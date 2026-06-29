@@ -1,9 +1,9 @@
-import { Button } from "@/components/ui/button";
+import { HeroView } from "@/modules/landing/ui/views/hero-view";
 
 const App = () => {
   return (
-    <div className="flex min-h-dvh items-center justify-center">
-      <Button>Hello Mémoire</Button>
+    <div className="relative h-screen w-screen overflow-x-hidden">
+      <HeroView />
     </div>
   );
 };

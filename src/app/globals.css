@@ -183,10 +183,16 @@
 @layer base {
   * {
     @apply border-border outline-ring/50;
+    /* border: 1px solid red; */
   }
   body {
     @apply bg-background text-foreground;
     letter-spacing: var(--tracking-normal);
+  }
+
+  ::selection {
+    background-color: var(--primary);
+    color: white;
   }
 }
 
@@ -195,4 +201,69 @@
   [role="button"]:not([disabled]) {
     cursor: pointer;
   }
+}
+
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--primary) var(--background);
+}
+
+/* Chrome, Edge, and Safari */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--background);
+  border-radius: var(--radius);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--primary);
+  border-radius: var(--radius);
+  transition: all 0.3s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--secondary);
+}
+
+/* Pour la version dark mode */
+.dark ::-webkit-scrollbar-track {
+  background: var(--background);
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: var(--primary);
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: var(--secondary);
+}
+
+/* Scrollbar pour les éléments avec overflow */
+.scrollable-element {
+  scrollbar-width: thin;
+  scrollbar-color: var(--primary) var(--background);
+}
+
+.scrollable-element::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.scrollable-element::-webkit-scrollbar-track {
+  background: var(--muted);
+  border-radius: var(--radius);
+}
+
+.scrollable-element::-webkit-scrollbar-thumb {
+  background: var(--primary);
+  border-radius: var(--radius);
+}
+
+.scrollable-element::-webkit-scrollbar-thumb:hover {
+  background: var(--secondary);
 }
