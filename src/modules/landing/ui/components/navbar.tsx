@@ -1,8 +1,12 @@
 import { useState, useEffect } from "react";
 import { InteractiveHoverButton } from "@/components/ui/interactive-hover-button";
 import { Menu, X } from "lucide-react";
+import Link from "next/link";
+import { useQuery } from "convex/react";
+import { api } from "../../../../../convex/_generated/api";
 
 export const NavBar = () => {
+  const user = useQuery(api.auth.getCurrentUser);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -70,13 +74,16 @@ export const NavBar = () => {
           </ul>
 
           {/* Boutons d'action */}
+
           <div className="flex items-center gap-2 sm:gap-4">
             <button className="hidden text-sm font-medium text-foreground/70 transition-colors hover:text-foreground sm:inline-block">
               Connexion
             </button>
-            <InteractiveHoverButton className="text-sm sm:text-base">
-              Commencer
-            </InteractiveHoverButton>
+            <Link href="/sign-in">
+              <InteractiveHoverButton className="text-sm sm:text-base">
+                Commencer
+              </InteractiveHoverButton>
+            </Link>
 
             {/* Bouton menu mobile */}
             <button
@@ -109,9 +116,11 @@ export const NavBar = () => {
               </a>
             ))}
             <div className="space-y-2 pt-4">
-              <button className="w-full rounded-lg px-4 py-3 text-sm font-medium text-foreground/70 transition-colors hover:bg-primary/5 hover:text-foreground">
-                Connexion
-              </button>
+              <Link href="/sign-in">
+                <button className="w-full rounded-lg px-4 py-3 text-sm font-medium text-foreground/70 transition-colors hover:bg-primary/5 hover:text-foreground">
+                  Connexion
+                </button>
+              </Link>
               <InteractiveHoverButton className="w-full justify-center text-center">
                 Commencer
               </InteractiveHoverButton>
