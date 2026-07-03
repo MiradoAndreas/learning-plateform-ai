@@ -24,6 +24,25 @@ export const createOnboardingData = mutation({
   handler: async (ctx, args) => {
     const now = Date.now();
 
+    const existing = await ctx.db
+      .query("onboarding_data")
+      .withIndex("by_userId", (q) => q.eq("userId", args.userId))
+      .first();
+
+    if (existing) {
+      await ctx.db.patch(existing._id, {
+        primaryGoal: args.primaryGoal,
+        secondaryGoals: args.secondaryGoals,
+        currentLevel: args.currentLevel,
+        studyDaysPerWeek: args.studyDaysPerWeek,
+        hoursPerStudyDay: args.hoursPerStudyDay,
+        preferredPace: args.preferredPace,
+        targetCompletionDate: args.targetCompletionDate,
+        lastUpdatedAt: now,
+      });
+      return existing._id;
+    }
+
     // Create onboarding data
     const onboardingId = await ctx.db.insert("onboarding_data", {
       userId: args.userId,
