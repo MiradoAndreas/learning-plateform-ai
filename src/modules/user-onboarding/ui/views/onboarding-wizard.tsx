@@ -7,6 +7,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
 import { useOnboarding } from "../../hooks/use-onboarding";
+import { StepInterests } from "./steps/step-interests";
 
 interface OnboardingWizardProps {
   userId: string;
@@ -24,6 +25,7 @@ export function OnboardingWizard({ userId }: OnboardingWizardProps) {
     saveLearningData,
     goToNext,
     goToPrevious,
+    saveInterests,
   } = useOnboarding(userId);
 
   // Redirect if complete (handled in hook)
@@ -31,8 +33,40 @@ export function OnboardingWizard({ userId }: OnboardingWizardProps) {
     return null;
   }
 
-  const isFirst = currentStep === 1;
-  const isLast = currentStep === 4;
+  const renderStep = () => {
+    const commonProps = {
+      onNext: goToNext,
+      onPrevious: goToPrevious,
+      isFirst: currentStep === 1,
+      isLast: currentStep === 4,
+      isSubmitting,
+    };
+
+    switch (currentStep) {
+      case 1:
+        return (
+          <StepLearning
+            {...commonProps}
+            defaultValues={data.learning}
+            onSave={saveLearningData}
+          />
+        );
+      case 2:
+        return (
+          <StepInterests
+            {...commonProps}
+            defaultValues={{ interests: data.interests || [] }}
+            onSave={saveInterests}
+          />
+        );
+      default:
+        return (
+          <div className="py-12 text-center">
+            <p className="text-muted-foreground">More steps coming soon...</p>
+          </div>
+        );
+    }
+  };
 
   if (isLoading && !data.learning) {
     return (
@@ -81,20 +115,7 @@ export function OnboardingWizard({ userId }: OnboardingWizardProps) {
           />
 
           {/* Step content */}
-          <div className="mt-12">
-            {currentStep === 1 && (
-              <StepLearning
-                defaultValues={data.learning}
-                onSave={saveLearningData}
-                onNext={goToNext}
-                onPrevious={goToPrevious}
-                isFirst={isFirst}
-                isLast={isLast}
-                isSubmitting={isSubmitting}
-              />
-            )}
-            {/* Future steps will be added here */}
-          </div>
+          <div className="mt-12">{renderStep()}</div>
         </CardContent>
       </Card>
     </div>

@@ -1,6 +1,76 @@
 import { mutation } from "../_generated/server";
 import { v } from "convex/values";
 
+// todos: Change it to addIntersts: so there are no networks repeat
+
+export const addInterest = mutation({
+  args: {
+    userId: v.string(),
+    domain: v.string(),
+    subdomain: v.optional(v.string()),
+    topic: v.string(),
+    technologies: v.optional(v.array(v.string())),
+    proficiency: v.union(
+      v.literal("exploring"),
+      v.literal("beginner"),
+      v.literal("intermediate"),
+      v.literal("advanced"),
+      v.literal("expert"),
+    ),
+  },
+  handler: async (ctx, args) => {
+    const now = Date.now();
+
+    // Check if this interest already exists for the user
+    const existing = await ctx.db
+      .query("interests")
+      .withIndex("by_userId", (q) => q.eq("userId", args.userId))
+      .collect();
+
+    // Check if same domain/topic exists
+    const duplicate = existing.find(
+      (i) => i.domain === args.domain && i.topic === args.topic,
+    );
+
+    if (duplicate) {
+      // Update existing interest
+      await ctx.db.patch(duplicate._id, {
+        subdomain: args.subdomain,
+        technologies: args.technologies || [],
+        proficiency: args.proficiency,
+        updatedAt: now,
+        isActive: true,
+      });
+      return duplicate._id;
+    }
+
+    // Create new interest
+    return await ctx.db.insert("interests", {
+      userId: args.userId,
+      domain: args.domain,
+      subdomain: args.subdomain,
+      topic: args.topic,
+      technologies: args.technologies || [],
+      proficiency: args.proficiency,
+      isActive: true,
+      createdAt: now,
+      updatedAt: now,
+    });
+  },
+});
+
+export const removeInterest = mutation({
+  args: {
+    interestId: v.id("interests"),
+  },
+  handler: async (ctx, args) => {
+    await ctx.db.patch(args.interestId, {
+      isActive: false,
+      updatedAt: Date.now(),
+    });
+  },
+});
+
 export const createOnboardingData = mutation({
   args: {
     userId: v.string(),
@@ -130,7 +200,7 @@ export const completeOnboarding = mutation({
   },
 });
 
-export const addLearningPreference = mutation({
+export const LearningPreference = mutation({
   args: {
     userId: v.string(),
     preferenceKey: v.string(),
