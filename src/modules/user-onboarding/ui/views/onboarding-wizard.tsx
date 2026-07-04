@@ -8,6 +8,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
 import { useOnboarding } from "../../hooks/use-onboarding";
 import { StepInterests } from "./steps/step-interests";
+import { StepPreferences } from "./steps/step-preferences";
 
 interface OnboardingWizardProps {
   userId: string;
@@ -23,6 +24,7 @@ export function OnboardingWizard({ userId }: OnboardingWizardProps) {
     error,
     isComplete,
     saveLearningData,
+    savePreferences,
     goToNext,
     goToPrevious,
     saveInterests,
@@ -59,6 +61,14 @@ export function OnboardingWizard({ userId }: OnboardingWizardProps) {
             onSave={saveInterests}
           />
         );
+      case 3:
+        return (
+          <StepPreferences
+            {...commonProps}
+            defaultValues={{ preferences: data.preferences || [] }}
+            onSave={savePreferences}
+          />
+        );
       default:
         return (
           <div className="py-12 text-center">
@@ -93,10 +103,10 @@ export function OnboardingWizard({ userId }: OnboardingWizardProps) {
           {/* Header */}
           <div className="mb-8">
             <h1 className="text-2xl font-semibold tracking-tight">
-              Customize Your Learning Journey
+              Personnalisez votre parcours d'apprentissage
             </h1>
             <p className="mt-1 text-sm text-muted-foreground">
-              Step {currentStep} of 4
+              Etape {currentStep} de 4
             </p>
           </div>
 

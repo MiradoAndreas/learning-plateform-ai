@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useMutation, useQuery } from "convex/react";
 
 import { useOnboardingStore } from "../stores/onboarding-store";
-import { InterestData, OnboardingData } from "../type";
+import { InterestData, OnboardingData, PreferenceData } from "../type";
 import { toast } from "sonner";
 import { api } from "../../../../convex/_generated/api";
 import { LearningSchema } from "../validators/learning-schema";
@@ -50,6 +50,7 @@ export function useOnboarding(userId: string) {
   const addInterest = useMutation(api.onboarding.mutations.addInterest);
 
   const removeInterest = useMutation(api.onboarding.mutations.removeInterest);
+  const addPreferences = useMutation(api.onboarding.mutations.addPreferences);
 
   // Load existing data into store when available
   useEffect(() => {
@@ -77,9 +78,17 @@ export function useOnboarding(userId: string) {
       };
       updateData(learningData);
 
+      if (onboardingData.onboarding?.primaryGoal) {
+        markStepComplete(1);
+      }
+
       // Mark step complete if interests exist
       if (onboardingData.interests && onboardingData.interests.length > 0) {
         markStepComplete(2);
+      }
+
+      if (onboardingData.preferences && onboardingData.preferences.length > 0) {
+        markStepComplete(3);
       }
     }
   }, [onboardingData, updateData, markStepComplete]);
@@ -145,6 +154,7 @@ export function useOnboarding(userId: string) {
     ],
   );
 
+  // Save Intersets
   const saveInterests = async (interests: InterestData[]): Promise<boolean> => {
     setLoading(true);
     setError(null);
@@ -196,6 +206,45 @@ export function useOnboarding(userId: string) {
     }
   };
 
+  // Save preferences
+  const savePreferences = async (
+    preferences: PreferenceData[],
+  ): Promise<boolean> => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      await addPreferences({
+        userId,
+        preferences: preferences.map((pref) => ({
+          preferenceKey: pref.key,
+          preferenceValue: pref.value,
+          category: pref.category,
+        })),
+      });
+
+      updateData({ preferences });
+      markStepComplete(3);
+
+      await updateStep({
+        userId,
+        step: 4,
+      });
+
+      toast.success("Learning preferences saved");
+      return true;
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : "Failed to save preferences";
+
+      setError(message);
+      toast.error(message);
+      return false;
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return {
     // State
     currentStep,
@@ -211,6 +260,7 @@ export function useOnboarding(userId: string) {
     removeInterest,
     saveInterests,
     saveLearningData,
+    savePreferences,
     goToNext,
     goToPrevious,
     setStep,
