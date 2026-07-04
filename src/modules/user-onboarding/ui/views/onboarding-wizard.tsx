@@ -9,6 +9,7 @@ import { AlertCircle } from "lucide-react";
 import { useOnboarding } from "../../hooks/use-onboarding";
 import { StepInterests } from "./steps/step-interests";
 import { StepPreferences } from "./steps/step-preferences";
+import { StepComplete } from "./steps/step-complete";
 
 interface OnboardingWizardProps {
   userId: string;
@@ -28,11 +29,19 @@ export function OnboardingWizard({ userId }: OnboardingWizardProps) {
     goToNext,
     goToPrevious,
     saveInterests,
+    submitOnboarding,
   } = useOnboarding(userId);
+
+  const handleComplete = async () => {
+    const success = await submitOnboarding();
+    if (success) {
+      console.log("Succès");
+    }
+  };
 
   // Redirect if complete (handled in hook)
   if (isComplete) {
-    return null;
+    return <div>Succès</div>;
   }
 
   const renderStep = () => {
@@ -67,6 +76,15 @@ export function OnboardingWizard({ userId }: OnboardingWizardProps) {
             {...commonProps}
             defaultValues={{ preferences: data.preferences || [] }}
             onSave={savePreferences}
+          />
+        );
+      case 4:
+        return (
+          <StepComplete
+            data={data}
+            isSubmitting={isSubmitting}
+            onPrevious={goToPrevious}
+            onSubmit={handleComplete}
           />
         );
       default:
