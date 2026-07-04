@@ -32,6 +32,7 @@ export function useOnboarding(userId: string) {
   const goToNext = useOnboardingStore((state) => state.goToNext);
   const goToPrevious = useOnboardingStore((state) => state.goToPrevious);
   const setStep = useOnboardingStore((state) => state.setStep);
+  const setSubmitting = useOnboardingStore((state) => state.setSubmitting);
 
   // Convex queries
   const onboardingData = useQuery(api.onboarding.queries.getOnboardingData, {
@@ -51,6 +52,9 @@ export function useOnboarding(userId: string) {
 
   const removeInterest = useMutation(api.onboarding.mutations.removeInterest);
   const addPreferences = useMutation(api.onboarding.mutations.addPreferences);
+  const completeOnboarding = useMutation(
+    api.onboarding.mutations.completeOnboarding,
+  );
 
   // Load existing data into store when available
   useEffect(() => {
@@ -129,7 +133,9 @@ export function useOnboarding(userId: string) {
         // Update step in Convex
         await updateStep({ userId, step: 2 });
 
-        toast.success("Learning preferences saved");
+        toast.success("Learning preferences saved", {
+          position: "top-center",
+        });
         return true;
       } catch (error) {
         const message =
@@ -178,7 +184,9 @@ export function useOnboarding(userId: string) {
       markStepComplete(2);
       await updateStep({ userId, step: 3 });
 
-      toast.success(`Saved ${interests.length} interests`);
+      toast.success(`Saved ${interests.length} interests`, {
+        position: "top-center",
+      });
       return true;
     } catch (error) {
       const message =
@@ -231,7 +239,9 @@ export function useOnboarding(userId: string) {
         step: 4,
       });
 
-      toast.success("Learning preferences saved");
+      toast.success("Learning preferences saved", {
+        position: "top-center",
+      });
       return true;
     } catch (error) {
       const message =
@@ -242,6 +252,38 @@ export function useOnboarding(userId: string) {
       return false;
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Complete onboarding
+  const submitOnboarding = async (): Promise<boolean> => {
+    setSubmitting(true);
+    setError(null);
+
+    try {
+      await completeOnboarding({ userId });
+
+      setComplete(true);
+      toast.success("🎉 Onboarding complete! Redirecting to dashboard...", {
+        position: "top-center",
+      });
+
+      // Redirect after a short delay for the user to see the success state
+      setTimeout(() => {
+        router.push("/dashboard");
+      }, 2000);
+
+      return true;
+    } catch (error) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : "Failed to complete onboarding";
+      setError(message);
+      toast.error(message);
+      return false;
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -260,6 +302,7 @@ export function useOnboarding(userId: string) {
     removeInterest,
     saveInterests,
     saveLearningData,
+    submitOnboarding,
     savePreferences,
     goToNext,
     goToPrevious,

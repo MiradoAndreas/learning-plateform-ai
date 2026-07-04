@@ -20,6 +20,7 @@ import Link from "next/link";
 import { Spinner } from "@/components/ui/spinner";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 const formSchema = z
   .object({
@@ -62,7 +63,9 @@ export const SignUpView = () => {
       },
       {
         onSuccess: () => {
-          toast.success("Account created successfully");
+          toast.success("Account created successfully", {
+            position: "top-center",
+          });
           router.push("/");
           setPending(false);
         },
@@ -277,7 +280,9 @@ export const SignUpView = () => {
             </FieldGroup>
           </form>
           <div className="relative hidden flex-col items-center justify-center gap-y-4 bg-radial from-sidebar-accent to-sidebar md:flex">
-            <img
+            <Image
+              width={92}
+              height={92}
               src="/logoipsum2.svg"
               alt="Image"
               className="h-[92px] w-[92px]"
