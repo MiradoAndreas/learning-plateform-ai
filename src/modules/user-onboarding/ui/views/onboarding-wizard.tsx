@@ -10,6 +10,7 @@ import { useOnboarding } from "../../hooks/use-onboarding";
 import { StepInterests } from "./steps/step-interests";
 import { StepPreferences } from "./steps/step-preferences";
 import { StepComplete } from "./steps/step-complete";
+import { OnboardingSuccess } from "../components/onboarding-complete-success";
 
 interface OnboardingWizardProps {
   userId: string;
@@ -41,7 +42,7 @@ export function OnboardingWizard({ userId }: OnboardingWizardProps) {
 
   // Redirect if complete (handled in hook)
   if (isComplete) {
-    return <div>Succès</div>;
+    return <OnboardingSuccess />;
   }
 
   const renderStep = () => {
