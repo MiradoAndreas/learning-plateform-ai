@@ -1,6 +1,68 @@
 import { mutation } from "../_generated/server";
 import { v } from "convex/values";
 
+// Add preference
+
+export const addPreferences = mutation({
+  args: {
+    userId: v.string(),
+    preferences: v.array(
+      v.object({
+        preferenceKey: v.string(),
+        preferenceValue: v.union(v.boolean(), v.string(), v.number(), v.null()),
+        category: v.union(
+          v.literal("learning_style"),
+          v.literal("content_preference"),
+          v.literal("interaction_style"),
+          v.literal("pace_preference"),
+          v.literal("custom"),
+        ),
+        weight: v.optional(v.number()),
+      }),
+    ),
+  },
+
+  handler: async (ctx, args) => {
+    const now = Date.now();
+
+    const existingPreferences = await ctx.db
+      .query("learning_preferences")
+      .withIndex("by_userId", (q) => q.eq("userId", args.userId))
+      .collect();
+
+    const existingMap = new Map(
+      existingPreferences.map((pref) => [pref.preferenceKey, pref]),
+    );
+
+    for (const preference of args.preferences) {
+      const existing = existingMap.get(preference.preferenceKey);
+
+      if (existing) {
+        await ctx.db.patch(existing._id, {
+          preferenceValue: preference.preferenceValue,
+          category: preference.category,
+          weight: preference.weight,
+          updatedAt: now,
+          isActive: true,
+        });
+
+        continue;
+      }
+
+      await ctx.db.insert("learning_preferences", {
+        userId: args.userId,
+        preferenceKey: preference.preferenceKey,
+        preferenceValue: preference.preferenceValue,
+        category: preference.category,
+        weight: preference.weight,
+        isActive: true,
+        createdAt: now,
+        updatedAt: now,
+      });
+    }
+  },
+});
+
 // todos: Change it to addIntersts: so there are no networks repeat
 
 export const addInterest = mutation({
