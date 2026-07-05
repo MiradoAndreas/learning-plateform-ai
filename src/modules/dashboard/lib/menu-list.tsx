@@ -1,13 +1,10 @@
 import {
-  Tag,
   Users,
   Settings,
-  Bookmark,
   SquarePen,
   LayoutGrid,
   LucideIcon,
   Bell,
-  User,
   TrendingUp,
 } from "lucide-react";
 
@@ -52,26 +49,26 @@ export function getMenuList(pathname: string): Group[] {
           icon: SquarePen,
           submenus: [
             {
-              href: "/ai/roadmap",
+              href: "/dashboard/ai/roadmap",
               label: "Roadmap",
             },
             {
-              href: "/ai/advice",
+              href: "/dashboard/ai/advice",
               label: "Advice",
             },
             {
-              href: "/ai/quiz",
+              href: "/dashboard/ai/quiz",
               label: "Quiz",
             },
           ],
         },
         {
-          href: "/notification",
+          href: "/dashboard/notification",
           label: "Notification",
           icon: Bell,
         },
         {
-          href: "/team",
+          href: "/dashboard/team",
           label: "Team",
           icon: Users,
         },
@@ -124,13 +121,8 @@ export function getMenuList(pathname: string): Group[] {
       groupLabel: "Settings",
       menus: [
         {
-          href: "/user",
-          label: "Users",
-          icon: User,
-        },
-        {
-          href: "/account",
-          label: "Account",
+          href: "/dashboard/settings/profile",
+          label: "Environments",
           icon: Settings,
         },
       ],
