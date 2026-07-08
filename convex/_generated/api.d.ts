@@ -21,6 +21,11 @@ import type * as onboarding_onboarding_data from "../onboarding/onboarding_data.
 import type * as onboarding_queries from "../onboarding/queries.js";
 import type * as profiles_user_profiles from "../profiles/user_profiles.js";
 import type * as profiles_user_settings from "../profiles/user_settings.js";
+import type * as roadmap_action from "../roadmap/action.js";
+import type * as roadmap_internal from "../roadmap/internal.js";
+import type * as roadmap_mutation from "../roadmap/mutation.js";
+import type * as roadmap_queries from "../roadmap/queries.js";
+import type * as roadmap_roadmap from "../roadmap/roadmap.js";
 
 import type {
   ApiFromModules,
@@ -42,6 +47,11 @@ declare const fullApi: ApiFromModules<{
   "onboarding/queries": typeof onboarding_queries;
   "profiles/user_profiles": typeof profiles_user_profiles;
   "profiles/user_settings": typeof profiles_user_settings;
+  "roadmap/action": typeof roadmap_action;
+  "roadmap/internal": typeof roadmap_internal;
+  "roadmap/mutation": typeof roadmap_mutation;
+  "roadmap/queries": typeof roadmap_queries;
+  "roadmap/roadmap": typeof roadmap_roadmap;
 }>;
 
 /**
