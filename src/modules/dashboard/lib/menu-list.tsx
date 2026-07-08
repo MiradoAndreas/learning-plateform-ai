@@ -83,23 +83,23 @@ export function getMenuList(pathname: string): Group[] {
           icon: SquarePen,
           submenus: [
             {
-              href: "/ai/library/plans",
+              href: "/dashboard/ai/library/plans",
               label: "Plans",
             },
             {
-              href: "/ai/library/roadmap",
+              href: "/dashboard/ai/library/roadmap",
               label: "Roadmap",
             },
             {
-              href: "/ai/library/guides",
+              href: "/dashboard/ai/library/guides",
               label: "Guides",
             },
             {
-              href: "/ai/library/quizzes",
+              href: "/dashboard/ai/library/quizzes",
               label: "Quizzes",
             },
             {
-              href: "/ai/library/courses",
+              href: "/dashboard/ai/library/courses",
               label: "Courses",
             },
           ],

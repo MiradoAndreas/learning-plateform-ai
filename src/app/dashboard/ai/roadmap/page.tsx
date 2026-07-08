@@ -1,10 +1,13 @@
-import { ContentLayout } from "@/modules/dashboard/ui/layouts/content-layout";
+import { Navbar } from "@/modules/dashboard/ui/components/navbar";
+
+import { RoadmapView } from "@/modules/roadmap/ui/views/roadmap-view";
 
 const Page = () => {
   return (
-    <ContentLayout title="Roadmap">
-      <div>Page Roadmap with AI</div>
-    </ContentLayout>
+    <div>
+      <Navbar title="Roadmap" />
+      <RoadmapView />
+    </div>
   );
 };
 
