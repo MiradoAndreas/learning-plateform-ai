@@ -48,6 +48,10 @@ export const sendMessage = action({
       { sessionId },
     );
 
+    // Limite l'historique envoyé à l'IA pour éviter de dépasser le contexte
+    const MAX_HISTORY = 20;
+    const trimmedHistory = history.slice(-MAX_HISTORY);
+
     // 3. Appel IA
     const reply = await generateChatReply({
       context: {
@@ -56,7 +60,7 @@ export const sendMessage = action({
         summary: roadmap.summary,
         mermaid: roadmap.mermaid,
       },
-      history: history.map((m) => ({ role: m.role, content: m.content })),
+      history: trimmedHistory.map((m) => ({ role: m.role, content: m.content })),
     });
 
     // 4. On persiste la réponse
