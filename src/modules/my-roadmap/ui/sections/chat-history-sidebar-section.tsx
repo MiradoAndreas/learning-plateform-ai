@@ -34,8 +34,16 @@ export const ChatHistorySidebarSection = ({
   const createSession = useMutation(api.chat.mutation.createSession);
 
   const handleCreateSession = async () => {
-    const sessionId = await createSession({ roadmapId });
-    setCurrentSessionId(sessionId);
+    if (isCreating) return;
+    setIsCreating(true);
+    try {
+      const sessionId = await createSession({ roadmapId });
+      setCurrentSessionId(sessionId);
+    } catch (error) {
+      console.error("Failed to create session:", error);
+    } finally {
+      setIsCreating(false);
+    }
   };
 
   return (
@@ -45,6 +53,7 @@ export const ChatHistorySidebarSection = ({
           className="w-full justify-start gap-x-2"
           variant="outline"
           onClick={handleCreateSession}
+          disabled={isCreating}
         >
           <PlusIcon className="h-4 w-4" />
           Nouvelle discussion
