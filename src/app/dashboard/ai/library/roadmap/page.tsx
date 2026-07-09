@@ -1,7 +1,7 @@
 import { ContentLayout } from "@/modules/dashboard/ui/layouts/content-layout";
-import { MyRoadMapView } from "@/modules/roadmap/ui/views/my-roadmap-view";
+import { MyRoadMapView } from "@/modules/my-roadmap/ui/views/all-my-roadmap-view";
 
-const MyRoadmapPage = () => {
+const Page = () => {
   return (
     <ContentLayout title="My Roadmap">
       <MyRoadMapView />
@@ -9,4 +9,4 @@ const MyRoadmapPage = () => {
   );
 };
 
-export default MyRoadmapPage;
+export default Page;

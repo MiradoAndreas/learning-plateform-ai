@@ -1,4 +1,4 @@
-import { RoadmapListSection } from "../sections/roadmap-list-section";
+import { RoadmapListSection } from "@/modules/roadmap/ui/sections/roadmap-list-section";
 
 export const MyRoadMapView = () => {
   return (
