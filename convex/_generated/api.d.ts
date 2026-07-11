@@ -19,6 +19,8 @@ import type * as onboarding_learning_preferences from "../onboarding/learning_pr
 import type * as onboarding_mutations from "../onboarding/mutations.js";
 import type * as onboarding_onboarding_data from "../onboarding/onboarding_data.js";
 import type * as onboarding_queries from "../onboarding/queries.js";
+import type * as playground_agentTest from "../playground/agentTest.js";
+import type * as playground_ragTest from "../playground/ragTest.js";
 import type * as profiles_user_profiles from "../profiles/user_profiles.js";
 import type * as profiles_user_settings from "../profiles/user_settings.js";
 import type * as roadmap_action from "../roadmap/action.js";
@@ -45,6 +47,8 @@ declare const fullApi: ApiFromModules<{
   "onboarding/mutations": typeof onboarding_mutations;
   "onboarding/onboarding_data": typeof onboarding_onboarding_data;
   "onboarding/queries": typeof onboarding_queries;
+  "playground/agentTest": typeof playground_agentTest;
+  "playground/ragTest": typeof playground_ragTest;
   "profiles/user_profiles": typeof profiles_user_profiles;
   "profiles/user_settings": typeof profiles_user_settings;
   "roadmap/action": typeof roadmap_action;
@@ -82,4 +86,6 @@ export declare const internal: FilterApi<
 
 export declare const components: {
   betterAuth: import("../betterAuth/_generated/component.js").ComponentApi<"betterAuth">;
+  agent: import("@convex-dev/agent/_generated/component.js").ComponentApi<"agent">;
+  rag: import("@convex-dev/rag/_generated/component.js").ComponentApi<"rag">;
 };

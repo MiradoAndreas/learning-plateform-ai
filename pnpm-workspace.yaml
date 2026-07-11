@@ -6,3 +6,6 @@ allowBuilds:
 ignoredBuiltDependencies:
   - sharp
   - unrs-resolver
+minimumReleaseAgeExclude:
+  - '@ai-sdk/gateway@3.0.148'
+  - ai@6.0.224
