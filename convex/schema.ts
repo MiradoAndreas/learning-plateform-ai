@@ -8,6 +8,7 @@ import { interests } from "./onboarding/interests";
 import { learningGoals } from "./onboarding/learning_goals";
 import { learningProfiles } from "./ai/learning_profiles";
 import { roadmapQuestions, roadmaps } from "./roadmap/roadmap";
+import { chatMessages, chatSessions } from "./chat/chat";
 
 export default defineSchema({
   user_profiles: userProfiles,
@@ -19,4 +20,6 @@ export default defineSchema({
   learning_profiles: learningProfiles,
   roadmaps: roadmaps,
   roadmap_questions: roadmapQuestions,
+  chat_messages: chatMessages,
+  chat_sessions: chatSessions,
 });

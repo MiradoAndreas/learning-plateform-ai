@@ -41,7 +41,7 @@ export const LearnChatSection = () => {
   };
 
   return (
-    <div className="flex h-full max-h-[600px] flex-col md:max-h-[650px]">
+    <div className="flex h-[650px] flex-col">
       <div className="flex items-center gap-x-2 border-b px-4 py-3">
         <SidebarTrigger />
         <BotIcon className="h-4 w-4 text-muted-foreground" />
