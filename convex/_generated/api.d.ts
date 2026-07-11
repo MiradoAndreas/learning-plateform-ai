@@ -14,6 +14,8 @@ import type * as chat_action from "../chat/action.js";
 import type * as chat_ai from "../chat/ai.js";
 import type * as chat_chat from "../chat/chat.js";
 import type * as chat_internal from "../chat/internal.js";
+import type * as chat_mutation from "../chat/mutation.js";
+import type * as chat_queries from "../chat/queries.js";
 import type * as http from "../http.js";
 import type * as lib_helper from "../lib/helper.js";
 import type * as lib_validators from "../lib/validators.js";
@@ -46,6 +48,8 @@ declare const fullApi: ApiFromModules<{
   "chat/ai": typeof chat_ai;
   "chat/chat": typeof chat_chat;
   "chat/internal": typeof chat_internal;
+  "chat/mutation": typeof chat_mutation;
+  "chat/queries": typeof chat_queries;
   http: typeof http;
   "lib/helper": typeof lib_helper;
   "lib/validators": typeof lib_validators;

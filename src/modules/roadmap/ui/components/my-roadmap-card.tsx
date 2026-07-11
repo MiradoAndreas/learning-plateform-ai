@@ -36,7 +36,7 @@ export const RoadmapCard = ({
   createdAt,
 }: RoadmapCardProps) => {
   return (
-    <Link href={`/roadmap/${roadmapId}`} className="block">
+    <Link href={`/dashboard/ai/library/roadmap/${roadmapId}`} className="block">
       <Card className="transition-colors hover:border-primary/50 hover:bg-muted/40">
         <CardHeader>
           <CardTitle className="line-clamp-1">{title ?? topic}</CardTitle>

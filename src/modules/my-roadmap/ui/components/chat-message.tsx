@@ -41,7 +41,6 @@ export const ChatMessageItem = ({
             <p className="text-sm whitespace-pre-wrap">{content}</p>
             {mermaid && (
               <div className="overflow-hidden rounded-md border bg-background">
-                {/* todos: add a try/catch when the diagram is not valid  */}
                 <ZoomableDiagramSvg chart={mermaid} />
               </div>
             )}
