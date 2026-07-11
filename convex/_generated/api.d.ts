@@ -10,6 +10,10 @@
 
 import type * as ai_learning_profiles from "../ai/learning_profiles.js";
 import type * as auth from "../auth.js";
+import type * as chat_action from "../chat/action.js";
+import type * as chat_ai from "../chat/ai.js";
+import type * as chat_chat from "../chat/chat.js";
+import type * as chat_internal from "../chat/internal.js";
 import type * as http from "../http.js";
 import type * as lib_helper from "../lib/helper.js";
 import type * as lib_validators from "../lib/validators.js";
@@ -19,6 +23,8 @@ import type * as onboarding_learning_preferences from "../onboarding/learning_pr
 import type * as onboarding_mutations from "../onboarding/mutations.js";
 import type * as onboarding_onboarding_data from "../onboarding/onboarding_data.js";
 import type * as onboarding_queries from "../onboarding/queries.js";
+import type * as playground_agentTest from "../playground/agentTest.js";
+import type * as playground_ragTest from "../playground/ragTest.js";
 import type * as profiles_user_profiles from "../profiles/user_profiles.js";
 import type * as profiles_user_settings from "../profiles/user_settings.js";
 import type * as roadmap_action from "../roadmap/action.js";
@@ -36,6 +42,10 @@ import type {
 declare const fullApi: ApiFromModules<{
   "ai/learning_profiles": typeof ai_learning_profiles;
   auth: typeof auth;
+  "chat/action": typeof chat_action;
+  "chat/ai": typeof chat_ai;
+  "chat/chat": typeof chat_chat;
+  "chat/internal": typeof chat_internal;
   http: typeof http;
   "lib/helper": typeof lib_helper;
   "lib/validators": typeof lib_validators;
@@ -45,6 +55,8 @@ declare const fullApi: ApiFromModules<{
   "onboarding/mutations": typeof onboarding_mutations;
   "onboarding/onboarding_data": typeof onboarding_onboarding_data;
   "onboarding/queries": typeof onboarding_queries;
+  "playground/agentTest": typeof playground_agentTest;
+  "playground/ragTest": typeof playground_ragTest;
   "profiles/user_profiles": typeof profiles_user_profiles;
   "profiles/user_settings": typeof profiles_user_settings;
   "roadmap/action": typeof roadmap_action;
@@ -82,4 +94,6 @@ export declare const internal: FilterApi<
 
 export declare const components: {
   betterAuth: import("../betterAuth/_generated/component.js").ComponentApi<"betterAuth">;
+  agent: import("@convex-dev/agent/_generated/component.js").ComponentApi<"agent">;
+  rag: import("@convex-dev/rag/_generated/component.js").ComponentApi<"rag">;
 };
