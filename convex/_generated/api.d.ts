@@ -8,6 +8,9 @@
  * @module
  */
 
+import type * as agents_orchestrator from "../agents/orchestrator.js";
+import type * as agents_roadmap from "../agents/roadmap.js";
+import type * as agents_tutor from "../agents/tutor.js";
 import type * as ai_learning_profiles from "../ai/learning_profiles.js";
 import type * as auth from "../auth.js";
 import type * as chat_action from "../chat/action.js";
@@ -42,6 +45,9 @@ import type {
 } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
+  "agents/orchestrator": typeof agents_orchestrator;
+  "agents/roadmap": typeof agents_roadmap;
+  "agents/tutor": typeof agents_tutor;
   "ai/learning_profiles": typeof ai_learning_profiles;
   auth: typeof auth;
   "chat/action": typeof chat_action;
