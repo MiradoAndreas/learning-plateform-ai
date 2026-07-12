@@ -28,6 +28,9 @@ export const LearnChatSection = () => {
     api.chat.queries.listMessages,
     currentSessionId ? { sessionId: currentSessionId } : "skip",
   );
+
+  console.log("Messages : ", messages);
+
   const sendMessage = useAction(api.chat.action.sendMessage);
 
   const handleSend = async (content: string) => {
