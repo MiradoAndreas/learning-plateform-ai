@@ -1,9 +1,9 @@
 import { Agent, createTool, stepCountIs } from "@convex-dev/agent";
+import { openai } from "@ai-sdk/openai";
 import { z } from "zod";
 import { components } from "../_generated/api";
 import { tutorAgent } from "./tutor";
 import { roadmapAgent } from "./roadmap";
-import { openai } from "../../ai";
 
 const askTutor = createTool({
   description:
@@ -38,13 +38,13 @@ export const chatReplySchema = z.object({
   content: z
     .string()
     .describe(
-      "Réponse pédagogique complète en texte. Fusionne les informations obtenues via les outils. N'inclus jamais de code Mermaid, de bloc Markdown ```mermaid ou de diagramme dans ce champ. Ce champ ne contient que du texte.",
+      "La réponse pédagogique complète en texte, fusionnant les informations obtenues via les outils. Ne mets JAMAIS de code mermaid dans ce champ.",
     ),
-
   mermaid: z
     .string()
     .describe(
-      "Diagramme Mermaid valide résumant visuellement la réponse. Retourne uniquement le code Mermaid brut, sans balises Markdown ni ```mermaid. Le diagramme doit être compatible avec Mermaid v11. Utilise uniquement une syntaxe valide (flowchart, sequenceDiagram, mindmap, etc.). N'utilise jamais les caractères '|' ou les parenthèses '(' ')' à l'intérieur des labels des nœuds. Pour les décisions, utilise un losange simple (Decision{Question}) puis des liens étiquetés (Decision -->|Oui| A). Les labels doivent être courts (moins de 40 caractères) et ne contenir que des lettres, chiffres, espaces, tirets ou deux-points. Si aucun diagramme complexe n'est nécessaire, génère au minimum un flowchart valide de 2 à 3 nœuds.",
+      "Un diagramme mermaid valide (flowchart, mindmap, sequenceDiagram, etc.) qui résume visuellement la réponse. " +
+        "Obligatoire, même pour un sujet simple (minimum 2-3 noeuds). Code mermaid brut uniquement, sans balises markdown.",
     ),
 });
 

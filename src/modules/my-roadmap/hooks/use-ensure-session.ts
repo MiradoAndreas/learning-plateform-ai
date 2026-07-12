@@ -9,35 +9,25 @@ import { api } from "../../../../convex/_generated/api";
 
 export function useEnsureChatSession(roadmapId: Id<"roadmaps">) {
   const sessions = useQuery(api.chat.queries.listSessions, { roadmapId });
-  const currentSessionId = useChatUIStore((state) => state.currentSessionId);
-  const setCurrentSessionId = useChatUIStore(
-    (state) => state.setCurrentSessionId,
+  const currentThreadId = useChatUIStore((state) => state.currentThreadId);
+  const setCurrentThreadId = useChatUIStore(
+    (state) => state.setCurrentThreadId,
   );
   const createSession = useMutation(api.chat.mutation.createSession);
 
   const hasTriggeredCreation = useRef(false);
 
   useEffect(() => {
-    if (sessions === undefined || currentSessionId) return;
+    if (sessions === undefined || currentThreadId) return;
 
     if (sessions.length > 0) {
-      setCurrentSessionId(sessions[0]._id);
+      setCurrentThreadId(sessions[0].threadId);
       return;
     }
 
-    // Aucune session pour cette roadmap -> on en crée une automatiquement,
-    // une seule fois (évite un double-appel en concurrent mode / strict mode).
     if (!hasTriggeredCreation.current) {
       hasTriggeredCreation.current = true;
-      createSession({ roadmapId }).then(setCurrentSessionId);
+      createSession({ roadmapId }).then(setCurrentThreadId);
     }
-  }, [
-    sessions,
-    currentSessionId,
-    roadmapId,
-    createSession,
-    setCurrentSessionId,
-  ]);
-
-  return { sessions, currentSessionId };
+  }, [sessions, currentThreadId, roadmapId, createSession, setCurrentThreadId]);
 }

@@ -1,5 +1,8 @@
 import { v } from "convex/values";
 import { query } from "../_generated/server";
+import { paginationOptsValidator } from "convex/server";
+import { listUIMessages } from "@convex-dev/agent";
+import { components } from "../_generated/api";
 
 export const listSessions = query({
   args: { roadmapId: v.id("roadmaps") },
@@ -13,28 +16,34 @@ export const listSessions = query({
     }
 
     return await ctx.db
-      .query("chat_sessions")
+      .query("roadmapThreads")
       .withIndex("by_roadmap", (q) => q.eq("roadmapId", roadmapId))
       .order("desc")
       .collect();
   },
 });
 
-export const listMessages = query({
-  args: { sessionId: v.id("chat_sessions") },
-  handler: async (ctx, { sessionId }) => {
+export const listThreadMessages = query({
+  args: {
+    threadId: v.string(),
+    paginationOpts: paginationOptsValidator,
+  },
+  handler: async (ctx, { threadId, paginationOpts }) => {
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) throw new Error("Non authentifié");
 
-    const session = await ctx.db.get(sessionId);
-    if (!session || session.userId !== identity.subject) {
+    const thread = await ctx.db
+      .query("roadmapThreads")
+      .withIndex("by_thread", (q) => q.eq("threadId", threadId))
+      .unique();
+
+    if (!thread || thread.userId !== identity.subject) {
       throw new Error("Introuvable");
     }
 
-    return await ctx.db
-      .query("chat_messages")
-      .withIndex("by_session", (q) => q.eq("sessionId", sessionId))
-      .order("asc")
-      .collect();
+    return await listUIMessages(ctx, components.agent, {
+      threadId,
+      paginationOpts,
+    });
   },
 });

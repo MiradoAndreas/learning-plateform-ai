@@ -31,7 +31,7 @@ export const RoadmapLearnView = ({ roadmapId }: RoadmapLearnViewProps) => {
           <ResizableHandle withHandle />
 
           <ResizablePanel defaultSize={50} minSize={30}>
-            <LearnChatSection />
+            <LearnChatSection roadmapId={roadmapId} />
           </ResizablePanel>
         </ResizablePanelGroup>
       </SidebarInset>

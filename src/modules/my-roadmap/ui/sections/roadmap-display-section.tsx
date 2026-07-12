@@ -2,7 +2,6 @@
 
 import { ZoomableDiagramSvg } from "@/components/zoomable-diagram";
 import { GeneratingIndicator } from "@/modules/roadmap/ui/components/generating-indicator";
-import { RoadmapStatusBadge } from "@/modules/roadmap/ui/components/my-roadmap-status-badge";
 import { RoadmapErrorAlert } from "@/modules/roadmap/ui/components/roadmap-error-alert";
 import { useQuery } from "convex/react";
 import { Id } from "../../../../../convex/_generated/dataModel";

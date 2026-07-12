@@ -27,15 +27,15 @@ export const ChatHistorySidebarSection = ({
   roadmapId,
 }: ChatHistorySidebarSectionProps) => {
   const sessions = useQuery(api.chat.queries.listSessions, { roadmapId });
-  const currentSessionId = useChatUIStore((state) => state.currentSessionId);
-  const setCurrentSessionId = useChatUIStore(
-    (state) => state.setCurrentSessionId,
+  const currentThreadId = useChatUIStore((state) => state.currentThreadId);
+  const setCurrentThreadId = useChatUIStore(
+    (state) => state.setCurrentThreadId,
   );
   const createSession = useMutation(api.chat.mutation.createSession);
 
   const handleCreateSession = async () => {
-    const sessionId = await createSession({ roadmapId });
-    setCurrentSessionId(sessionId);
+    const threadId = await createSession({ roadmapId });
+    setCurrentThreadId(threadId);
   };
 
   return (
@@ -59,8 +59,8 @@ export const ChatHistorySidebarSection = ({
                 <ChatHistoryItem
                   key={session._id}
                   title={session.title}
-                  active={session._id === currentSessionId}
-                  onClick={() => setCurrentSessionId(session._id)}
+                  active={session.threadId === currentThreadId}
+                  onClick={() => setCurrentThreadId(session.threadId)}
                 />
               ))}
             </SidebarMenu>

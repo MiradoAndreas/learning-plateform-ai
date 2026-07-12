@@ -1,9 +1,8 @@
 import { Agent, createTool } from "@convex-dev/agent";
-
+import { openai } from "@ai-sdk/openai";
 import { z } from "zod";
 import { internal, components } from "../_generated/api";
 import { Id } from "../_generated/dataModel";
-import { openai } from "../../ai";
 
 type RoadmapProgress = {
   topic: string;
