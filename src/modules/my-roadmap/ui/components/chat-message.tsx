@@ -6,19 +6,13 @@ import {
   MessageAvatar,
   MessageContent,
 } from "@/components/ui/message";
-import { ZoomableDiagramSvg } from "@/components/zoomable-diagram";
 
 type ChatMessageItemProps = {
   role: "user" | "assistant";
   content: string;
-  mermaid?: string;
 };
 
-export const ChatMessageItem = ({
-  role,
-  content,
-  mermaid,
-}: ChatMessageItemProps) => {
+export const ChatMessageItem = ({ role, content }: ChatMessageItemProps) => {
   const isUser = role === "user";
 
   return (
@@ -37,13 +31,8 @@ export const ChatMessageItem = ({
       )}
       <MessageContent>
         <Bubble variant={isUser ? "muted" : undefined}>
-          <BubbleContent className="flex flex-col gap-y-3">
+          <BubbleContent>
             <p className="text-sm whitespace-pre-wrap">{content}</p>
-            {mermaid && (
-              <div className="overflow-hidden rounded-md border bg-background">
-                <ZoomableDiagramSvg chart={mermaid} />
-              </div>
-            )}
           </BubbleContent>
         </Bubble>
       </MessageContent>

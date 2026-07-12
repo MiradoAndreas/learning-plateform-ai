@@ -35,3 +35,12 @@ export const roadmapQuestions = defineTable({
   .index("by_roadmap", ["roadmapId"])
   .index("by_roadmap_and_order", ["roadmapId", "order"])
   .index("by_roadmap_and_key", ["roadmapId", "key"]);
+
+export const roadmapThreads = defineTable({
+  roadmapId: v.id("roadmaps"),
+  userId: v.string(),
+  threadId: v.string(),
+  title: v.string(),
+})
+  .index("by_roadmap", ["roadmapId"])
+  .index("by_thread", ["threadId"]);
