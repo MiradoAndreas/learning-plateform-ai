@@ -190,7 +190,7 @@ export const FormRoadmapSection = () => {
         }
       >
         <BotIcon />
-        {submitting ? "Génération en cours..." : "Generate"}
+        {submitting ? "Analyse et génération..." : "Generate"}
       </Button>
     </div>
   );

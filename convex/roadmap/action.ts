@@ -1,13 +1,11 @@
-// convex/roadmaps/actions.ts
+// convex/roadmap/actions.ts
 "use node"; // si generateText nécessite l'environnement Node
 
 import { v } from "convex/values";
 import { action } from "../_generated/server";
 import { internal } from "../_generated/api";
-import {
-  generateQuestions,
-  generateRoadmap,
-} from "@/modules/roadmap/lib/roadmap-generator";
+import { generateQuestions } from "@/modules/roadmap/lib/roadmap-generator";
+import { generateRoadmap } from "./ai";
 
 export const generateQuestionsAction = action({
   args: { roadmapId: v.id("roadmaps") },
@@ -47,7 +45,6 @@ export const submitAnswersAndGenerateRoadmap = action({
     answers: v.array(v.object({ key: v.string(), value: v.string() })),
   },
   handler: async (ctx, { roadmapId, answers }) => {
-    // 1. On sauvegarde toutes les réponses en une fois (envoi groupé, comme demandé)
     await ctx.runMutation(internal.roadmap.internal.saveAnswers, {
       roadmapId,
       answers,
@@ -58,18 +55,18 @@ export const submitAnswersAndGenerateRoadmap = action({
     });
 
     try {
-      // 2. Les réponses vont dans le prompt (à adapter dans buildPrompt)
       const result = await generateRoadmap({
         topic: roadmap.topic,
         answers,
       });
 
-      // 3. Le roadmap généré est injecté en base
+      console.log("result : ", result);
+
       await ctx.runMutation(internal.roadmap.internal.saveRoadmapResult, {
         roadmapId,
         title: result.title,
         summary: result.summary,
-        mermaid: result.mermaid,
+        roadmapData: result.roadmapData,
       });
     } catch (err) {
       await ctx.runMutation(internal.roadmap.internal.setFailed, {

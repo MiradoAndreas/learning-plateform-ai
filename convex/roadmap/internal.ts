@@ -1,6 +1,7 @@
 // convex/roadmaps/internal.ts
 import { v } from "convex/values";
 import { internalMutation, internalQuery } from "../_generated/server";
+import { roadmapDataValidator } from "./roadmap";
 
 export const getRoadmap = internalQuery({
   args: { roadmapId: v.id("roadmaps") },
@@ -92,13 +93,13 @@ export const saveRoadmapResult = internalMutation({
     roadmapId: v.id("roadmaps"),
     title: v.string(),
     summary: v.string(),
-    mermaid: v.string(),
+    roadmapData: roadmapDataValidator, // même validator que dans le schéma
   },
-  handler: async (ctx, { roadmapId, title, summary, mermaid }) => {
+  handler: async (ctx, { roadmapId, title, summary, roadmapData }) => {
     await ctx.db.patch(roadmapId, {
       title,
       summary,
-      mermaid,
+      roadmapData,
       status: "completed",
     });
   },

@@ -2,12 +2,11 @@
 
 import { useQuery } from "convex/react";
 
-import { ZoomableDiagramSvg } from "@/components/zoomable-diagram";
-
 import { GeneratingIndicator } from "../components/generating-indicator";
 import { RoadmapErrorAlert } from "../components/roadmap-error-alert";
 import { useRoadmapStore } from "../../stores/roadmap-store";
 import { api } from "../../../../../convex/_generated/api";
+import { RoadmapFlow } from "../components/roadmap-flow";
 
 export const ResultRoadmapSection = () => {
   const roadmapId = useRoadmapStore((state) => state.roadmapId);
@@ -31,7 +30,7 @@ export const ResultRoadmapSection = () => {
     );
   }
 
-  if (roadmap.status !== "completed" || !roadmap.mermaid) {
+  if (roadmap.status !== "completed") {
     return null;
   }
 
@@ -43,7 +42,7 @@ export const ResultRoadmapSection = () => {
       {roadmap.summary && (
         <p className="text-sm text-muted-foreground">{roadmap.summary}</p>
       )}
-      <ZoomableDiagramSvg chart={roadmap.mermaid} />
+      {roadmap.roadmapData && <RoadmapFlow data={roadmap.roadmapData} />}
     </div>
   );
 };
