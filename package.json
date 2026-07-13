@@ -17,6 +17,7 @@
     "@gsap/react": "^2.1.2",
     "@hookform/resolvers": "^5.4.0",
     "@shadcn/react": "^0.2.0",
+    "@xyflow/react": "^12.11.2",
     "ai": "^6.0.191",
     "better-auth": "~1.6.22",
     "class-variance-authority": "^0.7.1",
