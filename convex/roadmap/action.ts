@@ -1,5 +1,3 @@
-// convex/roadmap/actions.ts
-"use node"; // si generateText nécessite l'environnement Node
 
 import { v } from "convex/values";
 import { action } from "../_generated/server";

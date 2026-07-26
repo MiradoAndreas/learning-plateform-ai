@@ -1,7 +1,32 @@
-// convex/roadmaps/internal.ts
 import { v } from "convex/values";
 import { internalMutation, internalQuery } from "../_generated/server";
 import { roadmapDataValidator } from "./roadmap";
+import {
+  LEARNING_RESOURCE_QUESTION,
+  LEARNING_RESOURCE_QUESTION_KEY,
+} from "./constants";
+
+export const getRoadmapPreferences = internalQuery({
+  args: {
+    roadmapId: v.id("roadmaps"),
+  },
+  handler: async (ctx, { roadmapId }) => {
+    const questions = await ctx.db
+      .query("roadmap_questions")
+      .withIndex("by_roadmap_and_order", (q) => q.eq("roadmapId", roadmapId))
+      .collect();
+
+    const preferences: Record<string, string> = {};
+
+    for (const question of questions) {
+      if (!question.answer) continue;
+
+      preferences[question.key] = question.answer;
+    }
+
+    return preferences;
+  },
+});
 
 export const getRoadmap = internalQuery({
   args: { roadmapId: v.id("roadmaps") },
@@ -42,26 +67,45 @@ export const saveGeneratedQuestions = internalMutation({
       v.object({
         key: v.string(),
         title: v.string(),
-        description: v.string(),
+        description: v.optional(v.string()),
         required: v.boolean(),
         options: v.array(v.string()),
       }),
     ),
   },
   handler: async (ctx, { roadmapId, questions }) => {
+    // 1. Le LLM ne doit jamais être la source de vérité pour cette question :
+    //    on retire toute tentative de sa part, quelle que soit sa formulation.
+    const llmQuestions = questions.filter(
+      (q) => q.key !== LEARNING_RESOURCE_QUESTION_KEY,
+    );
+
+    // 2. Dédoublonnage par clé, au cas où le LLM générerait deux fois la
+    //    même clé sous des libellés différents (garde la première occurrence).
+    const seenKeys = new Set<string>();
+    const dedupedQuestions = llmQuestions.filter((q) => {
+      if (seenKeys.has(q.key)) return false;
+      seenKeys.add(q.key);
+      return true;
+    });
+
+    // 3. On ajoute la question canonique, fixe et contrôlée par le code.
+    const finalQuestions = [...dedupedQuestions, LEARNING_RESOURCE_QUESTION];
+
     await Promise.all(
-      questions.map((q, index) =>
+      finalQuestions.map((q, index) =>
         ctx.db.insert("roadmap_questions", {
           roadmapId,
           order: index,
           key: q.key,
           title: q.title,
-          description: q.description || null,
+          description: q.description ?? null,
           required: q.required,
           options: q.options,
         }),
       ),
     );
+
     await ctx.db.patch(roadmapId, { status: "awaiting_answers" });
   },
 });

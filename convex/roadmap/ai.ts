@@ -15,6 +15,7 @@ const questionSchema = z.object({
   key: z.string(),
   title: z.string(),
   description: z.string(),
+  category: z.string(),
   required: z.boolean(),
   options: z.array(z.string()),
 });

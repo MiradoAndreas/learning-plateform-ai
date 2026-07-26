@@ -1,18 +1,32 @@
 "use client";
 
 import { GeneratingIndicator } from "@/modules/roadmap/ui/components/generating-indicator";
+import { Node } from "@xyflow/react";
 import { RoadmapErrorAlert } from "@/modules/roadmap/ui/components/roadmap-error-alert";
 import { useQuery } from "convex/react";
 import { Id } from "../../../../../convex/_generated/dataModel";
 import { api } from "../../../../../convex/_generated/api";
-import { RoadmapFlow } from "@/modules/roadmap/ui/components/roadmap-flow";
+import dynamic from "next/dynamic";
+
+const RoadmapFlow = dynamic(
+  () =>
+    import("@/modules/roadmap/ui/components/roadmap-flow").then(
+      (mod) => mod.RoadmapFlow,
+    ),
+  {
+    ssr: false,
+    loading: () => <GeneratingIndicator label="Chargement du diagramme..." />,
+  },
+);
 
 type RoadmapDisplaySectionProps = {
   roadmapId: Id<"roadmaps">;
+  onNodeClick: (node: Node) => void;
 };
 
 export const RoadmapDisplaySection = ({
   roadmapId,
+  onNodeClick,
 }: RoadmapDisplaySectionProps) => {
   const roadmap = useQuery(api.roadmap.queries.getRoadmap, { roadmapId });
 
@@ -33,9 +47,9 @@ export const RoadmapDisplaySection = ({
   }
 
   return (
-    <div className="flex h-full flex-col gap-y-4 overflow-auto p-6">
+    <div className="flex h-full flex-col gap-y-4 overflow-auto p-3 sm:p-6">
       <div className="flex-1">
-        <RoadmapFlow data={roadmap.roadmapData} />
+        <RoadmapFlow data={roadmap.roadmapData} onNodeClick={onNodeClick} />
       </div>
     </div>
   );

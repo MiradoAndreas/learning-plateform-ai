@@ -29,3 +29,37 @@ export const createSession = mutation({
     return threadId;
   },
 });
+
+export const renameSession = mutation({
+  args: {
+    threadId: v.string(),
+    title: v.string(),
+  },
+  handler: async (ctx, { threadId, title }) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) throw new Error("Non authentifié");
+
+    const trimmedTitle = title.trim();
+    if (!trimmedTitle) throw new Error("Le titre ne peut pas être vide");
+    if (trimmedTitle.length > 80) {
+      throw new Error("Le titre est trop long");
+    }
+
+    const session = await ctx.db
+      .query("roadmapThreads")
+      .withIndex("by_thread", (q) => q.eq("threadId", threadId))
+      .unique();
+
+    if (!session || session.userId !== identity.subject) {
+      throw new Error("Introuvable");
+    }
+
+    await ctx.db.patch(session._id, { title: trimmedTitle });
+
+    // Garde les métadonnées de l'agent synchronisées
+    await ctx.runMutation(components.agent.threads.updateThread, {
+      threadId,
+      patch: { title: trimmedTitle },
+    });
+  },
+});

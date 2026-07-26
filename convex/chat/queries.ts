@@ -47,3 +47,22 @@ export const listThreadMessages = query({
     });
   },
 });
+
+export const getSession = query({
+  args: { threadId: v.string() },
+  handler: async (ctx, { threadId }) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) throw new Error("Non authentifié");
+
+    const session = await ctx.db
+      .query("roadmapThreads")
+      .withIndex("by_thread", (q) => q.eq("threadId", threadId))
+      .unique();
+
+    if (!session || session.userId !== identity.subject) {
+      throw new Error("Introuvable");
+    }
+
+    return session;
+  },
+});
