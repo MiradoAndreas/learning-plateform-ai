@@ -32,6 +32,7 @@ export const ChatHistorySidebarSection = ({
     (state) => state.setCurrentThreadId,
   );
   const createSession = useMutation(api.chat.mutation.createSession);
+  const renameSession = useMutation(api.chat.mutation.renameSession);
 
   const handleCreateSession = async () => {
     const threadId = await createSession({ roadmapId });
@@ -61,6 +62,9 @@ export const ChatHistorySidebarSection = ({
                   title={session.title}
                   active={session.threadId === currentThreadId}
                   onClick={() => setCurrentThreadId(session.threadId)}
+                  onRename={(title) =>
+                    renameSession({ threadId: session.threadId, title })
+                  }
                 />
               ))}
             </SidebarMenu>

@@ -31,7 +31,7 @@ export const ChatInputBar = ({ onSend, disabled }: ChatInputBarProps) => {
           }
         }}
         placeholder="Posez une question sur cette étape..."
-        className="min-h-[44px] resize-none"
+        className="min-h-11 resize-none"
         disabled={disabled}
       />
       <Button

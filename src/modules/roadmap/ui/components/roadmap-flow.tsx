@@ -3,7 +3,7 @@
 import { useMemo } from "react";
 import { ReactFlow, Background, Controls, type NodeTypes } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
-
+import { Node } from "@xyflow/react";
 import {
   CenterNode,
   TopicNode,
@@ -24,9 +24,10 @@ const nodeTypes: NodeTypes = {
 
 type RoadmapFlowProps = {
   data: RoadmapData;
+  onNodeClick: (node: Node) => void;
 };
 
-export const RoadmapFlow = ({ data }: RoadmapFlowProps) => {
+export const RoadmapFlow = ({ data, onNodeClick }: RoadmapFlowProps) => {
   const { nodes, edges } = useMemo(() => buildRoadmapFlow(data), [data]);
 
   return (
@@ -40,6 +41,9 @@ export const RoadmapFlow = ({ data }: RoadmapFlowProps) => {
         nodesConnectable={false}
         elementsSelectable={false}
         proOptions={{ hideAttribution: true }}
+        onNodeClick={(_, node) => {
+          onNodeClick(node);
+        }}
       >
         <Background gap={24} />
         <Controls showInteractive={false} />

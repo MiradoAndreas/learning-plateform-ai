@@ -90,6 +90,7 @@ export const roadmapThreads = defineTable({
   userId: v.string(),
   threadId: v.string(),
   title: v.string(),
+  messageCount: v.optional(v.number()),
 })
   .index("by_roadmap", ["roadmapId"])
   .index("by_thread", ["threadId"]);

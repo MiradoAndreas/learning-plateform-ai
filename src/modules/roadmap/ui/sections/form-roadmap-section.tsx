@@ -106,8 +106,6 @@ export const FormRoadmapSection = () => {
     try {
       setSubmitting(true);
 
-      // Si l'utilisateur n'a pas coché la case, aucun roadmap n'a encore
-      // été créé -> on le crée maintenant, sans réponses.
       let targetRoadmapId = roadmapId;
       if (!targetRoadmapId) {
         targetRoadmapId = await createRoadmap({ topic: data.topic });

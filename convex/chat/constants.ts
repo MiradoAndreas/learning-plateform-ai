@@ -1,0 +1,4 @@
+export const MAX_EXCHANGES_PER_THREAD = 30;
+export const THREAD_WARNING_THRESHOLD = Math.floor(
+  MAX_EXCHANGES_PER_THREAD * 0.8,
+);
