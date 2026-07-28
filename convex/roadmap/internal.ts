@@ -5,6 +5,34 @@ import {
   LEARNING_RESOURCE_QUESTION,
   LEARNING_RESOURCE_QUESTION_KEY,
 } from "./constants";
+import { quizQuestionValidator } from "./progress";
+
+export const getNodeQuiz = internalQuery({
+  args: { roadmapId: v.id("roadmaps"), nodeId: v.string() },
+  handler: async (ctx, { roadmapId, nodeId }) => {
+    return await ctx.db
+      .query("roadmapNodeQuizzes")
+      .withIndex("by_roadmap_and_node", (q) =>
+        q.eq("roadmapId", roadmapId).eq("nodeId", nodeId),
+      )
+      .unique();
+  },
+});
+
+export const saveNodeQuiz = internalMutation({
+  args: {
+    roadmapId: v.id("roadmaps"),
+    nodeId: v.string(),
+    questions: v.array(quizQuestionValidator),
+  },
+  handler: async (ctx, { roadmapId, nodeId, questions }) => {
+    return await ctx.db.insert("roadmapNodeQuizzes", {
+      roadmapId,
+      nodeId,
+      questions,
+    });
+  },
+});
 
 export const getRoadmapPreferences = internalQuery({
   args: {
