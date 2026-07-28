@@ -4,6 +4,24 @@ import { query, QueryCtx } from "../_generated/server";
 import { Id } from "../_generated/dataModel";
 import { getOrderedNodeIds } from "../lib/nodeOrder";
 
+export const getRoadmapProjects = query({
+  args: { roadmapId: v.id("roadmaps") },
+  handler: async (ctx, { roadmapId }) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) throw new Error("Non authentifié");
+
+    const roadmap = await ctx.db.get(roadmapId);
+    if (!roadmap || roadmap.userId !== identity.subject) {
+      throw new Error("Introuvable");
+    }
+
+    return await ctx.db
+      .query("roadmapProjects")
+      .withIndex("by_roadmap_and_order", (q) => q.eq("roadmapId", roadmapId))
+      .collect();
+  },
+});
+
 async function requireOwnedRoadmap(ctx: QueryCtx, roadmapId: Id<"roadmaps">) {
   const identity = await ctx.auth.getUserIdentity();
   if (!identity) throw new Error("Non authentifié");

@@ -46,6 +46,7 @@ import type * as roadmap_generation_phaseSkeleton from "../roadmap/generation/ph
 import type * as roadmap_internal from "../roadmap/internal.js";
 import type * as roadmap_mutation from "../roadmap/mutation.js";
 import type * as roadmap_progress from "../roadmap/progress.js";
+import type * as roadmap_projects from "../roadmap/projects.js";
 import type * as roadmap_queries from "../roadmap/queries.js";
 import type * as roadmap_roadmap from "../roadmap/roadmap.js";
 
@@ -94,6 +95,7 @@ declare const fullApi: ApiFromModules<{
   "roadmap/internal": typeof roadmap_internal;
   "roadmap/mutation": typeof roadmap_mutation;
   "roadmap/progress": typeof roadmap_progress;
+  "roadmap/projects": typeof roadmap_projects;
   "roadmap/queries": typeof roadmap_queries;
   "roadmap/roadmap": typeof roadmap_roadmap;
 }>;
