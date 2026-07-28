@@ -23,6 +23,7 @@ import type * as chat_mutation from "../chat/mutation.js";
 import type * as chat_queries from "../chat/queries.js";
 import type * as http from "../http.js";
 import type * as lib_helper from "../lib/helper.js";
+import type * as lib_nodeOrder from "../lib/nodeOrder.js";
 import type * as lib_validators from "../lib/validators.js";
 import type * as onboarding_interests from "../onboarding/interests.js";
 import type * as onboarding_learning_goals from "../onboarding/learning_goals.js";
@@ -44,6 +45,7 @@ import type * as roadmap_generation_phaseDetails from "../roadmap/generation/pha
 import type * as roadmap_generation_phaseSkeleton from "../roadmap/generation/phaseSkeleton.js";
 import type * as roadmap_internal from "../roadmap/internal.js";
 import type * as roadmap_mutation from "../roadmap/mutation.js";
+import type * as roadmap_progress from "../roadmap/progress.js";
 import type * as roadmap_queries from "../roadmap/queries.js";
 import type * as roadmap_roadmap from "../roadmap/roadmap.js";
 
@@ -69,6 +71,7 @@ declare const fullApi: ApiFromModules<{
   "chat/queries": typeof chat_queries;
   http: typeof http;
   "lib/helper": typeof lib_helper;
+  "lib/nodeOrder": typeof lib_nodeOrder;
   "lib/validators": typeof lib_validators;
   "onboarding/interests": typeof onboarding_interests;
   "onboarding/learning_goals": typeof onboarding_learning_goals;
@@ -90,6 +93,7 @@ declare const fullApi: ApiFromModules<{
   "roadmap/generation/phaseSkeleton": typeof roadmap_generation_phaseSkeleton;
   "roadmap/internal": typeof roadmap_internal;
   "roadmap/mutation": typeof roadmap_mutation;
+  "roadmap/progress": typeof roadmap_progress;
   "roadmap/queries": typeof roadmap_queries;
   "roadmap/roadmap": typeof roadmap_roadmap;
 }>;

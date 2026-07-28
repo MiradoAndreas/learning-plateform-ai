@@ -27,10 +27,11 @@ import {
   THREAD_WARNING_THRESHOLD,
 } from "../../../../../convex/chat/constants";
 import { Node } from "@xyflow/react";
+import { RoadmapNodeSelection } from "@/modules/roadmap/lib/roadmap-node-selection";
 
 type LearnChatSectionProps = {
   roadmapId: Id<"roadmaps">;
-  selectedNode: Node | null;
+  selectedNode: RoadmapNodeSelection | null;
 };
 
 export const LearnChatSection = ({

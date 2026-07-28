@@ -267,3 +267,35 @@
 .scrollable-element::-webkit-scrollbar-thumb:hover {
   background: var(--secondary);
 }
+
+@keyframes node-unlock-glow {
+  0% {
+    box-shadow: 0 0 0 0 rgba(249, 115, 22, 0.55);
+  }
+  70% {
+    box-shadow: 0 0 0 14px rgba(249, 115, 22, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(249, 115, 22, 0);
+  }
+}
+
+@keyframes node-complete-pop {
+  0% {
+    transform: scale(1);
+  }
+  45% {
+    transform: scale(1.09);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.animate-node-unlock {
+  animation: node-unlock-glow 0.9s ease-out;
+}
+
+.animate-node-complete {
+  animation: node-complete-pop 0.4s ease-out;
+}

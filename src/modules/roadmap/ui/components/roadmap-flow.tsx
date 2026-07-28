@@ -25,13 +25,27 @@ const nodeTypes: NodeTypes = {
 type RoadmapFlowProps = {
   data: RoadmapData;
   onNodeClick: (node: Node) => void;
+  unlockedNodeIds: string[];
+  completedNodeIds: string[];
 };
 
-export const RoadmapFlow = ({ data, onNodeClick }: RoadmapFlowProps) => {
-  const { nodes, edges } = useMemo(() => buildRoadmapFlow(data), [data]);
+export const RoadmapFlow = ({
+  data,
+  onNodeClick,
+  unlockedNodeIds,
+  completedNodeIds,
+}: RoadmapFlowProps) => {
+  const { nodes, edges } = useMemo(
+    () =>
+      buildRoadmapFlow(data, {
+        unlockedNodeIds: new Set(unlockedNodeIds),
+        completedNodeIds: new Set(completedNodeIds),
+      }),
+    [data, unlockedNodeIds, completedNodeIds],
+  );
 
   return (
-    <div className="h-[700px] w-full overflow-hidden rounded-lg border">
+    <div className="h-175 w-full overflow-hidden rounded-lg border">
       <ReactFlow
         nodes={nodes}
         edges={edges}

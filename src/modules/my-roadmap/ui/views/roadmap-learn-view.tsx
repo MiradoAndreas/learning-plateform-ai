@@ -16,6 +16,7 @@ import { RoadmapDisplaySection } from "../sections/roadmap-display-section";
 import { LearnChatSection } from "../sections/learn-chat-section";
 import { useEnsureChatSession } from "../../hooks/use-ensure-session";
 import { Id } from "../../../../../convex/_generated/dataModel";
+import { RoadmapNodeSelection } from "@/modules/roadmap/lib/roadmap-node-selection";
 
 type RoadmapLearnViewProps = {
   roadmapId: Id<"roadmaps">;
@@ -25,13 +26,15 @@ type MobileTab = "roadmap" | "chat";
 
 export const RoadmapLearnView = ({ roadmapId }: RoadmapLearnViewProps) => {
   useEnsureChatSession(roadmapId);
-  const [selectedNode, setSelectedNode] = useState<Node | null>(null);
+  const [selectedNode, setSelectedNode] = useState<RoadmapNodeSelection | null>(
+    null,
+  );
   const [mobileTab, setMobileTab] = useState<MobileTab>("roadmap");
   const isMobile = useIsMobile();
 
-  const handleNodeClick = (node: Node) => {
+  const handleNodeClick = (node: RoadmapNodeSelection) => {
     setSelectedNode(node);
-    // Sur mobile, un clic sur un nœud n'a d'intérêt que si on bascule sur le chat.
+
     if (isMobile) setMobileTab("chat");
   };
 

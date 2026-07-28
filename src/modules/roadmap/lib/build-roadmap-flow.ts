@@ -8,13 +8,17 @@ const ROW_HEIGHT = 56;
 const CENTER_NODE_HEIGHT = 46;
 const CENTER_NODE_GAP = 10;
 const TOPIC_NODE_HEIGHT = 36;
-const CHOICE_NODE_HEIGHT = 36;
 const OPTION_NODE_HEIGHT = 48;
 const SECTION_LABEL_HEIGHT = 32;
 const SECTION_GAP = 50;
 const TOP_PADDING = 40;
 
 type Side = "left" | "right";
+
+type ProgressInfo = {
+  unlockedNodeIds: Set<string>;
+  completedNodeIds: Set<string>;
+};
 
 function isChoice(
   entry: RoadmapEntry,
@@ -36,6 +40,7 @@ function placeColumn({
   contentHeight,
   sectionTopY,
   hubCenterId,
+  progress,
   nodes,
   edges,
 }: {
@@ -45,6 +50,7 @@ function placeColumn({
   contentHeight: number;
   sectionTopY: number;
   hubCenterId: string | null;
+  progress: ProgressInfo;
   nodes: Node[];
   edges: Edge[];
 }) {
@@ -65,15 +71,20 @@ function placeColumn({
     const spanCenterY = spanTopY + (span * ROW_HEIGHT) / 2;
 
     if (isChoice(entry)) {
+      const choiceLocked = !progress.unlockedNodeIds.has(entry.id);
+      const choiceCompleted = progress.completedNodeIds.has(entry.id);
+
       nodes.push({
         id: entry.id,
         type: "choice",
         position: {
           x: hubX,
-          y: spanCenterY - CHOICE_NODE_HEIGHT / 2,
+          y: spanCenterY - TOPIC_NODE_HEIGHT / 2,
         },
         data: {
           label: entry.label,
+          locked: choiceLocked,
+          completed: choiceCompleted,
         },
         draggable: false,
       });
@@ -87,7 +98,7 @@ function placeColumn({
           targetHandle: hubTargetHandle,
           type: "bezier",
           style: {
-            stroke: "#60a5fa",
+            stroke: choiceLocked ? "#cbd5e1" : "#60a5fa",
             strokeDasharray: "3 4",
           },
         });
@@ -100,7 +111,6 @@ function placeColumn({
 
       const optionSourceHandle =
         side === "left" ? "source-left" : "source-right";
-
       const optionTargetHandle =
         side === "left" ? "target-right" : "target-left";
 
@@ -116,15 +126,14 @@ function placeColumn({
         nodes.push({
           id: option.id,
           type: "option",
-          position: {
-            x: optionX,
-            y: optionY,
-          },
+          position: { x: optionX, y: optionY },
           data: {
             label: option.label,
             recommendation: option.recommendation,
             note: option.note,
             side,
+            // Hérite du verrouillage du "choice" parent : pas de quiz propre.
+            locked: choiceLocked,
           },
           draggable: false,
         });
@@ -137,24 +146,25 @@ function placeColumn({
           targetHandle: optionTargetHandle,
           type: "bezier",
           style: {
-            stroke:
-              option.recommendation === "recommended" ? "#22c55e" : "#cbd5e1",
-            strokeWidth: option.recommendation === "recommended" ? 2 : 1,
+            stroke: choiceLocked
+              ? "#e2e8f0"
+              : option.recommendation === "recommended"
+                ? "#22c55e"
+                : "#cbd5e1",
+            strokeWidth:
+              !choiceLocked && option.recommendation === "recommended" ? 2 : 1,
           },
         });
       });
     } else {
+      const locked = !progress.unlockedNodeIds.has(entry.id);
+      const completed = progress.completedNodeIds.has(entry.id);
+
       nodes.push({
         id: entry.id,
         type: "topic",
-        position: {
-          x: hubX,
-          y: spanCenterY - TOPIC_NODE_HEIGHT / 2,
-        },
-        data: {
-          label: entry.label,
-          side,
-        },
+        position: { x: hubX, y: spanCenterY - TOPIC_NODE_HEIGHT / 2 },
+        data: { label: entry.label, side, locked, completed },
         draggable: false,
       });
 
@@ -167,7 +177,7 @@ function placeColumn({
           targetHandle: hubTargetHandle,
           type: "bezier",
           style: {
-            stroke: "#60a5fa",
+            stroke: locked ? "#cbd5e1" : "#60a5fa",
             strokeDasharray: "3 4",
           },
         });
@@ -178,7 +188,10 @@ function placeColumn({
   }
 }
 
-export function buildRoadmapFlow(data: RoadmapData): {
+export function buildRoadmapFlow(
+  data: RoadmapData,
+  progress: ProgressInfo,
+): {
   nodes: Node[];
   edges: Edge[];
 } {
@@ -252,6 +265,7 @@ export function buildRoadmapFlow(data: RoadmapData): {
       contentHeight,
       sectionTopY: y,
       hubCenterId: firstCenterId,
+      progress,
       nodes,
       edges,
     });
@@ -263,6 +277,7 @@ export function buildRoadmapFlow(data: RoadmapData): {
       contentHeight,
       sectionTopY: y,
       hubCenterId: lastCenterId,
+      progress,
       nodes,
       edges,
     });
@@ -273,3 +288,4 @@ export function buildRoadmapFlow(data: RoadmapData): {
 
   return { nodes, edges };
 }
+// mmm
