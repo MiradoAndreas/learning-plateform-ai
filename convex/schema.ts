@@ -4,6 +4,7 @@ import { userProfiles } from "./profiles/user_profiles";
 import { userSettings } from "./profiles/user_settings";
 import { roadmapQuestions, roadmaps, roadmapThreads } from "./roadmap/roadmap";
 import { roadmapNodeProgress, roadmapNodeQuizzes } from "./roadmap/progress";
+import { roadmapProjects } from "./roadmap/projects";
 
 export default defineSchema({
   user_profiles: userProfiles,
@@ -13,4 +14,5 @@ export default defineSchema({
   roadmapThreads: roadmapThreads,
   roadmapNodeQuizzes: roadmapNodeQuizzes,
   roadmapNodeProgress: roadmapNodeProgress,
+  roadmapProjects: roadmapProjects,
 });

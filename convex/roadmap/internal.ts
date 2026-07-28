@@ -6,6 +6,41 @@ import {
   LEARNING_RESOURCE_QUESTION_KEY,
 } from "./constants";
 import { quizQuestionValidator } from "./progress";
+import { skillLevelValidator } from "./projects";
+
+export const getRoadmapProjectsInternal = internalQuery({
+  args: { roadmapId: v.id("roadmaps") },
+  handler: async (ctx, { roadmapId }) => {
+    return await ctx.db
+      .query("roadmapProjects")
+      .withIndex("by_roadmap_and_order", (q) => q.eq("roadmapId", roadmapId))
+      .collect();
+  },
+});
+
+export const saveRoadmapProjects = internalMutation({
+  args: {
+    roadmapId: v.id("roadmaps"),
+    projects: v.array(
+      v.object({
+        level: skillLevelValidator,
+        order: v.number(),
+        title: v.string(),
+        description: v.string(),
+        objectives: v.array(v.string()),
+        skillsPracticed: v.array(v.string()),
+        estimatedDuration: v.optional(v.string()),
+      }),
+    ),
+  },
+  handler: async (ctx, { roadmapId, projects }) => {
+    await Promise.all(
+      projects.map((project) =>
+        ctx.db.insert("roadmapProjects", { roadmapId, ...project }),
+      ),
+    );
+  },
+});
 
 export const getNodeQuiz = internalQuery({
   args: { roadmapId: v.id("roadmaps"), nodeId: v.string() },
