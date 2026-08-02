@@ -8,6 +8,61 @@ import {
 import { quizQuestionValidator } from "./progress";
 import { skillLevelValidator } from "./projects";
 
+export const getSubmission = internalQuery({
+  args: { submissionId: v.id("roadmapProjectSubmissions") },
+  handler: async (ctx, { submissionId }) => {
+    const submission = await ctx.db.get(submissionId);
+    if (!submission) throw new Error("Soumission introuvable");
+    return submission;
+  },
+});
+
+export const getProjectForSubmission = internalQuery({
+  args: { projectId: v.id("roadmapProjects") },
+  handler: async (ctx, { projectId }) => {
+    const project = await ctx.db.get(projectId);
+    if (!project) throw new Error("Projet introuvable");
+    return project;
+  },
+});
+
+export const setSubmissionReviewing = internalMutation({
+  args: { submissionId: v.id("roadmapProjectSubmissions") },
+  handler: async (ctx, { submissionId }) => {
+    await ctx.db.patch(submissionId, { status: "reviewing" });
+  },
+});
+
+export const setSubmissionResult = internalMutation({
+  args: {
+    submissionId: v.id("roadmapProjectSubmissions"),
+    score: v.number(),
+    passed: v.boolean(),
+    summary: v.string(),
+    strengths: v.array(v.string()),
+    improvements: v.array(v.string()),
+    meetsObjectives: v.boolean(),
+  },
+  handler: async (ctx, args) => {
+    const { submissionId, ...result } = args;
+    await ctx.db.patch(submissionId, {
+      ...result,
+      status: "completed",
+      reviewedAt: Date.now(),
+    });
+  },
+});
+
+export const setSubmissionFailed = internalMutation({
+  args: {
+    submissionId: v.id("roadmapProjectSubmissions"),
+    errorMessage: v.string(),
+  },
+  handler: async (ctx, { submissionId, errorMessage }) => {
+    await ctx.db.patch(submissionId, { status: "failed", errorMessage });
+  },
+});
+
 export const getRoadmapProjectsInternal = internalQuery({
   args: { roadmapId: v.id("roadmaps") },
   handler: async (ctx, { roadmapId }) => {

@@ -10,6 +10,7 @@
 
 import type * as agents_leaningAgent from "../agents/leaningAgent.js";
 import type * as agents_orchestrator from "../agents/orchestrator.js";
+import type * as agents_projectReviewAgent from "../agents/projectReviewAgent.js";
 import type * as agents_roadmap from "../agents/roadmap.js";
 import type * as agents_tutor from "../agents/tutor.js";
 import type * as ai_learning_profiles from "../ai/learning_profiles.js";
@@ -49,6 +50,9 @@ import type * as roadmap_progress from "../roadmap/progress.js";
 import type * as roadmap_projects from "../roadmap/projects.js";
 import type * as roadmap_queries from "../roadmap/queries.js";
 import type * as roadmap_roadmap from "../roadmap/roadmap.js";
+import type * as roadmap_submissions_action from "../roadmap/submissions/action.js";
+import type * as roadmap_submissions_mutation from "../roadmap/submissions/mutation.js";
+import type * as roadmap_submissions_queries from "../roadmap/submissions/queries.js";
 
 import type {
   ApiFromModules,
@@ -59,6 +63,7 @@ import type {
 declare const fullApi: ApiFromModules<{
   "agents/leaningAgent": typeof agents_leaningAgent;
   "agents/orchestrator": typeof agents_orchestrator;
+  "agents/projectReviewAgent": typeof agents_projectReviewAgent;
   "agents/roadmap": typeof agents_roadmap;
   "agents/tutor": typeof agents_tutor;
   "ai/learning_profiles": typeof ai_learning_profiles;
@@ -98,6 +103,9 @@ declare const fullApi: ApiFromModules<{
   "roadmap/projects": typeof roadmap_projects;
   "roadmap/queries": typeof roadmap_queries;
   "roadmap/roadmap": typeof roadmap_roadmap;
+  "roadmap/submissions/action": typeof roadmap_submissions_action;
+  "roadmap/submissions/mutation": typeof roadmap_submissions_mutation;
+  "roadmap/submissions/queries": typeof roadmap_submissions_queries;
 }>;
 
 /**
