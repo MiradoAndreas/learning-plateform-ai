@@ -429,6 +429,7 @@ const ProjectDetailModal = ({
 
 const statusLabels: Record<string, string> = {
   uploaded: "En file d'attente",
+  extracting: "Extraction de l'archive...",
   reviewing: "Analyse en cours...",
   completed: "Terminé",
   failed: "Échec de l'analyse",
@@ -446,10 +447,10 @@ const ProjectSubmissionPanel = ({
     { projectId },
   );
   const generateUploadUrl = useMutation(
-    api.roadmap.submissions.mutation.generateSubmissionUploadUrl,
+    api.roadmap.submissions.mutation.generateSubmissionUploadUrl, // ⚠️ changer "submissionsMutation" → "mutation"
   );
   const submitProject = useMutation(
-    api.roadmap.submissions.mutation.submitProject,
+    api.roadmap.submissions.mutation.submitProject, // ⚠️ changer "submissionsMutation" → "mutation"
   );
 
   const [isUploading, setIsUploading] = useState(false);
@@ -531,7 +532,9 @@ const ProjectSubmissionPanel = ({
         <p className="mb-2 text-xs text-destructive">{uploadError}</p>
       )}
 
-      {!latestSubmission ? (
+      {submissions === undefined ? (
+        <p className="text-xs text-muted-foreground">Chargement...</p>
+      ) : !latestSubmission ? (
         <p className="text-xs text-muted-foreground">
           Aucune soumission pour ce projet pour le moment.
         </p>
@@ -549,6 +552,7 @@ const ProjectSubmissionPanel = ({
                 latestSubmission.status === "failed" &&
                   "bg-red-100 text-red-700 dark:bg-red-900/50 dark:text-red-300",
                 (latestSubmission.status === "uploaded" ||
+                  latestSubmission.status === "extracting" ||
                   latestSubmission.status === "reviewing") &&
                   "bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300",
               )}
@@ -568,6 +572,16 @@ const ProjectSubmissionPanel = ({
               <p className="text-xs text-foreground/80">
                 {latestSubmission.summary}
               </p>
+              {typeof latestSubmission.totalFilesAnalyzed === "number" && (
+                <p className="text-[10px] text-muted-foreground">
+                  {latestSubmission.totalFilesAnalyzed} fichier
+                  {latestSubmission.totalFilesAnalyzed > 1 ? "s" : ""} analysé
+                  {latestSubmission.totalFilesAnalyzed > 1 ? "s" : ""} sur{" "}
+                  {latestSubmission.totalFilesInProject}
+                  {latestSubmission.truncated &&
+                    " (analyse partielle, projet volumineux)"}
+                </p>
+              )}
 
               {!!latestSubmission.strengths?.length && (
                 <div>

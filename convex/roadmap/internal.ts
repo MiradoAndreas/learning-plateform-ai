@@ -73,6 +73,77 @@ export const getRoadmapProjectsInternal = internalQuery({
   },
 });
 
+export const setSubmissionStatus = internalMutation({
+  args: {
+    submissionId: v.id("roadmapProjectSubmissions"),
+    status: v.union(v.literal("extracting"), v.literal("reviewing")),
+  },
+  handler: async (ctx, { submissionId, status }) => {
+    await ctx.db.patch(submissionId, { status });
+  },
+});
+
+export const setSubmissionCoverage = internalMutation({
+  args: {
+    submissionId: v.id("roadmapProjectSubmissions"),
+    totalFilesInProject: v.number(),
+    totalFilesAnalyzed: v.number(),
+    totalBatches: v.number(),
+    truncated: v.boolean(),
+  },
+  handler: async (ctx, args) => {
+    const { submissionId, ...coverage } = args;
+    await ctx.db.patch(submissionId, coverage);
+  },
+});
+
+export const insertFileBatch = internalMutation({
+  args: {
+    submissionId: v.id("roadmapProjectSubmissions"),
+    batchIndex: v.number(),
+    filePaths: v.array(v.string()),
+    content: v.string(),
+  },
+  handler: async (ctx, args) => {
+    return await ctx.db.insert("roadmapSubmissionFileBatches", {
+      ...args,
+      analyzed: false,
+    });
+  },
+});
+
+export const getFileBatch = internalQuery({
+  args: { batchId: v.id("roadmapSubmissionFileBatches") },
+  handler: async (ctx, { batchId }) => {
+    const batch = await ctx.db.get(batchId);
+    if (!batch) throw new Error("Lot introuvable");
+    return batch;
+  },
+});
+
+export const setFileBatchResult = internalMutation({
+  args: {
+    batchId: v.id("roadmapSubmissionFileBatches"),
+    filesReviewed: v.array(v.string()),
+    observations: v.array(v.string()),
+    notableIssues: v.array(v.string()),
+  },
+  handler: async (ctx, args) => {
+    const { batchId, ...result } = args;
+    await ctx.db.patch(batchId, { ...result, analyzed: true });
+  },
+});
+
+export const listAnalyzedBatches = internalQuery({
+  args: { submissionId: v.id("roadmapProjectSubmissions") },
+  handler: async (ctx, { submissionId }) => {
+    return await ctx.db
+      .query("roadmapSubmissionFileBatches")
+      .withIndex("by_submission", (q) => q.eq("submissionId", submissionId))
+      .collect();
+  },
+});
+
 export const saveRoadmapProjects = internalMutation({
   args: {
     roadmapId: v.id("roadmaps"),

@@ -4,6 +4,7 @@ import { mutation } from "../../_generated/server";
 
 import { Id } from "../../_generated/dataModel";
 import { internal } from "../../_generated/api";
+import { workflow } from "../../workflows/manager";
 
 export const generateSubmissionUploadUrl = mutation({
   args: {},
@@ -25,6 +26,7 @@ export const submitProject = mutation({
     ctx,
     { roadmapId, projectId, storageId, fileName },
   ): Promise<Id<"roadmapProjectSubmissions">> => {
+    console.log("submitProject", roadmapId, projectId, storageId, fileName);
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) throw new Error("Non authentifié");
 
@@ -52,10 +54,22 @@ export const submitProject = mutation({
       submittedAt: Date.now(),
     });
 
-    await ctx.scheduler.runAfter(
-      0,
-      internal.roadmap.submissions.action.reviewProjectSubmission,
-      { submissionId },
+    // Démarre le workflow durable au lieu de l'ancienne action directe.
+    await workflow.start(
+      ctx,
+      internal.roadmap.submissions.submissionsWorkflow.reviewSubmissionWorkflow,
+      {
+        submissionId,
+        userId: identity.subject,
+        projectTitle: project.title,
+        projectLevel: project.level,
+      },
+      {
+        onComplete:
+          internal.roadmap.submissions.submissionsWorkflowComplete
+            .handleSubmissionReviewComplete,
+        context: submissionId,
+      },
     );
 
     return submissionId;

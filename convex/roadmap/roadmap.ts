@@ -97,6 +97,7 @@ export const roadmapThreads = defineTable({
 
 export const submissionStatusValidator = v.union(
   v.literal("uploaded"),
+  v.literal("extracting"),
   v.literal("reviewing"),
   v.literal("completed"),
   v.literal("failed"),
@@ -110,17 +111,31 @@ export const roadmapProjectSubmissions = defineTable({
   fileName: v.string(),
   status: submissionStatusValidator,
   score: v.optional(v.number()),
-  // Déterministe : score >= SUBMISSION_PASS_THRESHOLD, calculé côté serveur,
-  // jamais laissé à l'appréciation du LLM.
   passed: v.optional(v.boolean()),
   summary: v.optional(v.string()),
   strengths: v.optional(v.array(v.string())),
   improvements: v.optional(v.array(v.string())),
   meetsObjectives: v.optional(v.boolean()),
   errorMessage: v.optional(v.string()),
+  // Transparence sur la couverture réelle de l'analyse.
+  totalFilesInProject: v.optional(v.number()),
+  totalFilesAnalyzed: v.optional(v.number()),
+  totalBatches: v.optional(v.number()),
+  truncated: v.optional(v.boolean()), // true si le plafond de sécurité a été atteint
   submittedAt: v.number(),
   reviewedAt: v.optional(v.number()),
 })
   .index("by_project", ["projectId"])
   .index("by_project_and_user", ["projectId", "userId"])
   .index("by_roadmap_and_user", ["roadmapId", "userId"]);
+
+export const roadmapSubmissionFileBatches = defineTable({
+  submissionId: v.id("roadmapProjectSubmissions"),
+  batchIndex: v.number(),
+  filePaths: v.array(v.string()),
+  content: v.string(), // contenu brut concaténé du lot, servi à l'analyse
+  filesReviewed: v.optional(v.array(v.string())),
+  observations: v.optional(v.array(v.string())),
+  notableIssues: v.optional(v.array(v.string())),
+  analyzed: v.boolean(),
+}).index("by_submission", ["submissionId"]);
