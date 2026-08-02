@@ -6,6 +6,7 @@ import {
   roadmapProjectSubmissions,
   roadmapQuestions,
   roadmaps,
+  roadmapSubmissionFileBatches,
   roadmapThreads,
 } from "./roadmap/roadmap";
 import { roadmapNodeProgress, roadmapNodeQuizzes } from "./roadmap/progress";
@@ -21,4 +22,5 @@ export default defineSchema({
   roadmapNodeProgress: roadmapNodeProgress,
   roadmapProjects: roadmapProjects,
   roadmapProjectSubmissions: roadmapProjectSubmissions,
+  roadmapSubmissionFileBatches: roadmapSubmissionFileBatches,
 });

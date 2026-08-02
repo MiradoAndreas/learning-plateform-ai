@@ -33,7 +33,7 @@ const getRoadmapProgress = createTool({
       topic: roadmap.topic,
       title: roadmap.title,
       summary: roadmap.summary,
-      mermaid: roadmap.mermaid,
+
       answers: questions
         .filter(
           (q): q is typeof q & { answer: string } => q.answer !== undefined,

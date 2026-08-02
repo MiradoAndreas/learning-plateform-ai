@@ -50,9 +50,14 @@ import type * as roadmap_progress from "../roadmap/progress.js";
 import type * as roadmap_projects from "../roadmap/projects.js";
 import type * as roadmap_queries from "../roadmap/queries.js";
 import type * as roadmap_roadmap from "../roadmap/roadmap.js";
-import type * as roadmap_submissions_action from "../roadmap/submissions/action.js";
 import type * as roadmap_submissions_mutation from "../roadmap/submissions/mutation.js";
 import type * as roadmap_submissions_queries from "../roadmap/submissions/queries.js";
+import type * as roadmap_submissions_submissionsAnalyseBatchAction from "../roadmap/submissions/submissionsAnalyseBatchAction.js";
+import type * as roadmap_submissions_submissionsExtractAction from "../roadmap/submissions/submissionsExtractAction.js";
+import type * as roadmap_submissions_submissionsSynthesizeAction from "../roadmap/submissions/submissionsSynthesizeAction.js";
+import type * as roadmap_submissions_submissionsWorkflow from "../roadmap/submissions/submissionsWorkflow.js";
+import type * as roadmap_submissions_submissionsWorkflowComplete from "../roadmap/submissions/submissionsWorkflowComplete.js";
+import type * as workflows_manager from "../workflows/manager.js";
 
 import type {
   ApiFromModules,
@@ -103,9 +108,14 @@ declare const fullApi: ApiFromModules<{
   "roadmap/projects": typeof roadmap_projects;
   "roadmap/queries": typeof roadmap_queries;
   "roadmap/roadmap": typeof roadmap_roadmap;
-  "roadmap/submissions/action": typeof roadmap_submissions_action;
   "roadmap/submissions/mutation": typeof roadmap_submissions_mutation;
   "roadmap/submissions/queries": typeof roadmap_submissions_queries;
+  "roadmap/submissions/submissionsAnalyseBatchAction": typeof roadmap_submissions_submissionsAnalyseBatchAction;
+  "roadmap/submissions/submissionsExtractAction": typeof roadmap_submissions_submissionsExtractAction;
+  "roadmap/submissions/submissionsSynthesizeAction": typeof roadmap_submissions_submissionsSynthesizeAction;
+  "roadmap/submissions/submissionsWorkflow": typeof roadmap_submissions_submissionsWorkflow;
+  "roadmap/submissions/submissionsWorkflowComplete": typeof roadmap_submissions_submissionsWorkflowComplete;
+  "workflows/manager": typeof workflows_manager;
 }>;
 
 /**
@@ -135,6 +145,7 @@ export declare const internal: FilterApi<
 >;
 
 export declare const components: {
+  workflow: import("@convex-dev/workflow/_generated/component.js").ComponentApi<"workflow">;
   betterAuth: import("../betterAuth/_generated/component.js").ComponentApi<"betterAuth">;
   agent: import("@convex-dev/agent/_generated/component.js").ComponentApi<"agent">;
   rag: import("@convex-dev/rag/_generated/component.js").ComponentApi<"rag">;

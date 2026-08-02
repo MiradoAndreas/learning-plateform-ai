@@ -14,6 +14,8 @@
     "@convex-dev/agent": "^0.6.4",
     "@convex-dev/better-auth": "^0.12.5",
     "@convex-dev/rag": "^0.7.5",
+    "@convex-dev/workflow": "^0.4.4",
+    "@convex-dev/workpool": "^0.4.9",
     "@gsap/react": "^2.1.2",
     "@hookform/resolvers": "^5.4.0",
     "@shadcn/react": "^0.2.0",
