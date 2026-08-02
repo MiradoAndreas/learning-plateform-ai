@@ -94,3 +94,33 @@ export const roadmapThreads = defineTable({
 })
   .index("by_roadmap", ["roadmapId"])
   .index("by_thread", ["threadId"]);
+
+export const submissionStatusValidator = v.union(
+  v.literal("uploaded"),
+  v.literal("reviewing"),
+  v.literal("completed"),
+  v.literal("failed"),
+);
+
+export const roadmapProjectSubmissions = defineTable({
+  roadmapId: v.id("roadmaps"),
+  projectId: v.id("roadmapProjects"),
+  userId: v.string(),
+  storageId: v.id("_storage"),
+  fileName: v.string(),
+  status: submissionStatusValidator,
+  score: v.optional(v.number()),
+  // Déterministe : score >= SUBMISSION_PASS_THRESHOLD, calculé côté serveur,
+  // jamais laissé à l'appréciation du LLM.
+  passed: v.optional(v.boolean()),
+  summary: v.optional(v.string()),
+  strengths: v.optional(v.array(v.string())),
+  improvements: v.optional(v.array(v.string())),
+  meetsObjectives: v.optional(v.boolean()),
+  errorMessage: v.optional(v.string()),
+  submittedAt: v.number(),
+  reviewedAt: v.optional(v.number()),
+})
+  .index("by_project", ["projectId"])
+  .index("by_project_and_user", ["projectId", "userId"])
+  .index("by_roadmap_and_user", ["roadmapId", "userId"]);

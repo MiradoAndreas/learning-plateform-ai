@@ -33,6 +33,7 @@
     "immer": "^11.1.9",
     "inngest": "^4.11.0",
     "input-otp": "^1.4.2",
+    "jszip": "^3.10.1",
     "lucide-react": "^1.21.0",
     "mermaid": "^11.16.0",
     "motion": "^12.42.2",

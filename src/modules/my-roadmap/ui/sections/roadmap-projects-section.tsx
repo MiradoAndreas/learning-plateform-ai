@@ -1,17 +1,19 @@
 // src/modules/my-roadmap/ui/sections/roadmap-projects-section.tsx
 "use client";
 
-import { useState, useMemo } from "react";
-import { useQuery } from "convex/react";
+import { useState, useMemo, useRef } from "react";
+import { useQuery, useMutation } from "convex/react";
 import {
   ClockIcon,
   TargetIcon,
   FilterIcon,
+  UploadIcon,
   XIcon,
   CalendarIcon,
   UserIcon,
   BookOpenIcon,
   CheckCircleIcon,
+  CheckCircle2Icon,
 } from "lucide-react";
 import { GeneratingIndicator } from "@/modules/roadmap/ui/components/generating-indicator";
 import { Id } from "../../../../../convex/_generated/dataModel";
@@ -265,12 +267,14 @@ const LevelFilter = ({
 // Composant Modal pour les détails du projet
 const ProjectDetailModal = ({
   project,
+  roadmapId,
   isOpen,
   onClose,
 }: {
   project: Project | null;
   isOpen: boolean;
   onClose: () => void;
+  roadmapId: Id<"roadmaps">;
 }) => {
   if (!project) return null;
 
@@ -281,7 +285,7 @@ const ProjectDetailModal = ({
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent
         className={cn(
-          "max-h-[90vh] max-w-2xl overflow-hidden",
+          "max-h-[90vh] max-w-2xl overflow-y-auto",
           "border-2",
           styles.modalBorder,
         )}
@@ -412,10 +416,195 @@ const ProjectDetailModal = ({
                   </ul>
                 </div>
               )}
+            <ProjectSubmissionPanel
+              roadmapId={roadmapId}
+              projectId={project._id}
+            />
           </div>
         </ScrollArea>
       </DialogContent>
     </Dialog>
+  );
+};
+
+const statusLabels: Record<string, string> = {
+  uploaded: "En file d'attente",
+  reviewing: "Analyse en cours...",
+  completed: "Terminé",
+  failed: "Échec de l'analyse",
+};
+
+const ProjectSubmissionPanel = ({
+  roadmapId,
+  projectId,
+}: {
+  roadmapId: Id<"roadmaps">;
+  projectId: Id<"roadmapProjects">;
+}) => {
+  const submissions = useQuery(
+    api.roadmap.submissions.queries.listProjectSubmissions,
+    { projectId },
+  );
+  const generateUploadUrl = useMutation(
+    api.roadmap.submissions.mutation.generateSubmissionUploadUrl,
+  );
+  const submitProject = useMutation(
+    api.roadmap.submissions.mutation.submitProject,
+  );
+
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file) return;
+
+    if (!file.name.toLowerCase().endsWith(".zip")) {
+      setUploadError("Seuls les fichiers .zip sont acceptés");
+      return;
+    }
+
+    if (file.size > 20 * 1024 * 1024) {
+      setUploadError("Le fichier ne doit pas dépasser 20 Mo");
+      return;
+    }
+
+    setUploadError(null);
+    setIsUploading(true);
+
+    try {
+      const uploadUrl = await generateUploadUrl();
+      const result = await fetch(uploadUrl, {
+        method: "POST",
+        headers: { "Content-Type": file.type || "application/zip" },
+        body: file,
+      });
+
+      if (!result.ok) throw new Error("Échec de l'envoi du fichier");
+
+      const { storageId } = await result.json();
+
+      await submitProject({
+        roadmapId,
+        projectId,
+        storageId,
+        fileName: file.name,
+      });
+    } catch (error) {
+      setUploadError(
+        error instanceof Error ? error.message : "Une erreur est survenue",
+      );
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const latestSubmission = submissions?.[0];
+
+  return (
+    <div className="rounded-lg border p-4">
+      <div className="mb-3 flex items-center justify-between gap-x-2">
+        <h4 className="flex items-center gap-2 text-sm font-medium">
+          <UploadIcon className="h-4 w-4" />
+          Soumettre mon projet
+        </h4>
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept=".zip"
+          className="hidden"
+          onChange={handleFileChange}
+        />
+        <Button
+          size="sm"
+          variant="outline"
+          onClick={() => fileInputRef.current?.click()}
+          disabled={isUploading}
+        >
+          {isUploading ? "Envoi..." : "Choisir un fichier .zip"}
+        </Button>
+      </div>
+
+      {uploadError && (
+        <p className="mb-2 text-xs text-destructive">{uploadError}</p>
+      )}
+
+      {!latestSubmission ? (
+        <p className="text-xs text-muted-foreground">
+          Aucune soumission pour ce projet pour le moment.
+        </p>
+      ) : (
+        <div className="flex flex-col gap-y-2">
+          <div className="flex items-center justify-between">
+            <span className="truncate text-xs text-muted-foreground">
+              {latestSubmission.fileName}
+            </span>
+            <span
+              className={cn(
+                "shrink-0 rounded-full px-2 py-0.5 text-[10px] font-medium",
+                latestSubmission.status === "completed" &&
+                  "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-300",
+                latestSubmission.status === "failed" &&
+                  "bg-red-100 text-red-700 dark:bg-red-900/50 dark:text-red-300",
+                (latestSubmission.status === "uploaded" ||
+                  latestSubmission.status === "reviewing") &&
+                  "bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300",
+              )}
+            >
+              {statusLabels[latestSubmission.status]}
+            </span>
+          </div>
+
+          {latestSubmission.status === "completed" && (
+            <div className="flex flex-col gap-y-2 rounded-md bg-muted/50 p-3">
+              <div className="flex items-baseline gap-x-1.5">
+                <span className="text-2xl font-bold">
+                  {latestSubmission.score}
+                </span>
+                <span className="text-xs text-muted-foreground">/ 10</span>
+              </div>
+              <p className="text-xs text-foreground/80">
+                {latestSubmission.summary}
+              </p>
+
+              {!!latestSubmission.strengths?.length && (
+                <div>
+                  <p className="text-[10px] font-medium text-muted-foreground">
+                    Points forts
+                  </p>
+                  <ul className="list-disc pl-4 text-[11px] text-foreground/80">
+                    {latestSubmission.strengths.map((s, i) => (
+                      <li key={i}>{s}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {!!latestSubmission.improvements?.length && (
+                <div>
+                  <p className="text-[10px] font-medium text-muted-foreground">
+                    Pistes d&apos;amélioration
+                  </p>
+                  <ul className="list-disc pl-4 text-[11px] text-foreground/80">
+                    {latestSubmission.improvements.map((s, i) => (
+                      <li key={i}>{s}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
+          )}
+
+          {latestSubmission.status === "failed" && (
+            <p className="text-xs text-destructive">
+              {latestSubmission.errorMessage ?? "Une erreur est survenue"}
+            </p>
+          )}
+        </div>
+      )}
+    </div>
   );
 };
 
@@ -425,6 +614,12 @@ export const RoadmapProjectsSection = ({
   const projects = useQuery(api.roadmap.queries.getRoadmapProjects, {
     roadmapId,
   });
+
+  const submissionsSummary = useQuery(
+    api.roadmap.submissions.queries.getSubmissionsSummaryByRoadmap,
+    { roadmapId },
+  );
+
   const isMobile = useIsMobile();
   const [selectedLevels, setSelectedLevels] = useState<Set<SkillLevel>>(
     new Set(),
@@ -689,13 +884,34 @@ export const RoadmapProjectsSection = ({
                       >
                         {project.level}
                       </span>
-                      {project.estimatedDuration && (
-                        <span className="flex items-center gap-x-1 text-[10px] whitespace-nowrap text-muted-foreground">
-                          <ClockIcon className="h-3 w-3" />
-                          {project.estimatedDuration}
-                        </span>
-                      )}
+                      <div className="flex items-center gap-x-1.5">
+                        {project.estimatedDuration && (
+                          <span className="flex items-center gap-x-1 text-[10px] whitespace-nowrap text-muted-foreground">
+                            <ClockIcon className="h-3 w-3" />
+                            {project.estimatedDuration}
+                          </span>
+                        )}
+                      </div>
                     </div>
+
+                    {submissionsSummary?.[project._id] && (
+                      <div className="flex items-center gap-x-2">
+                        {submissionsSummary[project._id].passed && (
+                          <span className="flex items-center gap-x-1 rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-medium text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-300">
+                            <CheckCircle2Icon className="h-3 w-3" />
+                            Réalisé
+                          </span>
+                        )}
+                        <span className="text-[10px] text-muted-foreground">
+                          {submissionsSummary[project._id].attempts} tentative
+                          {submissionsSummary[project._id].attempts > 1
+                            ? "s"
+                            : ""}
+                          {submissionsSummary[project._id].bestScore !== null &&
+                            ` · meilleur score ${submissionsSummary[project._id].bestScore}/10`}
+                        </span>
+                      </div>
+                    )}
 
                     <p className="line-clamp-2 text-sm leading-tight font-semibold">
                       {project.title}
@@ -742,6 +958,7 @@ export const RoadmapProjectsSection = ({
 
       {/* Modal des détails du projet */}
       <ProjectDetailModal
+        roadmapId={roadmapId}
         project={selectedProject}
         isOpen={isModalOpen}
         onClose={closeProjectDetails}

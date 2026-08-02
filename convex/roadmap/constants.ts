@@ -32,3 +32,5 @@ export const SKILL_LEVELS = [
 ] as const;
 
 export type SkillLevel = (typeof SKILL_LEVELS)[number];
+
+export const SUBMISSION_PASS_THRESHOLD = 5;
