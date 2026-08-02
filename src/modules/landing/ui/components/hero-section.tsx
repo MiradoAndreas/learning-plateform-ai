@@ -1,32 +1,108 @@
-import { InteractiveHoverButton } from "@/components/ui/interactive-hover-button";
+"use client";
+
+import Link from "next/link";
+import { Suspense } from "react";
+import { ArrowRightIcon, SparklesIcon } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Silk } from "../components/silk";
+import { CardNav, type CardNavItem } from "../components/card-nav";
+
+const NAV_ITEMS: CardNavItem[] = [
+  {
+    label: "Produit",
+    bgColor: "#1B1722",
+    textColor: "#fff",
+    links: [
+      {
+        label: "Roadmaps IA",
+        href: "#fonctionnalites",
+        ariaLabel: "Roadmaps générées par IA",
+      },
+      {
+        label: "Tuteur intégré",
+        href: "#fonctionnalites",
+        ariaLabel: "Tuteur IA intégré",
+      },
+      {
+        label: "Projets & quiz",
+        href: "#fonctionnalites",
+        ariaLabel: "Projets et quiz de progression",
+      },
+    ],
+  },
+  {
+    label: "Ressources",
+    bgColor: "#2F293A",
+    textColor: "#fff",
+    links: [
+      { label: "Tarifs", href: "/pricing", ariaLabel: "Voir les tarifs" },
+      { label: "FAQ", href: "/#faq", ariaLabel: "Questions fréquentes" },
+    ],
+  },
+  {
+    label: "Compte",
+    bgColor: "#2F293A",
+    textColor: "#fff",
+    links: [
+      { label: "Se connecter", href: "/sign-in", ariaLabel: "Se connecter" },
+      {
+        label: "Créer un compte",
+        href: "/sign-up",
+        ariaLabel: "Créer un compte",
+      },
+    ],
+  },
+];
 
 export const HeroSection = () => {
   return (
-    <section className="relative z-10 flex min-h-[calc(100vh-80px)] items-center justify-center px-4 py-20">
-      <div className="container mx-auto max-w-6xl">
-        <div className="text-center">
-          {/* Titre principal */}
-          <h1 className="mb-6 text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl">
-            <span className="text-foreground">Power IA Assisant</span>
-            <br />
-            <span className="bg-linear-to-r from-primary to-secondary bg-clip-text text-transparent">
-              AITutor customizable
-            </span>
-          </h1>
+    <section className="relative flex min-h-[85vh] items-center justify-center overflow-hidden">
+      <CardNav
+        brandName="AI Tutor"
+        logoSrc="/icon.svg"
+        items={NAV_ITEMS}
+        ctaLabel="Commencer"
+        ctaHref="/sign-up"
+        baseColor="#ffffff"
+        menuColor="#111111"
+        buttonBgColor="#6366F1"
+        buttonTextColor="#ffffff"
+      />
 
-          {/* Description */}
-          <p className="mx-auto mb-10 max-w-2xl text-base text-muted-foreground sm:text-lg md:text-xl">
-            La seule intelligence tutor qui vous permette d&apos;apprendre avec
-            votre <span className="text-primary">rythme</span> et bien evidement
-            votre <span className="text-primary">préference</span>
-          </p>
+      <div className="absolute inset-0">
+        <Suspense fallback={<div className="h-full w-full bg-background" />}>
+          <Silk
+            speed={4}
+            scale={1}
+            color="#6366F1"
+            noiseIntensity={1.2}
+            rotation={0}
+          />
+        </Suspense>
+        <div className="absolute inset-0 bg-background/70" />
+      </div>
 
-          {/* Boutons d'action */}
-          <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
-            <InteractiveHoverButton className="py-4">
-              Obtenir mon roadmap
-            </InteractiveHoverButton>
-          </div>
+      <div className="relative z-10 mx-auto my-38 flex max-w-2xl flex-col items-center gap-y-6 px-4 text-center md:my-40">
+        <h1 className="text-3xl font-semibold tracking-tight sm:text-5xl">
+          Un parcours sur mesure pour maîtriser n'importe quel sujet.
+        </h1>
+
+        <p className="max-w-xl text-sm text-muted-foreground sm:text-base">
+          Décrivez ce que vous voulez apprendre. L&apos;IA construit votre
+          roadmap, vous accompagne avec un tuteur intégré, et valide votre
+          progression grâce à des quiz et des projets corrigés automatiquement.
+        </p>
+
+        <div className="flex flex-col gap-3 sm:flex-row">
+          <Button asChild size="lg" className="gap-x-1.5">
+            <Link href="/sign-up">
+              Commencer gratuitement
+              <ArrowRightIcon className="h-4 w-4" />
+            </Link>
+          </Button>
+          <Button asChild size="lg" variant="outline">
+            <Link href="/sign-in">Se connecter</Link>
+          </Button>
         </div>
       </div>
     </section>

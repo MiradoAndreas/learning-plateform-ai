@@ -22,9 +22,26 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useQuery } from "convex/react";
 import { api } from "../../../../../convex/_generated/api";
+import { useRouter } from "next/navigation";
+import { authClient } from "@/lib/auth-client";
 
 export function UserNav() {
   const user = useQuery(api.auth.getCurrentUser);
+  const router = useRouter();
+
+  if (user === undefined) return null;
+
+  const handleSignOut = async () => {
+    console.log("handleSignOut");
+    await authClient.signOut({
+      fetchOptions: {
+        onSuccess: async () => {
+          await authClient.revokeSessions();
+          router.push("/sign-in");
+        },
+      },
+    });
+  };
 
   return (
     <DropdownMenu>
@@ -74,7 +91,10 @@ export function UserNav() {
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <DropdownMenuItem className="hover:cursor-pointer" onClick={() => {}}>
+        <DropdownMenuItem
+          className="hover:cursor-pointer"
+          onClick={handleSignOut}
+        >
           <LogOut className="mr-3 h-4 w-4 text-muted-foreground" />
           Sign out
         </DropdownMenuItem>

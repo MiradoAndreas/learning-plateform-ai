@@ -47,6 +47,7 @@ export const Header = ({
 }) => {
   const router = useRouter();
   const handleSignOut = async () => {
+    console.log("handleSignOut");
     await authClient.signOut({
       fetchOptions: {
         onSuccess: async () => {

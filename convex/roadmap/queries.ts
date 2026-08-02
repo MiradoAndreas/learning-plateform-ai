@@ -3,6 +3,21 @@ import { v } from "convex/values";
 import { query, QueryCtx } from "../_generated/server";
 import { Id } from "../_generated/dataModel";
 import { getOrderedNodeIds } from "../lib/nodeOrder";
+import { DASHBOARD_ROADMAP_LIMIT } from "./constants";
+
+export const getRecentRoadmaps = query({
+  args: {},
+  handler: async (ctx) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) throw new Error("Non authentifié");
+
+    return await ctx.db
+      .query("roadmaps")
+      .withIndex("by_user", (q) => q.eq("userId", identity.subject))
+      .order("desc")
+      .take(DASHBOARD_ROADMAP_LIMIT + 1);
+  },
+});
 
 export const getRoadmapProjects = query({
   args: { roadmapId: v.id("roadmaps") },

@@ -20,7 +20,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Learning plateform ai",
+  title: "AI Tutor",
   description: "Plateform to learn by professor ai customizable",
 };
 
