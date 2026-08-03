@@ -219,11 +219,7 @@ export const SignInView = () => {
             </FieldGroup>
           </form>
           <div className="relative hidden flex-col items-center justify-center gap-y-4 bg-radial from-sidebar-accent to-sidebar md:flex">
-            <img
-              src="/logoipsum2.svg"
-              alt="Image"
-              className="h-[92px] w-[92px]"
-            />
+            <img src="/icon.svg" alt="Image" className="h-[92px] w-[92px]" />
             <p className="text-2xl font-semibold text-white">AI Tutor</p>
           </div>
         </CardContent>

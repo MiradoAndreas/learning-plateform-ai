@@ -284,7 +284,7 @@ export const SignUpView = () => {
             <Image
               width={92}
               height={92}
-              src="/logoipsum2.svg"
+              src="/icon.svg"
               alt="Image"
               className="h-[92px] w-[92px]"
             />
