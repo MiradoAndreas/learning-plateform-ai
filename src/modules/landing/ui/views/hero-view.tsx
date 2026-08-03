@@ -1,16 +1,17 @@
 "use client";
 
 import { HeroSection } from "../components/hero-section";
+import { FaqSection } from "../sections/faq-section";
+import { Footer } from "../sections/footer-section";
 import { ServiceSection } from "../sections/service-section";
 
 export const HeroView = () => {
   return (
     <>
-      {/* Effet Hyperspeed en arrière plan */}
-
-      {/* <NavBar /> */}
       <HeroSection />
       <ServiceSection />
+      <FaqSection />
+      <Footer />
     </>
   );
 };
