@@ -41,39 +41,50 @@ export function getMenuList(pathname: string): Group[] {
       ],
     },
     {
-      groupLabel: "Learning AI",
+      groupLabel: "Learning",
       menus: [
         {
-          href: "/dashboard/ai",
-          label: "Create With AI",
+          href: "/dashboard/ai/roadmap",
+          label: "New Roadmap",
           icon: SquarePen,
-          submenus: [
-            {
-              href: "/dashboard/ai/roadmap",
-              label: "Roadmap",
-            },
-            {
-              href: "/dashboard/ai/advice",
-              label: "Advice",
-            },
-            {
-              href: "/dashboard/ai/quiz",
-              label: "Quiz",
-            },
-          ],
-        },
-        {
-          href: "/dashboard/notification",
-          label: "Notification",
-          icon: Bell,
-        },
-        {
-          href: "/dashboard/team",
-          label: "Team",
-          icon: Users,
+          submenus: [],
         },
       ],
     },
+    // {
+    //   groupLabel: "Learning AI",
+    //   menus: [
+    //     {
+    //       href: "/dashboard/ai",
+    //       label: "Create With AI",
+    //       icon: SquarePen,
+    //       submenus: [
+    //         {
+    //           href: "/dashboard/ai/roadmap",
+    //           label: "Roadmap",
+    //         },
+    //         {
+    //           href: "/dashboard/ai/advice",
+    //           label: "Advice",
+    //         },
+    //         {
+    //           href: "/dashboard/ai/quiz",
+    //           label: "Quiz",
+    //         },
+    //       ],
+    //     },
+    //     {
+    //       href: "/dashboard/notification",
+    //       label: "Notification",
+    //       icon: Bell,
+    //     },
+    //     {
+    //       href: "/dashboard/team",
+    //       label: "Team",
+    //       icon: Users,
+    //     },
+    //   ],
+    // },
     {
       groupLabel: "My Learning",
       menus: [
@@ -82,26 +93,26 @@ export function getMenuList(pathname: string): Group[] {
           label: "Plan",
           icon: SquarePen,
           submenus: [
-            {
-              href: "/dashboard/ai/library/plans",
-              label: "Plans",
-            },
+            // {
+            //   href: "/dashboard/ai/library/plans",
+            //   label: "Plans",
+            // },
             {
               href: "/dashboard/ai/library/roadmap",
-              label: "Roadmap",
+              label: "All my roadmaps",
             },
-            {
-              href: "/dashboard/ai/library/guides",
-              label: "Guides",
-            },
-            {
-              href: "/dashboard/ai/library/quizzes",
-              label: "Quizzes",
-            },
-            {
-              href: "/dashboard/ai/library/courses",
-              label: "Courses",
-            },
+            // {
+            //   href: "/dashboard/ai/library/guides",
+            //   label: "Guides",
+            // },
+            // {
+            //   href: "/dashboard/ai/library/quizzes",
+            //   label: "Quizzes",
+            // },
+            // {
+            //   href: "/dashboard/ai/library/courses",
+            //   label: "Courses",
+            // },
           ],
         },
       ],

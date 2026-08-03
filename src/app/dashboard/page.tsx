@@ -1,5 +1,6 @@
 import { isAuthenticated } from "@/lib/auth-server";
 import { ContentLayout } from "@/modules/dashboard/ui/layouts/content-layout";
+import { DashboardView } from "@/modules/dashboard/ui/views/dahsboard-view";
 import { redirect } from "next/navigation";
 
 const Page = async () => {
@@ -10,7 +11,7 @@ const Page = async () => {
 
   return (
     <ContentLayout title="Dashboard">
-      <div>Hello World</div>
+      <DashboardView />
     </ContentLayout>
   );
 };

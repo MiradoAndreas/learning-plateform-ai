@@ -105,3 +105,5 @@ export function isRelevantFile(path: string): boolean {
   if (IGNORED_EXACT_NAMES.includes(baseName)) return false;
   return TEXT_EXTENSIONS.some((ext) => lower.endsWith(ext));
 }
+
+export const DASHBOARD_ROADMAP_LIMIT = 5;

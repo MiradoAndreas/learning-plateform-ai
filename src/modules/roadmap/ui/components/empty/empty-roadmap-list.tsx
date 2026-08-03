@@ -10,7 +10,7 @@ export const EmptyRoadmapList = () => {
         Vous n'avez pas encore créé de roadmap
       </p>
       <Button asChild size="sm">
-        <Link href="/roadmap/new">Créer ma première roadmap</Link>
+        <Link href="/dashboard/ai/roadmap">Créer ma première roadmap</Link>
       </Button>
     </div>
   );

@@ -35,7 +35,7 @@ export function Sidebar() {
           variant="link"
           asChild
         >
-          <Link href="/dashboard" className="flex items-center gap-2">
+          <Link href="/" className="flex items-center gap-2">
             <PanelsTopLeft className="mr-1 h-6 w-6" />
             <h1
               className={cn(

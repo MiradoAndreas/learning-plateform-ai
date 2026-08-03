@@ -26,6 +26,16 @@ export const createAuth = (ctx: GenericCtx<DataModel>) => {
       // The Convex plugin is required for Convex compatibility
       convex({ authConfig }),
     ],
+    socialProviders: {
+      github: {
+        clientId: process.env.GITHUB_CLIENT_ID as string,
+        clientSecret: process.env.GITHUB_CLIENT_SECRET as string,
+      },
+      google: {
+        clientId: process.env.GOOGLE_CLIENT_ID as string,
+        clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
+      },
+    },
   });
 };
 
