@@ -1,11 +1,5 @@
-// roadmap-flow-node-animations.ts
 import { useEffect, useRef, useState } from "react";
 
-/**
- * Détecte une transition false→true (ou true→false selon `from`/`to`)
- * et retourne `true` pendant `durationMs`, pour déclencher une classe
- * d'animation CSS ponctuelle sans dépendance externe (Framer Motion, etc.).
- */
 export function useFlagTransition(
   value: boolean | undefined,
   options: { from: boolean; to: boolean; durationMs?: number },
