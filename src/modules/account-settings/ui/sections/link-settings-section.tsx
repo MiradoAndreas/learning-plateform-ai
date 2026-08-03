@@ -22,11 +22,6 @@ const navSettingsLinks = [
     href: "/dashboard/settings/billing",
   },
   {
-    title: "Appearance",
-    icon: Palette,
-    href: "/dashboard/settings/appearance",
-  },
-  {
     title: "Notification",
     icon: BellRing,
     href: "/dashboard/settings/notification",

@@ -1,5 +1,5 @@
 const Page = () => {
-  return <div>Page Account</div>;
+  return <div>Cet fonctionnalité sera plus tard avec les équipes</div>;
 };
 
 export default Page;
