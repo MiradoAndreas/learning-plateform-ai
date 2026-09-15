@@ -210,7 +210,7 @@ export const getRoadmapPreferences = internalQuery({
     for (const question of questions) {
       if (!question.answer) continue;
 
-      preferences[question.key] = question.answer;
+      preferences[toFieldKey(question.key)] = question.answer;
     }
 
     return preferences;
@@ -249,6 +249,15 @@ export const setStatus = internalMutation({
   },
 });
 
+function toFieldKey(label: string): string {
+  return label
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "_")
+    .replace(/^_+|_+$/g, "");
+}
+
 export const saveGeneratedQuestions = internalMutation({
   args: {
     roadmapId: v.id("roadmaps"),
@@ -263,14 +272,10 @@ export const saveGeneratedQuestions = internalMutation({
     ),
   },
   handler: async (ctx, { roadmapId, questions }) => {
-    // 1. Le LLM ne doit jamais être la source de vérité pour cette question :
-    //    on retire toute tentative de sa part, quelle que soit sa formulation.
-    const llmQuestions = questions.filter(
-      (q) => q.key !== LEARNING_RESOURCE_QUESTION_KEY,
-    );
+    const llmQuestions = questions
+      .filter((q) => q.key !== LEARNING_RESOURCE_QUESTION_KEY)
+      .map((q) => ({ ...q, key: toFieldKey(q.key) })); // ← sanitize ici
 
-    // 2. Dédoublonnage par clé, au cas où le LLM générerait deux fois la
-    //    même clé sous des libellés différents (garde la première occurrence).
     const seenKeys = new Set<string>();
     const dedupedQuestions = llmQuestions.filter((q) => {
       if (seenKeys.has(q.key)) return false;
