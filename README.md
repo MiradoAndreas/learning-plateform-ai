@@ -2,7 +2,7 @@
  
 Application web permettant à n'importe quel utilisateur de générer, via l'IA, une roadmap d'apprentissage personnalisée sur le sujet de son choix, puis de progresser dedans grâce à un assistant conversationnel, des quiz de validation et des projets pratiques évalués automatiquement.
  
-> Remplacez ce titre et cette description par le nom définitif de votre projet avant publication.
+> Assistant roadmap personnalisé
  
 ## Table des matières
  
