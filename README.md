@@ -205,7 +205,6 @@ Les principales tables Convex utilisées par le projet :
 
 ## Limites connues
 
-- Les noms de champs Convex doivent être des caractères ASCII sans accent ; toute clé dynamique générée par IA (par exemple une clé de préférence) doit être normalisée avant d'être utilisée comme nom de champ, aussi bien à l'écriture qu'à la lecture.
 - La limite d'échanges par discussion nécessite la création d'une nouvelle session une fois atteinte ; il n'y a pas de résumé automatique de l'historique pour prolonger une discussion existante.
 - La génération de contenu dépend de la disponibilité et des quotas du fournisseur du modèle de langage configuré.
 
