@@ -134,7 +134,6 @@ src/
       lib/               Utilitaires (sélection de nœud, etc.)
 ```
 
-La structure exacte peut varier selon votre organisation ; adaptez cette section à l'arborescence réelle de votre dépôt.
 
 ## Prérequis
 
