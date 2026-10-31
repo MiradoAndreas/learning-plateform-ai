@@ -26,7 +26,7 @@ export const submitProject = mutation({
     ctx,
     { roadmapId, projectId, storageId, fileName },
   ): Promise<Id<"roadmapProjectSubmissions">> => {
-    console.log("submitProject", roadmapId, projectId, storageId, fileName);
+    
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) throw new Error("Non authentifié");
 

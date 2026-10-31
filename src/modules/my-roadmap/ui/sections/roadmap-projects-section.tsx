@@ -447,10 +447,10 @@ const ProjectSubmissionPanel = ({
     { projectId },
   );
   const generateUploadUrl = useMutation(
-    api.roadmap.submissions.mutation.generateSubmissionUploadUrl, // ⚠️ changer "submissionsMutation" → "mutation"
+    api.roadmap.submissions.mutation.generateSubmissionUploadUrl, 
   );
   const submitProject = useMutation(
-    api.roadmap.submissions.mutation.submitProject, // ⚠️ changer "submissionsMutation" → "mutation"
+    api.roadmap.submissions.mutation.submitProject,
   );
 
   const [isUploading, setIsUploading] = useState(false);
