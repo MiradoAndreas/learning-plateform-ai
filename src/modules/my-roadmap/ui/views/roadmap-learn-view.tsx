@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 import {
   ResizableHandle,
@@ -13,7 +14,6 @@ import { cn } from "@/lib/utils";
 import { ChatHistorySidebarSection } from "../sections/chat-history-sidebar-section";
 import { RoadmapDisplaySection } from "../sections/roadmap-display-section";
 import { LearnChatSection } from "../sections/learn-chat-section";
-import { RoadmapProjectsSection } from "../sections/roadmap-projects-section";
 import { useEnsureChatSession } from "../../hooks/use-ensure-session";
 import { useEnsureRoadmapProjects } from "../../hooks/use-ensure-roadmap-projects";
 import { Id } from "../../../../../convex/_generated/dataModel";
@@ -23,7 +23,7 @@ type RoadmapLearnViewProps = {
   roadmapId: Id<"roadmaps">;
 };
 
-type MobileTab = "roadmap" | "chat" | "projects";
+type MobileTab = "roadmap" | "chat";
 
 export const RoadmapLearnView = ({ roadmapId }: RoadmapLearnViewProps) => {
   useEnsureChatSession(roadmapId);
@@ -43,6 +43,14 @@ export const RoadmapLearnView = ({ roadmapId }: RoadmapLearnViewProps) => {
   return (
     <SidebarProvider>
       <SidebarInset>
+        <div className="flex shrink-0 justify-end border-b px-4 py-2">
+          <Link
+            href={`/dashboard/ai/library/roadmap/${roadmapId}/projects`}
+            className="text-sm font-medium text-muted-foreground hover:text-foreground"
+          >
+            Projects
+          </Link>
+        </div>
         {isMobile ? (
           <div className="flex h-dvh flex-col">
             <div className="flex shrink-0 border-b">
@@ -70,18 +78,6 @@ export const RoadmapLearnView = ({ roadmapId }: RoadmapLearnViewProps) => {
               >
                 Assistant
               </button>
-              <button
-                type="button"
-                onClick={() => setMobileTab("projects")}
-                className={cn(
-                  "flex-1 border-b-2 py-2.5 text-sm font-medium transition-colors",
-                  mobileTab === "projects"
-                    ? "border-primary text-foreground"
-                    : "border-transparent text-muted-foreground",
-                )}
-              >
-                Projects
-              </button>
             </div>
 
             <div
@@ -103,48 +99,24 @@ export const RoadmapLearnView = ({ roadmapId }: RoadmapLearnViewProps) => {
                 selectedNode={selectedNode}
               />
             </div>
-            <div
-              className={cn(
-                "min-h-0 flex-1",
-                mobileTab !== "projects" && "hidden",
-              )}
-            >
-              <RoadmapProjectsSection roadmapId={roadmapId} />
-            </div>
           </div>
         ) : (
           <div className="flex h-dvh flex-col">
-            <ResizablePanelGroup
-              orientation="vertical"
-              className="min-h-0 flex-1"
-            >
-              <ResizablePanel defaultSize={75} minSize={40}>
-                <ResizablePanelGroup
-                  orientation="horizontal"
-                  className="h-full"
-                >
-                  <ResizablePanel defaultSize={50} minSize={30}>
-                    <RoadmapDisplaySection
-                      roadmapId={roadmapId}
-                      onNodeClick={handleNodeClick}
-                    />
-                  </ResizablePanel>
-
-                  <ResizableHandle withHandle />
-
-                  <ResizablePanel defaultSize={50} minSize={30}>
-                    <LearnChatSection
-                      roadmapId={roadmapId}
-                      selectedNode={selectedNode}
-                    />
-                  </ResizablePanel>
-                </ResizablePanelGroup>
+            <ResizablePanelGroup orientation="horizontal" className="h-full">
+              <ResizablePanel defaultSize={50} minSize={30}>
+                <RoadmapDisplaySection
+                  roadmapId={roadmapId}
+                  onNodeClick={handleNodeClick}
+                />
               </ResizablePanel>
 
               <ResizableHandle withHandle />
 
-              <ResizablePanel defaultSize={25} minSize={15}>
-                <RoadmapProjectsSection roadmapId={roadmapId} />
+              <ResizablePanel defaultSize={50} minSize={30}>
+                <LearnChatSection
+                  roadmapId={roadmapId}
+                  selectedNode={selectedNode}
+                />
               </ResizablePanel>
             </ResizablePanelGroup>
           </div>

@@ -8,7 +8,7 @@ import {
   type NodeTypes,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
-import { useCallback, useMemo } from "react";
+import { useCallback, useMemo, type CSSProperties } from "react";
 import { buildRoadmapFlow } from "../../lib/build-roadmap-flow";
 import { RoadmapData } from "../../lib/roadmap-data-types";
 import {
@@ -26,6 +26,14 @@ const nodeTypes: NodeTypes = {
   option: OptionNode,
   sectionLabel: SectionLabelNode,
 };
+
+const controlsStyle = {
+  "--xy-controls-button-background-color": "var(--card)",
+  "--xy-controls-button-background-color-hover": "var(--muted)",
+  "--xy-controls-button-color": "var(--card-foreground)",
+  "--xy-controls-button-color-hover": "var(--foreground)",
+  "--xy-controls-button-border-color": "var(--border)",
+} as CSSProperties;
 
 type RoadmapFlowProps = {
   data: RoadmapData;
@@ -67,8 +75,13 @@ export const RoadmapFlow = ({
         proOptions={{ hideAttribution: true }}
         onNodeClick={handleNodeClick}
       >
-        <Controls showInteractive={false} />
-        <MiniMap />
+        <Controls showInteractive={false} style={controlsStyle} />
+        {/* <MiniMap
+          bgColor="var(--card)"
+          nodeColor="var(--muted-foreground)"
+          maskColor="color-mix(in oklch, var(--background) 65%, transparent)"
+          className="border border-border"
+        /> */}
       </ReactFlow>
     </div>
   );
