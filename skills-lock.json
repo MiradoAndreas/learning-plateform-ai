@@ -204,6 +204,12 @@
       "sourceType": "github",
       "skillPath": "skills/convex-verify/SKILL.md",
       "computedHash": "dbe65a37ca2e9a5afa55669b8928ce1dc3ac765151452008f9105bde049228f7"
+    },
+    "streamdown": {
+      "source": "vercel/streamdown",
+      "sourceType": "github",
+      "skillPath": "skills/streamdown/SKILL.md",
+      "computedHash": "2f8292ddf03ef22a271acb22c852f06ea9105d05d000adbbf2d21b4bd71c7447"
     }
   }
 }
