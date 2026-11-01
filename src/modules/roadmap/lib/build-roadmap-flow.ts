@@ -39,7 +39,7 @@ function placeColumn({
   columnRows,
   contentHeight,
   sectionTopY,
-  hubCenterId,
+  getHubCenterId,
   progress,
   nodes,
   edges,
@@ -49,7 +49,7 @@ function placeColumn({
   columnRows: number;
   contentHeight: number;
   sectionTopY: number;
-  hubCenterId: string | null;
+  getHubCenterId: (index: number) => string | null;
   progress: ProgressInfo;
   nodes: Node[];
   edges: Edge[];
@@ -65,7 +65,8 @@ function placeColumn({
 
   let rowCursor = 0;
 
-  for (const entry of entries) {
+  for (const [entryIndex, entry] of entries.entries()) {
+    const hubCenterId = getHubCenterId(entryIndex);
     const span = rowsForEntry(entry);
     const spanTopY = columnStartY + rowCursor * ROW_HEIGHT;
     const spanCenterY = spanTopY + (span * ROW_HEIGHT) / 2;
@@ -258,13 +259,22 @@ export function buildRoadmapFlow(
     const lastCenterId: string | null =
       section.centerNodes.at(-1)?.id ?? firstCenterId;
 
+    // Older roadmaps store side entries without an explicit center parent.
+    // Spread them in reading order so intermediate centers also get branches.
+    const entryCount = section.leftNodes.length + section.rightNodes.length;
+    const centerForEntry = (index: number): string | null =>
+      section.centerNodes[
+        Math.floor((index * section.centerNodes.length) / entryCount)
+      ]?.id ?? firstCenterId;
+
     placeColumn({
       entries: section.leftNodes,
       side: "left",
       columnRows: leftRows,
       contentHeight,
       sectionTopY: y,
-      hubCenterId: firstCenterId,
+      getHubCenterId: (index) =>
+        section.centerNodes.length > 2 ? centerForEntry(index) : firstCenterId,
       progress,
       nodes,
       edges,
@@ -276,7 +286,10 @@ export function buildRoadmapFlow(
       columnRows: rightRows,
       contentHeight,
       sectionTopY: y,
-      hubCenterId: lastCenterId,
+      getHubCenterId: (index) =>
+        section.centerNodes.length > 2
+          ? centerForEntry(section.leftNodes.length + index)
+          : lastCenterId,
       progress,
       nodes,
       edges,
@@ -288,4 +301,3 @@ export function buildRoadmapFlow(
 
   return { nodes, edges };
 }
-// mmm

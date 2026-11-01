@@ -1,4 +1,4 @@
-import { generateText, Output } from "ai";
+import { streamText, Output } from "ai";
 import { gateway } from "../../ai/provider";
 import { AI_MODELS } from "../../ai/constants";
 import type {
@@ -11,34 +11,54 @@ import { buildRoadmapPrompt } from "./prompts";
 export async function generateRoadmap({
   topic,
   answers = [],
+  onProgress,
 }: {
   topic: string;
   answers?: { key: string; value: string }[];
+  onProgress?: (data: RoadmapData) => Promise<void>;
 }) {
   const startedAt = Date.now();
   console.info("roadmap.generation.started", {
     provider: "vercel-ai-gateway",
     requestedModel: AI_MODELS.roadmap,
   });
-  const { output, response, providerMetadata, totalUsage } = await generateText(
-    {
+  let result;
+  let output;
+  try {
+    result = streamText({
       model: gateway(AI_MODELS.roadmap),
       output: Output.object({ schema: completeRoadmapSchema }),
       prompt: buildRoadmapPrompt({ topic, answers }),
-    },
-  ).catch((error: unknown) => {
-    const generationId =
-      error && typeof error === "object" && "generationId" in error
-        ? error.generationId
-        : undefined;
+    });
+    let publishedSections = 0;
+    for await (const partial of result.partialOutputStream) {
+      // A following section proves the preceding JSON object is complete.
+      // Publish immutable prefixes so existing node IDs and positions stay stable.
+      const count = Math.max(0, (partial.sections?.length ?? 0) - 1);
+      if (!onProgress || count <= publishedSections) continue;
+      const sections = completeRoadmapSchema.shape.sections.element
+        .array()
+        .parse(partial.sections!.slice(0, count));
+      await onProgress(
+        normalizeRoadmap({ title: partial.title ?? topic, sections }),
+      );
+      publishedSections = count;
+    }
+    // Await the validated final output: truncated/failed streams never complete a roadmap.
+    output = await result.output;
+  } catch (error) {
     console.error("roadmap.generation.failed", {
       requestedModel: AI_MODELS.roadmap,
       errorName: error instanceof Error ? error.name : "UnknownError",
-      generationId: typeof generationId === "string" ? generationId : undefined,
       durationMs: Date.now() - startedAt,
     });
     throw error;
-  });
+  }
+  const [response, providerMetadata, totalUsage] = await Promise.all([
+    result.response,
+    result.providerMetadata,
+    result.totalUsage,
+  ]);
 
   console.info("roadmap.generation.completed", {
     requestedModel: AI_MODELS.roadmap,
@@ -50,6 +70,17 @@ export async function generateRoadmap({
     sections: output.sections.length,
   });
 
+  const roadmapData = normalizeRoadmap(output);
+  const summary = `Roadmap complète couvrant ${output.sections.length} phases : ${output.domainCoverageChecklist.join(", ")}.`;
+  return { title: output.title, summary, roadmapData };
+}
+
+function normalizeRoadmap(
+  output: Pick<
+    import("zod").infer<typeof completeRoadmapSchema>,
+    "title" | "sections"
+  >,
+): RoadmapData {
   // Normalize IDs and nullable notes without another model call.
   const seen = new Set<string>();
   function uniqueId(id: string) {
@@ -100,6 +131,5 @@ export async function generateRoadmap({
       rightNodes: section.rightNodes.map(normalizeEntry),
     })),
   };
-  const summary = `Roadmap complète couvrant ${output.sections.length} phases : ${output.domainCoverageChecklist.join(", ")}.`;
-  return { title: output.title, summary, roadmapData };
+  return roadmapData;
 }

@@ -8,6 +8,8 @@ import { useRoadmapStore } from "../../stores/roadmap-store";
 import { api } from "../../../../../convex/_generated/api";
 import { RoadmapFlow } from "../components/roadmap-flow";
 
+const EMPTY_NODE_IDS: string[] = [];
+
 export const ResultRoadmapSection = () => {
   const roadmapId = useRoadmapStore((state) => state.roadmapId);
 
@@ -22,10 +24,6 @@ export const ResultRoadmapSection = () => {
 
   if (!roadmap) return null;
 
-  if (roadmap.status === "generating_roadmap") {
-    return <GeneratingIndicator label="Génération de votre roadmap..." />;
-  }
-
   if (roadmap.status === "failed") {
     return (
       <RoadmapErrorAlert
@@ -34,24 +32,20 @@ export const ResultRoadmapSection = () => {
     );
   }
 
-  if (roadmap.status !== "completed") {
-    return null;
-  }
+  const isGenerating = roadmap.status === "generating_roadmap";
+  if (!isGenerating && roadmap.status !== "completed") return null;
 
   return (
-    <div className="flex flex-col gap-y-2">
-      {roadmap.title && (
-        <h2 className="text-xl font-semibold">{roadmap.title}</h2>
+    <div className="flex flex-col gap-y-2" aria-busy={isGenerating}>
+      {isGenerating && (
+        <GeneratingIndicator label="Génération de votre roadmap..." />
       )}
-      {roadmap.summary && (
-        <p className="text-sm text-muted-foreground">{roadmap.summary}</p>
-      )}
-      {roadmap.roadmapData && progress && (
+      {roadmap.roadmapData && roadmap.roadmapData.sections.length > 0 && (
         <RoadmapFlow
+          key={roadmapId}
           data={roadmap.roadmapData}
-          onNodeClick={() => {}}
-          unlockedNodeIds={progress.unlockedNodeIds}
-          completedNodeIds={progress.completedNodeIds}
+          unlockedNodeIds={progress?.unlockedNodeIds ?? EMPTY_NODE_IDS}
+          completedNodeIds={progress?.completedNodeIds ?? EMPTY_NODE_IDS}
         />
       )}
     </div>

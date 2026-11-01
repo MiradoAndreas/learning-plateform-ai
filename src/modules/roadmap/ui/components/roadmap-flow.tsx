@@ -1,8 +1,14 @@
 "use client";
 
-import { MiniMap, Node, ReactFlow, type NodeTypes } from "@xyflow/react";
+import {
+  Controls,
+  MiniMap,
+  Node,
+  ReactFlow,
+  type NodeTypes,
+} from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
-import { useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import { buildRoadmapFlow } from "../../lib/build-roadmap-flow";
 import { RoadmapData } from "../../lib/roadmap-data-types";
 import {
@@ -23,7 +29,7 @@ const nodeTypes: NodeTypes = {
 
 type RoadmapFlowProps = {
   data: RoadmapData;
-  onNodeClick: (node: Node) => void;
+  onNodeClick?: (node: Node) => void;
   unlockedNodeIds: string[];
   completedNodeIds: string[];
 };
@@ -43,6 +49,11 @@ export const RoadmapFlow = ({
     [data, unlockedNodeIds, completedNodeIds],
   );
 
+  const handleNodeClick = useCallback(
+    (_: React.MouseEvent, node: Node) => onNodeClick?.(node),
+    [onNodeClick],
+  );
+
   return (
     <div className="h-175 w-full overflow-hidden rounded-lg border">
       <ReactFlow
@@ -54,12 +65,10 @@ export const RoadmapFlow = ({
         nodesConnectable={false}
         elementsSelectable={false}
         proOptions={{ hideAttribution: true }}
-        onNodeClick={(_, node) => {
-          onNodeClick(node);
-        }}
+        onNodeClick={handleNodeClick}
       >
+        <Controls showInteractive={false} />
         <MiniMap />
-
       </ReactFlow>
     </div>
   );

@@ -81,3 +81,14 @@ export const setFailed = internalMutation({
     await ctx.db.patch(roadmapId, { status: "failed", errorMessage });
   },
 });
+
+// Internal only: clients observe these snapshots through the owned roadmap query.
+export const saveRoadmapProgress = internalMutation({
+  args: { roadmapId: v.id("roadmaps"), roadmapData: roadmapDataValidator },
+  returns: v.null(),
+  handler: async (ctx, { roadmapId, roadmapData }) => {
+    const roadmap = await ctx.db.get(roadmapId);
+    if (!roadmap || roadmap.status !== "generating_roadmap") return;
+    await ctx.db.patch(roadmapId, { roadmapData });
+  },
+});

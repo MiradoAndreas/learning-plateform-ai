@@ -78,6 +78,23 @@ for (const [name, args, fixture] of [
   );
 }
 
+test("AI actions use the Node runtime for streamed structured generation", () => {
+  const fs = require("node:fs");
+  const path = require("node:path");
+  const { root } = require("../../tests/test.helpers.cjs");
+  const source = fs.readFileSync(
+    path.join(root, "convex/roadmap/action.ts"),
+    "utf8",
+  );
+  assert.match(source, /^"use node";/);
+  const actions = createLoader()("convex/roadmap/action.ts");
+  assert.equal(actions.submitAnswersAndGenerateRoadmap.isAction, true);
+  for (const endpoint of Object.values(actions)) {
+    assert.equal(endpoint.isMutation, undefined);
+    assert.equal(endpoint.isQuery, undefined);
+  }
+});
+
 test("roadmap uses one Nemotron 3 Ultra request and preserves renderable content", async () => {
   const requests = [];
   const options = [
@@ -114,9 +131,26 @@ test("roadmap uses one Nemotron 3 Ultra request and preserves renderable content
   const loader = createLoader({
     overrides: {
       ai: {
-        generateText: async (request) => {
+        streamText: (request) => {
           requests.push(request);
-          return { output: request.output.schema.parse(output) };
+          return {
+            partialOutputStream: (async function* () {
+              yield { title: output.title, sections: [output.sections[0]] };
+              yield {
+                title: output.title,
+                sections: output.sections.slice(0, 2),
+              };
+              yield {
+                title: output.title,
+                sections: output.sections.slice(0, 2),
+              };
+              yield {
+                title: output.title,
+                sections: output.sections.slice(0, 4),
+              };
+            })(),
+            output: Promise.resolve(request.output.schema.parse(output)),
+          };
         },
         Output: { object: (args) => args },
       },
@@ -124,10 +158,26 @@ test("roadmap uses one Nemotron 3 Ultra request and preserves renderable content
     },
   });
   const { generateRoadmap } = loader("convex/roadmap/generation/pipeline.ts");
+  const snapshots = [];
   const result = await generateRoadmap({
     topic: "TypeScript",
     answers: [{ key: "goal", value: "Build apps" }],
+    onProgress: async (data) => {
+      snapshots.push(data);
+    },
   });
+  assert.deepEqual(
+    snapshots.map((data) => data.sections.length),
+    [1, 3],
+  );
+  assert.deepEqual(
+    snapshots[0].sections,
+    result.roadmapData.sections.slice(0, 1),
+  );
+  assert.deepEqual(
+    snapshots[1].sections,
+    result.roadmapData.sections.slice(0, 3),
+  );
   assert.equal(requests.length, 1);
   assert.equal(requests[0].model, "nvidia/nemotron-3-ultra-550b-a55b");
   assert.match(requests[0].prompt, /goal: Build apps/);
@@ -164,7 +214,7 @@ test("roadmap propagates model failures without invoking fallback agents", async
   const loader = createLoader({
     overrides: {
       ai: {
-        generateText: async () => {
+        streamText: () => {
           calls++;
           throw Error("Gateway failure");
         },
@@ -180,6 +230,34 @@ test("roadmap propagates model failures without invoking fallback agents", async
     /Gateway failure/,
   );
   assert.equal(calls, 1);
+});
+
+test("roadmap rejects a stream that fails after emitting partial output", async () => {
+  const loader = createLoader({
+    overrides: {
+      ai: {
+        streamText: () => ({
+          partialOutputStream: (async function* () {
+            yield { title: "Learning", sections: [] };
+            throw new Error("Stream interrupted");
+          })(),
+        }),
+        Output: { object: (args) => args },
+      },
+      "convex/ai/provider.ts": { gateway: (model) => model },
+    },
+  });
+  const snapshots = [];
+  await assert.rejects(
+    loader("convex/roadmap/generation/pipeline.ts").generateRoadmap({
+      topic: "TypeScript",
+      onProgress: async (data) => {
+        snapshots.push(data);
+      },
+    }),
+    /Stream interrupted/,
+  );
+  assert.deepEqual(snapshots, []);
 });
 
 test("merge retains replacement options, unique IDs, addition order and existing null-note behavior", () => {
@@ -244,7 +322,7 @@ test("merge retains replacement options, unique IDs, addition order and existing
   assert.equal(output.sections[0].leftNodes[0].options[0].note, undefined);
 });
 
-test("roadmap refactor adds and removes no registered endpoints", () => {
+test("roadmap preserves registered endpoints and adds the internal streaming mutation", () => {
   const fs = require("node:fs");
   const path = require("node:path");
   const { root } = require("../../tests/test.helpers.cjs");
@@ -252,6 +330,7 @@ test("roadmap refactor adds and removes no registered endpoints", () => {
   const expected = Object.keys(baseline.contracts).filter((name) =>
     name.startsWith("roadmap/"),
   );
+  expected.push("roadmap/internal:saveRoadmapProgress");
   const canonical = {
     projects: ["listProjects", "saveProjects"],
     progress: ["getQuiz", "saveQuiz"],

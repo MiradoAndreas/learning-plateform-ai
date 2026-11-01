@@ -101,6 +101,10 @@ export const saveAnswers = internalMutation({
         await ctx.db.patch(question._id, { answer: value });
       }
     }
-    await ctx.db.patch(roadmapId, { status: "generating_roadmap" });
+    await ctx.db.patch(roadmapId, {
+      status: "generating_roadmap",
+      roadmapData: undefined,
+      errorMessage: undefined,
+    });
   },
 });

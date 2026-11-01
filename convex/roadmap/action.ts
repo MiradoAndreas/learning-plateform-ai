@@ -1,3 +1,5 @@
+"use node";
+
 import { v } from "convex/values";
 import { action } from "../_generated/server";
 import { internal } from "../_generated/api";
@@ -75,9 +77,13 @@ export const submitAnswersAndGenerateRoadmap = action({
       const result = await generateRoadmap({
         topic: roadmap.topic,
         answers,
+        onProgress: async (roadmapData) => {
+          await ctx.runMutation(internal.roadmap.internal.saveRoadmapProgress, {
+            roadmapId,
+            roadmapData,
+          });
+        },
       });
-
-      console.log("result : ", result);
 
       await ctx.runMutation(internal.roadmap.internal.saveRoadmapResult, {
         roadmapId,
