@@ -78,74 +78,108 @@ for (const [name, args, fixture] of [
   );
 }
 
-test("pipeline preserves stage ordering, parallel phase details and final summary", async () => {
-  const events = [];
-  const phase2 = { ...phase, id: "practice", title: "Practice" };
-  const plan = { ...skeleton, phases: [phase, phase2] };
-  const generatedDetails = {
-    basics: details.basics,
-    practice: { ...details.basics },
+test("roadmap uses one Nemotron 3 Ultra request and preserves renderable content", async () => {
+  const requests = [];
+  const options = [
+    { id: "shared", label: "React", recommendation: "recommended", note: null },
+    {
+      id: "shared",
+      label: "Vue",
+      recommendation: "recommended",
+      note: "Alternative",
+    },
+  ];
+  const output = {
+    title: "Learning",
+    domainCoverageChecklist: ["Tools", "Tests"],
+    sections: Array.from({ length: 6 }, (_, index) => ({
+      id: "shared",
+      title: `Phase ${index}`,
+      centerNodes: [{ id: "shared", label: "Core" }],
+      leftNodes: [
+        { kind: "choice", id: "shared", label: "Choose", options },
+        ...Array.from({ length: 2 }, () => ({
+          kind: "topic",
+          id: "shared",
+          label: "Topic",
+        })),
+      ],
+      rightNodes: Array.from({ length: 3 }, () => ({
+        kind: "topic",
+        id: "shared",
+        label: "Topic",
+      })),
+    })),
   };
-  const pending = new Map();
-  const audit = { additions: [] };
-  const choices = { replacements: [] };
-  const merged = { title: "Learning", sections: [] };
   const loader = createLoader({
     overrides: {
-      "convex/roadmap/generation/stages.ts": {
-        generatePhaseSkeleton: async (input) => {
-          events.push(["skeleton", input]);
-          return plan;
+      ai: {
+        generateText: async (request) => {
+          requests.push(request);
+          return { output: request.output.schema.parse(output) };
         },
-        generatePhaseDetails: async (input) => {
-          events.push(["details", input.phase.id]);
-          await new Promise((resolve) => {
-            pending.set(input.phase.id, resolve);
-            if (pending.size === 2) for (const done of pending.values()) done();
-          });
-          return generatedDetails[input.phase.id];
-        },
-        auditGaps: async (input) => {
-          events.push(["audit", input]);
-          return audit;
-        },
-        addChoices: async (input) => {
-          events.push(["choices", input]);
-          return choices;
-        },
+        Output: { object: (args) => args },
       },
-      "convex/roadmap/generation/merge.ts": {
-        mergeRoadmap: (input) => {
-          events.push(["merge", input]);
-          return merged;
-        },
-      },
+      "convex/ai/provider.ts": { gateway: (model) => model },
     },
   });
-  const result = await loader(
-    "convex/roadmap/generation/pipeline.ts",
-  ).generateRoadmap({ topic: "TypeScript" });
-  assert.deepEqual(
-    events.map(([name]) => name),
-    ["skeleton", "details", "details", "audit", "choices", "merge"],
+  const { generateRoadmap } = loader("convex/roadmap/generation/pipeline.ts");
+  const result = await generateRoadmap({
+    topic: "TypeScript",
+    answers: [{ key: "goal", value: "Build apps" }],
+  });
+  assert.equal(requests.length, 1);
+  assert.equal(requests[0].model, "nvidia/nemotron-3-ultra-550b-a55b");
+  assert.match(requests[0].prompt, /goal: Build apps/);
+  assert.match(requests[0].prompt, /prérequis/);
+  assert.equal(
+    result.summary,
+    "Roadmap complète couvrant 6 phases : Tools, Tests.",
   );
-  assert.deepEqual(events[0][1], { topic: "TypeScript", answers: [] });
-  assert.deepEqual(events[3][1], {
-    roadmapTopic: "TypeScript",
-    skeleton: plan,
-    details: generatedDetails,
+  assert.equal(result.roadmapData.sections.length, 6);
+  const ids = [];
+  for (const section of result.roadmapData.sections) {
+    ids.push(section.id, ...section.centerNodes.map((node) => node.id));
+    for (const entry of [...section.leftNodes, ...section.rightNodes]) {
+      ids.push(entry.id);
+      if (entry.kind === "choice") {
+        ids.push(...entry.options.map((option) => option.id));
+        assert.equal(
+          entry.options.filter(
+            (option) => option.recommendation === "recommended",
+          ).length,
+          1,
+        );
+        assert.equal(entry.options[0].note, undefined);
+      }
+    }
+  }
+  assert.equal(new Set(ids).size, ids.length);
+  await generateRoadmap({ topic: "TypeScript" });
+  assert.match(requests[1].prompt, /public débutant/);
+});
+
+test("roadmap propagates model failures without invoking fallback agents", async () => {
+  let calls = 0;
+  const loader = createLoader({
+    overrides: {
+      ai: {
+        generateText: async () => {
+          calls++;
+          throw Error("Gateway failure");
+        },
+        Output: { object: (args) => args },
+      },
+      "convex/ai/provider.ts": { gateway: (model) => model },
+    },
   });
-  assert.deepEqual(events[5][1], {
-    skeleton: plan,
-    details: generatedDetails,
-    gapAudit: audit,
-    choicePass: choices,
-  });
-  assert.deepEqual(result, {
-    title: "Learning",
-    summary: "Roadmap complète couvrant 2 phases : Tools.",
-    roadmapData: merged,
-  });
+  await assert.rejects(
+    loader("convex/roadmap/generation/pipeline.ts").generateRoadmap({
+      topic: "TypeScript",
+    }),
+    /Gateway failure/,
+  );
+  assert.equal(calls, 1);
 });
 
 test("merge retains replacement options, unique IDs, addition order and existing null-note behavior", () => {
@@ -188,16 +222,26 @@ test("merge retains replacement options, unique IDs, addition order and existing
         title: "Basics",
         centerNodes: [{ id: "core", label: "Core" }],
         leftNodes: [
-          { kind: "choice", id: "left", label: "Choose", options },
+          {
+            kind: "choice",
+            id: "left",
+            label: "Choose",
+            options: options.map((option) => ({ ...option, note: undefined })),
+          },
           { kind: "topic", id: "left-3", label: "Gap" },
         ],
         rightNodes: [
-          { kind: "choice", id: "left-2", label: "Choose", options },
+          {
+            kind: "choice",
+            id: "left-2",
+            label: "Choose",
+            options: options.map((option) => ({ ...option, note: undefined })),
+          },
         ],
       },
     ],
   });
-  assert.equal(output.sections[0].leftNodes[0].options, options);
+  assert.equal(output.sections[0].leftNodes[0].options[0].note, undefined);
 });
 
 test("roadmap refactor adds and removes no registered endpoints", () => {

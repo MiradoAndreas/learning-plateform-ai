@@ -113,3 +113,33 @@ export type GenerationContext = {
   skeleton: RoadmapSkeleton;
   details: Record<string, PhaseDetail>;
 };
+
+// Complete response for the single-call roadmap generator.
+const roadmapChoiceEntrySchema = z.object({
+  kind: z.literal("choice"),
+  id: z.string(),
+  label: z.string(),
+  options: z.array(roadmapOptionSchema).min(2).max(6),
+});
+
+const roadmapEntrySchema = z.discriminatedUnion("kind", [
+  roadmapTopicEntrySchema,
+  roadmapChoiceEntrySchema,
+]);
+
+export const completeRoadmapSchema = z.object({
+  title: z.string(),
+  domainCoverageChecklist: z.array(z.string()).min(1),
+  sections: z
+    .array(
+      z.object({
+        id: z.string(),
+        title: z.string(),
+        centerNodes: z.array(roadmapCenterNodeSchema).min(1).max(3),
+        leftNodes: z.array(roadmapEntrySchema).min(3).max(12),
+        rightNodes: z.array(roadmapEntrySchema).min(3).max(12),
+      }),
+    )
+    .min(6)
+    .max(16),
+});

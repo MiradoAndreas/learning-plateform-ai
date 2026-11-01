@@ -1,60 +1,105 @@
-import {
-  generatePhaseSkeleton,
-  generatePhaseDetails,
-  auditGaps,
-  addChoices,
-} from "./stages";
-import type { PhaseDetail } from "./schemas";
-import { mergeRoadmap } from "./merge";
+import { generateText, Output } from "ai";
+import { gateway } from "../../ai/provider";
+import { AI_MODELS } from "../../ai/constants";
+import type {
+  RoadmapData,
+  RoadmapEntry,
+} from "@/modules/roadmap/lib/roadmap-data-types";
+import { completeRoadmapSchema } from "./schemas";
+import { buildRoadmapPrompt } from "./prompts";
 
 export async function generateRoadmap({
   topic,
-  answers,
+  answers = [],
 }: {
   topic: string;
   answers?: { key: string; value: string }[];
 }) {
-  const resolvedAnswers = answers ?? [];
-
-  // Étape 1 : squelette des grandes phases + checklist de domaines.
-  const skeleton = await generatePhaseSkeleton({
-    topic,
-    answers: resolvedAnswers,
+  const startedAt = Date.now();
+  console.info("roadmap.generation.started", {
+    provider: "vercel-ai-gateway",
+    requestedModel: AI_MODELS.roadmap,
+  });
+  const { output, response, providerMetadata, totalUsage } = await generateText(
+    {
+      model: gateway(AI_MODELS.roadmap),
+      output: Output.object({ schema: completeRoadmapSchema }),
+      prompt: buildRoadmapPrompt({ topic, answers }),
+    },
+  ).catch((error: unknown) => {
+    const generationId =
+      error && typeof error === "object" && "generationId" in error
+        ? error.generationId
+        : undefined;
+    console.error("roadmap.generation.failed", {
+      requestedModel: AI_MODELS.roadmap,
+      errorName: error instanceof Error ? error.name : "UnknownError",
+      generationId: typeof generationId === "string" ? generationId : undefined,
+      durationMs: Date.now() - startedAt,
+    });
+    throw error;
   });
 
-  console.log("Skeleton : ", skeleton);
+  console.info("roadmap.generation.completed", {
+    requestedModel: AI_MODELS.roadmap,
+    responseModel: response?.modelId,
+    generationId: providerMetadata?.gateway?.generationId,
+    durationMs: Date.now() - startedAt,
+    inputTokens: totalUsage?.inputTokens,
+    outputTokens: totalUsage?.outputTokens,
+    sections: output.sections.length,
+  });
 
-  // Étape 2 : détail de chaque phase, en parallèle (indépendantes entre elles).
-  const detailResults = await Promise.all(
-    skeleton.phases.map((phase) =>
-      generatePhaseDetails({ roadmapTopic: topic, skeleton, phase }).then(
-        (detail): [string, PhaseDetail] => [phase.id, detail],
+  // Normalize IDs and nullable notes without another model call.
+  const seen = new Set<string>();
+  function uniqueId(id: string) {
+    let value = id;
+    let suffix = 2;
+    while (seen.has(value)) value = `${id}-${suffix++}`;
+    seen.add(value);
+    return value;
+  }
+  function normalizeEntry(
+    entry: (typeof output.sections)[number]["leftNodes"][number],
+  ): RoadmapEntry {
+    const id = uniqueId(entry.id);
+    if (entry.kind === "topic") return { ...entry, id };
+    // Keep choices usable even if the model marks multiple recommendations.
+    const recommended = Math.max(
+      0,
+      entry.options.findIndex(
+        (option) => option.recommendation === "recommended",
       ),
-    ),
-  );
-  const details = Object.fromEntries(detailResults);
-  console.log("details", details);
-
-  // Étape 3+4 : audit des prérequis manquants et des domaines oubliés.
-  const gapAudit = await auditGaps({ roadmapTopic: topic, skeleton, details });
-  console.log("gapAudit", gapAudit);
-
-  // Étape 5 : identification des dilemmes technologiques (choice).
-  const choicePass = await addChoices({
-    roadmapTopic: topic,
-    skeleton,
-    details,
-  });
-  console.log("choicePass", choicePass);
-
-  // Étape 6 : fusion pure, sans appel LLM.
-  const roadmapData = mergeRoadmap({ skeleton, details, gapAudit, choicePass });
-
-  console.log("roadmapData", roadmapData);
-
-  // Résumé pour l'affichage (titre/summary de la fiche roadmap).
-  const summary = `Roadmap complète couvrant ${skeleton.phases.length} phases : ${skeleton.domainCoverageChecklist.join(", ")}.`;
-  console.log("summary", summary);
-
-  return { title: skeleton.title, summary, roadmapData };
+    );
+    return {
+      ...entry,
+      id,
+      options: entry.options.map((option, index) => ({
+        ...option,
+        id: uniqueId(option.id),
+        recommendation:
+          index === recommended
+            ? "recommended"
+            : option.recommendation === "recommended"
+              ? "none"
+              : option.recommendation,
+        note: option.note ?? undefined,
+      })),
+    };
+  }
+  const roadmapData: RoadmapData = {
+    title: output.title,
+    sections: output.sections.map((section) => ({
+      ...section,
+      id: uniqueId(section.id),
+      centerNodes: section.centerNodes.map((node) => ({
+        ...node,
+        id: uniqueId(node.id),
+      })),
+      leftNodes: section.leftNodes.map(normalizeEntry),
+      rightNodes: section.rightNodes.map(normalizeEntry),
+    })),
+  };
+  const summary = `Roadmap complète couvrant ${output.sections.length} phases : ${output.domainCoverageChecklist.join(", ")}.`;
+  return { title: output.title, summary, roadmapData };
 }

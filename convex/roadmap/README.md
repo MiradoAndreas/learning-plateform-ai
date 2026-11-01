@@ -1,8 +1,12 @@
 # Roadmap backend
 
-This folder groups code by responsibility. The refactor changes organization only:
-public/internal function paths, schemas, prompts, model choices, thresholds,
-ordering, workflow references, and business behavior stay unchanged.
+Roadmap generation uses one structured-output request to `nvidia/nemotron-3-ultra-550b-a55b`.
+The response includes all 6–16 phases, detailed topics, coverage checklist and
+technology choices. The prompt combines planning, prerequisite/coverage auditing
+and choice selection; no per-phase agents or follow-up model passes run.
+Local normalization ensures unique IDs and one recommended option per choice,
+then returns the existing title, summary and roadmapData contract. Questionnaire,
+project, quiz and submission models remain unchanged.
 
 ```text
 roadmap/
@@ -12,8 +16,8 @@ roadmap/
   constants.ts                        Existing client imports and dashboard limit
   validators.ts                       Persisted roadmap validators
   generation/
-    pipeline.ts                       Multi-stage generation orchestration
-    stages.ts                         Stage functions and shared AI request setup
+    pipeline.ts                       Single-call generation and local normalization
+    stages.ts                         Legacy stage helpers (unused by roadmap generation)
     schemas.ts                        Stage response schemas and inferred types
     prompts.ts                        Prompt builders and context formatting
     merge.ts                          Pure merge and unique-ID assignment
@@ -44,42 +48,41 @@ roadmap/
   tests/                              Generation and structure regressions
 ```
 
-The root action module owns endpoint registration and roadmap lifecycle transitions;
-project and quiz implementation lives with its domain. Plain model functions are
-shared by endpoint handlers. Generation stages share one AI request implementation,
-while prompt construction, response validation, and pure merging remain separate.
-Small single-function question/helper and archive files were consolidated. Unused
-generation schemas and the repeated left/right topic-list schema were removed.
-
-The longer historical submission filenames remain because renaming a Convex module
-changes its function address, including references already stored by durable
-workflows. Review action files are now thin registrations that delegate to one
-implementation module. The refactor registers no additional endpoints.
-
-Only necessary surrounding references were updated: imports in the existing
-frontend generator, paths in the existing regression suite, and generated Convex
-API bindings. No frontend behavior, tables, auth policy, or dependency configuration
-was changed.
+The root action module owns endpoint registration and roadmap lifecycle transitions.
+Existing persistence, status transitions and failure handling remain unchanged.
+Legacy stage helpers remain for historical regression coverage.
 
 Run checks from the repository root:
 
 ```sh
-node --test convex/tests/refactor.test.cjs convex/roadmap/tests/structure.test.cjs
-node node_modules/eslint/bin/eslint.js convex/roadmap --max-warnings 0
+node --test convex/tests/*.test.cjs convex/roadmap/tests/*.test.cjs
+node node_modules/eslint/bin/eslint.js convex/roadmap/generation --max-warnings 0
 node node_modules/typescript/bin/tsc --noEmit -p convex/tsconfig.json
 ```
 
-Request fingerprints were captured before this refactor and verify exact model,
-prompt, response-schema and output parity for every generation stage. Additional
-checks cover parallel phase generation, merge ordering, unchanged endpoint inventory,
-ownership failures and cached results. The broader existing suite verifies database
-schema and historical endpoint contracts, submissions, ZIP processing and chat.
+Tests mock the model to verify call count, model selection, personalization,
+response normalization and error propagation without spending inference credits.
+Live latency, token cost and educational quality require a representative live
+comparison; fewer requests alone do not guarantee lower total token cost.
 
-The existing nullable-option-note type mismatch in `generation/merge.ts` is
-intentionally preserved; correcting its data policy would change behavior. Root
-TypeScript checks also contain previously identified frontend errors. Deployment
-is outside the scope of this structural cleanup.
+## Verifying the active model
 
-Verification result: all 33 regression tests pass; ESLint and read-only Convex
-code generation/bundling pass. Production TypeScript modules decreased from 44 to 39.
-The backend typecheck reports only the pre-existing nullable-note mismatch.
+The browser calls `roadmap/action:submitAnswersAndGenerateRoadmap` on
+`NEXT_PUBLIC_CONVEX_URL`; restarting Next.js alone does not update Convex code.
+After changing the backend, push to the matching dev deployment with
+`npx convex dev --once` (production requires a separate deployment).
+
+Each generation emits `roadmap.generation.started` and
+`roadmap.generation.completed` (or `roadmap.generation.failed`) with the requested model, response model,
+AI Gateway generation ID, duration and token usage. No prompts or credentials
+are logged. Use that generation ID to correlate the request in the Vercel
+team's AI Gateway logs; Convex authenticates using its own deployed
+`AI_GATEWAY_API_KEY`, independently of the local `.env.local` file.
+Questionnaire, tutor, project and review calls intentionally use their other
+configured models. The historical frontend helper re-exports the same roadmap
+pipeline so it cannot reintroduce the former multi-stage generator.
+
+Nemotron 3 Ultra is eligible for Vercel AI Gateway free credits, subject to the
+team's remaining credit balance and free-tier rate limits. This is the Gateway
+model, not the OpenRouter `:free` endpoint; requests use the existing deployed
+`AI_GATEWAY_API_KEY` and retain structured-output validation.

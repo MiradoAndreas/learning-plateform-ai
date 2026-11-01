@@ -118,3 +118,17 @@ Pour chaque sujet identifié, propose son remplacement par un choix ("replacemen
 
 N'en propose que pour les VRAIS dilemmes — la majorité des sujets doivent rester des topics simples.`;
 }
+
+export function buildRoadmapPrompt(input: SkeletonInput) {
+  return `${buildSkeletonPrompt(input)}
+
+Produis directement la roadmap COMPLÈTE dans sections en une seule réponse structurée.
+- Organise 6 à 16 phases dans l'ordre des prérequis : enseigne chaque base avant les sujets avancés qui en dépendent.
+- Pour chaque section : id unique en kebab-case, title, 1 à 3 centerNodes structurants, et 3 à 12 entrées détaillées de CHAQUE côté (leftNodes et rightNodes).
+- Les labels des sujets restent courts (2 à 4 mots), concrets et sans doublons inutiles. Tous les ids (sections, concepts, sujets et options) doivent être globalement uniques.
+- Intègre dès maintenant les prérequis et domaines manquants : vérifie chaque domaine de domainCoverageChecklist et la liste de référence avant de finaliser. Corrige les lacunes dans les sections appropriées, sans sacrifier la couverture pour raccourcir.
+- La majorité des entrées sont des topics (kind: "topic"). Pour les vrais dilemmes technologiques uniquement, crée une entrée kind: "choice" avec une question dans label et 2 à 6 options concrètes.
+- Chaque choice contient EXACTEMENT une option recommended (avec une courte note justificative), au plus une alternative, les autres none. Utilise null pour les notes absentes.
+- Adapte les choix, le niveau, la profondeur et les objectifs aux réponses du questionnaire. Préserve une progression pédagogique complète et professionnelle.
+- Retourne uniquement le résultat final : aucun brouillon, audit séparé ou appel à un autre agent.`;
+}

@@ -1,4 +1,5 @@
 export const AI_MODELS = {
+  roadmap: "nvidia/nemotron-3-ultra-550b-a55b",
   generation: "openai/gpt-5-nano",
   learning: "openai/gpt-5-mini",
   review: "openai/gpt-4o-mini",
