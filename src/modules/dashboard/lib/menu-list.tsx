@@ -121,7 +121,7 @@ export function getMenuList(pathname: string): Group[] {
       groupLabel: "",
       menus: [
         {
-          href: "/progession",
+          href: "/progress",
           label: "Progression",
           icon: TrendingUp,
           submenus: [],
