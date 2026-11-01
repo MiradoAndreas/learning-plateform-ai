@@ -205,6 +205,12 @@
       "skillPath": "skills/convex-verify/SKILL.md",
       "computedHash": "dbe65a37ca2e9a5afa55669b8928ce1dc3ac765151452008f9105bde049228f7"
     },
+    "shadcn": {
+      "source": "shadcn-ui/ui",
+      "sourceType": "github",
+      "skillPath": "skills/shadcn/SKILL.md",
+      "computedHash": "b864a958765563321f485a96f4d59c0bb6539f4286ab6d8b8b66895b7ebd302d"
+    },
     "streamdown": {
       "source": "vercel/streamdown",
       "sourceType": "github",

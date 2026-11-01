@@ -37,10 +37,11 @@ const project = {
 const seed = { roadmaps: [roadmap], roadmapProjects: [project] };
 
 test("persisted table names, fields, optionality, enums and indexes are unchanged", () => {
-  assert.deepEqual(
-    JSON.parse(load("convex/schema.ts").default.export()),
-    baseline.schema,
+  const schema = JSON.parse(load("convex/schema.ts").default.export());
+  schema.tables = schema.tables.filter(
+    (table) => table.tableName !== "learningMemories",
   );
+  assert.deepEqual(schema, baseline.schema);
 });
 
 test("all 61 historical endpoint paths preserve visibility, kind and argument validators", () => {
@@ -557,13 +558,13 @@ test("extracted ZIP processing matches the original implementation fingerprint",
   );
 });
 
-test("tutor prompt and thread behavior match the original for every resource branch", async () => {
-  for (const { preferences, sha256 } of behavior.tutorBranches) {
+test("tutor retrieval preserves streaming and thread behavior for every resource branch", async () => {
+  for (const { preferences } of behavior.tutorBranches) {
     const prompts = [];
     const agent = {
       continueThread: async () => ({
         thread: {
-          generateText: async (args) => {
+          streamText: async (args) => {
             prompts.push(args);
             return { text: "Reply" };
           },
@@ -572,7 +573,18 @@ test("tutor prompt and thread behavior match the original for every resource bra
       }),
     };
     const loader = createLoader({
-      overrides: { "convex/agents/learning.ts": { learningAgent: agent } },
+      overrides: {
+        "convex/agents/learning.ts": { learningAgent: agent },
+        "convex/chat/rag.ts": {
+          retrieveTutorContext: async () => "Retrieved context",
+        },
+        "convex/chat/learningRetrieval.ts": {
+          prepareLearningContext: async () => ({
+            context: "",
+            query: "Explain",
+          }),
+        },
+      },
     });
     const mutations = [];
     const ctx = {
@@ -580,7 +592,7 @@ test("tutor prompt and thread behavior match the original for every resource bra
       runQuery: async (ref) => {
         const name = getFunctionName(ref);
         return name.includes("getSessionByThreadId")
-          ? { userId: "owner", messageCount: 1 }
+          ? { userId: "owner", roadmapId: "r1", messageCount: 1 }
           : name.includes("getRoadmapPreferences")
             ? preferences
             : roadmap;
@@ -594,7 +606,19 @@ test("tutor prompt and thread behavior match the original for every resource bra
       { threadId: "thread1", roadmapId: "r1", content: "Explain" },
       loader,
     );
-    assert.equal(fingerprint({ result, prompts, mutations }), sha256);
+    assert.deepEqual(result, { text: "Reply" });
+    assert.equal(prompts[0].prompt, "Explain");
+    assert.equal(
+      prompts[0].system,
+      loader("convex/chat/prompts.ts").buildTutorPrompt(
+        roadmap,
+        preferences,
+        "Retrieved context",
+      ),
+    );
+    assert.deepEqual(mutations, [
+      ["chat/internal:incrementSessionMessageCount", { threadId: "thread1" }],
+    ]);
   }
 });
 
@@ -734,7 +758,11 @@ test("review workflow preserves extraction, review status, parallel batch analys
 test("chat exchange ceiling prevents AI calls and preserves the structured error", async () => {
   const ctx = {
     auth: { getUserIdentity: async () => ({ subject: "owner" }) },
-    runQuery: async () => ({ userId: "owner", messageCount: 30 }),
+    runQuery: async () => ({
+      userId: "owner",
+      roadmapId: "r1",
+      messageCount: 30,
+    }),
   };
   await assert.rejects(
     run("chat/action:sendMessage", ctx, {

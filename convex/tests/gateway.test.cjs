@@ -18,7 +18,7 @@ test("Gateway retains existing language models and embedding compatibility", () 
     generation: "openai/gpt-5-nano",
     learning: "openai/gpt-5-mini",
     review: "openai/gpt-4o-mini",
-    embedding: "openai/text-embedding-3-small",
+    embedding: "alibaba/qwen3-embedding-0.6b",
   });
   for (const role of ["roadmap", "generation", "learning", "review"]) {
     const model = gateway(AI_MODELS[role]);
@@ -26,9 +26,9 @@ test("Gateway retains existing language models and embedding compatibility", () 
     assert.equal(model.provider, "gateway");
   }
   const embedding = gateway.embeddingModel(AI_MODELS.embedding);
-  assert.equal(embedding.modelId, "openai/text-embedding-3-small");
+  assert.equal(embedding.modelId, "alibaba/qwen3-embedding-0.6b");
   assert.equal(embedding.provider, "gateway");
-  assert.equal(EMBEDDING_DIMENSION, 1536);
+  assert.equal(EMBEDDING_DIMENSION, 1024);
 });
 
 test("historical roadmap helper shares the single-call Convex pipeline", () => {

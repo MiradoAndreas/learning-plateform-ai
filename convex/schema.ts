@@ -4,6 +4,7 @@ import { roadmaps, roadmapQuestions } from "./tables/roadmaps";
 import { roadmapThreads } from "./tables/chat";
 import { roadmapNodeProgress, roadmapNodeQuizzes } from "./tables/progress";
 import { roadmapProjects } from "./tables/projects";
+import { learningMemories } from "./tables/learning";
 import {
   roadmapProjectSubmissions,
   roadmapSubmissionFileBatches,
@@ -21,4 +22,5 @@ export default defineSchema({
   roadmapProjects,
   roadmapProjectSubmissions,
   roadmapSubmissionFileBatches,
+  learningMemories,
 });

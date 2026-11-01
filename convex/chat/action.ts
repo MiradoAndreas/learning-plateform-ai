@@ -1,4 +1,6 @@
 import { buildTutorPrompt } from "./prompts";
+import { retrieveTutorContext } from "./rag";
+import { prepareLearningContext } from "./learningRetrieval";
 import { requireIdentity } from "../lib/auth";
 import { ConvexError, v } from "convex/values";
 import { action, internalAction } from "../_generated/server";
@@ -27,7 +29,11 @@ export const sendMessage = action({
       },
     );
 
-    if (!session || session.userId !== identity.subject) {
+    if (
+      !session ||
+      session.userId !== identity.subject ||
+      session.roadmapId !== roadmapId
+    ) {
       throw new Error("Introuvable");
     }
 
@@ -42,6 +48,7 @@ export const sendMessage = action({
     const roadmap = await ctx.runQuery(internal.roadmap.internal.getRoadmap, {
       roadmapId,
     });
+    if (roadmap.userId !== identity.subject) throw new Error("Introuvable");
 
     const preferences = await ctx.runQuery(
       internal.roadmap.internal.getRoadmapPreferences,
@@ -50,7 +57,31 @@ export const sendMessage = action({
       },
     );
 
-    const system = buildTutorPrompt(roadmap, preferences);
+    const learning = await prepareLearningContext(
+      ctx,
+      roadmap,
+      threadId,
+      content,
+    );
+    const progress = await ctx.runQuery(
+      internal.chat.learningMemory.getProgressContext,
+      {
+        roadmapId,
+        userId: identity.subject,
+      },
+    );
+    const retrievedContext = await retrieveTutorContext(
+      ctx,
+      roadmap,
+      learning.query,
+      progress,
+    );
+    const system = buildTutorPrompt(
+      roadmap,
+      preferences,
+      retrievedContext,
+      learning.context,
+    );
 
     const { thread } = await learningAgent.continueThread(ctx, {
       threadId,
