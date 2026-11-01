@@ -1,4 +1,5 @@
-// convex/roadmap/submissions-mutation.ts
+import { requireOwnedRoadmap } from "../access";
+import { requireIdentity } from "../../lib/auth";
 import { v } from "convex/values";
 import { mutation } from "../../_generated/server";
 
@@ -8,9 +9,9 @@ import { workflow } from "../../workflows/manager";
 
 export const generateSubmissionUploadUrl = mutation({
   args: {},
+  returns: v.string(),
   handler: async (ctx): Promise<string> => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) throw new Error("Non authentifié");
+    await requireIdentity(ctx);
     return await ctx.storage.generateUploadUrl();
   },
 });
@@ -22,18 +23,14 @@ export const submitProject = mutation({
     storageId: v.id("_storage"),
     fileName: v.string(),
   },
+  returns: v.id("roadmapProjectSubmissions"),
   handler: async (
     ctx,
     { roadmapId, projectId, storageId, fileName },
   ): Promise<Id<"roadmapProjectSubmissions">> => {
-    
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) throw new Error("Non authentifié");
+    const identity = await requireIdentity(ctx);
 
-    const roadmap = await ctx.db.get(roadmapId);
-    if (!roadmap || roadmap.userId !== identity.subject) {
-      throw new Error("Introuvable");
-    }
+    await requireOwnedRoadmap(ctx, roadmapId, identity.subject);
 
     const project = await ctx.db.get(projectId);
     if (!project || project.roadmapId !== roadmapId) {

@@ -4,13 +4,13 @@ import { z } from "zod";
 
 import { buildQuestionsPrompt } from "./prompt-question-builder";
 import { openai } from "../../../../ai";
-import { generatePhaseSkeleton } from "../../../../convex/roadmap/generation/phaseSkeleton";
-import { auditGaps } from "../../../../convex/roadmap/generation/gapAudit";
 import {
+  generatePhaseSkeleton,
   generatePhaseDetails,
-  PhaseDetail,
-} from "../../../../convex/roadmap/generation/phaseDetails";
-import { addChoices } from "../../../../convex/roadmap/generation/choicePass";
+  auditGaps,
+  addChoices,
+} from "../../../../convex/roadmap/generation/stages";
+import type { PhaseDetail } from "../../../../convex/roadmap/generation/schemas";
 import { mergeRoadmap } from "../../../../convex/roadmap/generation/merge";
 
 const questionSchema = z.object({

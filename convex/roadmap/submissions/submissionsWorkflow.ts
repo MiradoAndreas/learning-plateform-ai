@@ -1,9 +1,6 @@
-// convex/roadmap/submissions-workflow.ts
 import { v } from "convex/values";
 import { workflow } from "../../workflows/manager";
 import { internal } from "../../_generated/api";
-import { internalMutation } from "../../_generated/server";
-import { vResultValidator, vWorkflowId } from "@convex-dev/workflow";
 
 export const reviewSubmissionWorkflow = workflow.define({
   args: {
@@ -12,6 +9,7 @@ export const reviewSubmissionWorkflow = workflow.define({
     projectTitle: v.string(),
     projectLevel: v.string(),
   },
+  returns: v.null(),
   handler: async (
     step,
     { submissionId, userId, projectTitle, projectLevel },
@@ -56,21 +54,5 @@ export const reviewSubmissionWorkflow = workflow.define({
   },
 });
 
-export const handleSubmissionReviewComplete = internalMutation({
-  args: {
-    workflowId: vWorkflowId,
-    result: vResultValidator,
-    context: v.id("roadmapProjectSubmissions"),
-  },
-  handler: async (ctx, { result, context: submissionId }) => {
-    console.log("Handle Submission Review Complete");
-    if (result.kind === "success") return; // déjà marqué "completed" par synthesizeSubmissionReview
-
-    const errorMessage =
-      result.kind === "failed"
-        ? result.error
-        : "L'analyse a été annulée avant sa fin";
-
-    await ctx.db.patch(submissionId, { status: "failed", errorMessage });
-  },
-});
+// Keep the historical callback path valid for workflows already in flight.
+export { handleSubmissionReviewComplete } from "./submissionsWorkflowComplete";

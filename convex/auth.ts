@@ -1,3 +1,4 @@
+import { currentUserValidator } from "./profiles/authValidators";
 import { createClient, type GenericCtx } from "@convex-dev/better-auth";
 import { convex } from "@convex-dev/better-auth/plugins";
 import { components } from "./_generated/api";
@@ -44,6 +45,7 @@ export const createAuth = (ctx: GenericCtx<DataModel>) => {
 // Feel free to edit, omit, etc.
 export const getCurrentUser = query({
   args: {},
+  returns: currentUserValidator,
   handler: async (ctx) => {
     const authUser = await authComponent.safeGetAuthUser(ctx);
 
@@ -63,6 +65,7 @@ export const getCurrentUser = query({
 
 export const generateUploadUrl = mutation({
   args: {},
+  returns: v.string(),
   handler: async (ctx) => {
     return await ctx.storage.generateUploadUrl();
   },
@@ -70,6 +73,7 @@ export const generateUploadUrl = mutation({
 
 export const getImageUrl = query({
   args: { storageId: v.id("_storage") },
+  returns: v.union(v.string(), v.null()),
   handler: async (ctx, args) => {
     return await ctx.storage.getUrl(args.storageId);
   },

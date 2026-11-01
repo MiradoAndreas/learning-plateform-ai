@@ -1,18 +1,17 @@
 "use client";
 
-import { useMemo } from "react";
-import { ReactFlow, Background, Controls, type NodeTypes } from "@xyflow/react";
+import { MiniMap, Node, ReactFlow, type NodeTypes } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
-import { Node } from "@xyflow/react";
+import { useMemo } from "react";
+import { buildRoadmapFlow } from "../../lib/build-roadmap-flow";
+import { RoadmapData } from "../../lib/roadmap-data-types";
 import {
   CenterNode,
-  TopicNode,
   ChoiceNode,
   OptionNode,
   SectionLabelNode,
+  TopicNode,
 } from "./roadmap-flow-nodes";
-import { buildRoadmapFlow } from "../../lib/build-roadmap-flow";
-import { RoadmapData } from "../../lib/roadmap-data-types";
 
 const nodeTypes: NodeTypes = {
   center: CenterNode,
@@ -59,8 +58,8 @@ export const RoadmapFlow = ({
           onNodeClick(node);
         }}
       >
-        <Background gap={24} />
-        <Controls showInteractive={false} />
+        <MiniMap />
+
       </ReactFlow>
     </div>
   );

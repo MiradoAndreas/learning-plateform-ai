@@ -1,23 +1,21 @@
+import { documentValidator } from "../lib/documents";
+import { getSessionByThreadId as findSessionByThreadId } from "./data";
 import { v } from "convex/values";
 import { internalMutation, internalQuery } from "../_generated/server";
 
 export const getSessionByThreadId = internalQuery({
   args: { threadId: v.string() },
+  returns: v.union(documentValidator("roadmapThreads"), v.null()),
   handler: async (ctx, { threadId }) => {
-    return await ctx.db
-      .query("roadmapThreads")
-      .withIndex("by_thread", (q) => q.eq("threadId", threadId))
-      .unique();
+    return await findSessionByThreadId(ctx, threadId);
   },
 });
 
 export const incrementSessionMessageCount = internalMutation({
   args: { threadId: v.string() },
+  returns: v.null(),
   handler: async (ctx, { threadId }) => {
-    const session = await ctx.db
-      .query("roadmapThreads")
-      .withIndex("by_thread", (q) => q.eq("threadId", threadId))
-      .unique();
+    const session = await findSessionByThreadId(ctx, threadId);
 
     if (!session) return;
 
@@ -31,11 +29,9 @@ export const patchSessionTitleByThreadId = internalMutation({
     threadId: v.string(),
     title: v.string(),
   },
+  returns: v.null(),
   handler: async (ctx, { threadId, title }) => {
-    const session = await ctx.db
-      .query("roadmapThreads")
-      .withIndex("by_thread", (q) => q.eq("threadId", threadId))
-      .unique();
+    const session = await findSessionByThreadId(ctx, threadId);
 
     if (!session) return;
 

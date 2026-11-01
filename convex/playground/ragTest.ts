@@ -1,5 +1,14 @@
-// convex/playground/rag-test.ts
 "use node";
+
+import { ragAddResultValidator, ragSearchResultValidator } from "./validators";
+
+import {
+  AI_MODELS,
+  EMBEDDING_DIMENSION,
+  RAG_TEST_NAMESPACE,
+  RAG_TEST_RESULT_LIMIT,
+} from "../ai/constants";
+// convex/playground/rag-test.ts
 
 import { RAG } from "@convex-dev/rag";
 import { openai } from "@ai-sdk/openai";
@@ -8,15 +17,16 @@ import { components } from "../_generated/api";
 import { v } from "convex/values";
 
 const rag = new RAG(components.rag, {
-  textEmbeddingModel: openai.embedding("text-embedding-3-small"),
-  embeddingDimension: 1536,
+  textEmbeddingModel: openai.embedding(AI_MODELS.embedding),
+  embeddingDimension: EMBEDDING_DIMENSION,
 });
 
 export const addTestDoc = action({
   args: { text: v.string() },
+  returns: ragAddResultValidator,
   handler: async (ctx, { text }) => {
     return await rag.add(ctx, {
-      namespace: "test",
+      namespace: RAG_TEST_NAMESPACE,
       text,
     });
   },
@@ -24,11 +34,12 @@ export const addTestDoc = action({
 
 export const searchTestDoc = action({
   args: { query: v.string() },
+  returns: ragSearchResultValidator,
   handler: async (ctx, { query }) => {
     const results = await rag.search(ctx, {
-      namespace: "test",
+      namespace: RAG_TEST_NAMESPACE,
       query,
-      limit: 3,
+      limit: RAG_TEST_RESULT_LIMIT,
     });
     return results;
   },

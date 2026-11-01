@@ -1,0 +1,1 @@
+export const REVIEW_MAX_PARALLELISM = 4;

@@ -1,4 +1,3 @@
-// convex/roadmap/submissions-workflow-complete.ts
 import { vWorkflowId } from "@convex-dev/workflow";
 import { vResultValidator } from "@convex-dev/workpool";
 import { v } from "convex/values";
@@ -10,6 +9,7 @@ export const handleSubmissionReviewComplete = internalMutation({
     result: vResultValidator,
     context: v.id("roadmapProjectSubmissions"),
   },
+  returns: v.null(),
   handler: async (ctx, { result, context: submissionId }) => {
     console.log("Handle Submission Review Complete");
     if (result.kind === "success") return; // déjà marqué "completed" par synthesizeSubmissionReview

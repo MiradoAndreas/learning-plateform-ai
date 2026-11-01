@@ -1,0 +1,3086 @@
+{
+  "schema": {
+    "tables": [
+      {
+        "tableName": "user_profiles",
+        "indexes": [
+          {
+            "indexDescriptor": "by_userId",
+            "fields": ["userId"]
+          },
+          {
+            "indexDescriptor": "by_onboarding_status",
+            "fields": ["onboardingCompleted"]
+          },
+          {
+            "indexDescriptor": "by_last_active",
+            "fields": ["lastActiveAt"]
+          }
+        ],
+        "stagedDbIndexes": [],
+        "searchIndexes": [],
+        "stagedSearchIndexes": [],
+        "vectorIndexes": [],
+        "stagedVectorIndexes": [],
+        "documentType": {
+          "type": "object",
+          "value": {
+            "userId": {
+              "fieldType": {
+                "type": "string"
+              },
+              "optional": false
+            },
+            "fullName": {
+              "fieldType": {
+                "type": "string"
+              },
+              "optional": false
+            },
+            "displayName": {
+              "fieldType": {
+                "type": "string"
+              },
+              "optional": true
+            },
+            "avatarUrl": {
+              "fieldType": {
+                "type": "string"
+              },
+              "optional": true
+            },
+            "bio": {
+              "fieldType": {
+                "type": "string"
+              },
+              "optional": true
+            },
+            "onboardingCompleted": {
+              "fieldType": {
+                "type": "boolean"
+              },
+              "optional": false
+            },
+            "onboardingStep": {
+              "fieldType": {
+                "type": "number"
+              },
+              "optional": true
+            },
+            "onboardingStartedAt": {
+              "fieldType": {
+                "type": "number"
+              },
+              "optional": true
+            },
+            "onboardingCompletedAt": {
+              "fieldType": {
+                "type": "number"
+              },
+              "optional": true
+            },
+            "lastActiveAt": {
+              "fieldType": {
+                "type": "number"
+              },
+              "optional": false
+            },
+            "accountStatus": {
+              "fieldType": {
+                "type": "union",
+                "value": [
+                  {
+                    "type": "literal",
+                    "value": "active"
+                  },
+                  {
+                    "type": "literal",
+                    "value": "suspended"
+                  },
+                  {
+                    "type": "literal",
+                    "value": "deleted"
+                  }
+                ]
+              },
+              "optional": false
+            }
+          }
+        }
+      },
+      {
+        "tableName": "user_settings",
+        "indexes": [
+          {
+            "indexDescriptor": "by_userId",
+            "fields": ["userId"]
+          }
+        ],
+        "stagedDbIndexes": [],
+        "searchIndexes": [],
+        "stagedSearchIndexes": [],
+        "vectorIndexes": [],
+        "stagedVectorIndexes": [],
+        "documentType": {
+          "type": "object",
+          "value": {
+            "userId": {
+              "fieldType": {
+                "type": "string"
+              },
+              "optional": false
+            },
+            "preferredLanguage": {
+              "fieldType": {
+                "type": "string"
+              },
+              "optional": false
+            },
+            "timezone": {
+              "fieldType": {
+                "type": "string"
+              },
+              "optional": false
+            },
+            "theme": {
+              "fieldType": {
+                "type": "union",
+                "value": [
+                  {
+                    "type": "literal",
+                    "value": "light"
+                  },
+                  {
+                    "type": "literal",
+                    "value": "dark"
+                  },
+                  {
+                    "type": "literal",
+                    "value": "system"
+                  }
+                ]
+              },
+              "optional": false
+            },
+            "fontSize": {
+              "fieldType": {
+                "type": "union",
+                "value": [
+                  {
+                    "type": "literal",
+                    "value": "small"
+                  },
+                  {
+                    "type": "literal",
+                    "value": "medium"
+                  },
+                  {
+                    "type": "literal",
+                    "value": "large"
+                  }
+                ]
+              },
+              "optional": true
+            },
+            "emailNotifications": {
+              "fieldType": {
+                "type": "boolean"
+              },
+              "optional": true
+            },
+            "pushNotifications": {
+              "fieldType": {
+                "type": "boolean"
+              },
+              "optional": true
+            },
+            "highContrast": {
+              "fieldType": {
+                "type": "boolean"
+              },
+              "optional": true
+            },
+            "reducedMotion": {
+              "fieldType": {
+                "type": "boolean"
+              },
+              "optional": true
+            }
+          }
+        }
+      },
+      {
+        "tableName": "roadmaps",
+        "indexes": [
+          {
+            "indexDescriptor": "by_user",
+            "fields": ["userId"]
+          },
+          {
+            "indexDescriptor": "by_user_and_status",
+            "fields": ["userId", "status"]
+          }
+        ],
+        "stagedDbIndexes": [],
+        "searchIndexes": [],
+        "stagedSearchIndexes": [],
+        "vectorIndexes": [],
+        "stagedVectorIndexes": [],
+        "documentType": {
+          "type": "object",
+          "value": {
+            "userId": {
+              "fieldType": {
+                "type": "string"
+              },
+              "optional": false
+            },
+            "topic": {
+              "fieldType": {
+                "type": "string"
+              },
+              "optional": false
+            },
+            "status": {
+              "fieldType": {
+                "type": "union",
+                "value": [
+                  {
+                    "type": "literal",
+                    "value": "draft"
+                  },
+                  {
+                    "type": "literal",
+                    "value": "generating_questions"
+                  },
+                  {
+                    "type": "literal",
+                    "value": "awaiting_answers"
+                  },
+                  {
+                    "type": "literal",
+                    "value": "generating_roadmap"
+                  },
+                  {
+                    "type": "literal",
+                    "value": "completed"
+                  },
+                  {
+                    "type": "literal",
+                    "value": "failed"
+                  }
+                ]
+              },
+              "optional": false
+            },
+            "title": {
+              "fieldType": {
+                "type": "string"
+              },
+              "optional": true
+            },
+            "summary": {
+              "fieldType": {
+                "type": "string"
+              },
+              "optional": true
+            },
+            "roadmapData": {
+              "fieldType": {
+                "type": "object",
+                "value": {
+                  "title": {
+                    "fieldType": {
+                      "type": "string"
+                    },
+                    "optional": false
+                  },
+                  "sections": {
+                    "fieldType": {
+                      "type": "array",
+                      "value": {
+                        "type": "object",
+                        "value": {
+                          "id": {
+                            "fieldType": {
+                              "type": "string"
+                            },
+                            "optional": false
+                          },
+                          "title": {
+                            "fieldType": {
+                              "type": "string"
+                            },
+                            "optional": false
+                          },
+                          "centerNodes": {
+                            "fieldType": {
+                              "type": "array",
+                              "value": {
+                                "type": "object",
+                                "value": {
+                                  "id": {
+                                    "fieldType": {
+                                      "type": "string"
+                                    },
+                                    "optional": false
+                                  },
+                                  "label": {
+                                    "fieldType": {
+                                      "type": "string"
+                                    },
+                                    "optional": false
+                                  }
+                                }
+                              }
+                            },
+                            "optional": false
+                          },
+                          "leftNodes": {
+                            "fieldType": {
+                              "type": "array",
+                              "value": {
+                                "type": "union",
+                                "value": [
+                                  {
+                                    "type": "object",
+                                    "value": {
+                                      "kind": {
+                                        "fieldType": {
+                                          "type": "literal",
+                                          "value": "topic"
+                                        },
+                                        "optional": false
+                                      },
+                                      "id": {
+                                        "fieldType": {
+                                          "type": "string"
+                                        },
+                                        "optional": false
+                                      },
+                                      "label": {
+                                        "fieldType": {
+                                          "type": "string"
+                                        },
+                                        "optional": false
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "type": "object",
+                                    "value": {
+                                      "kind": {
+                                        "fieldType": {
+                                          "type": "literal",
+                                          "value": "choice"
+                                        },
+                                        "optional": false
+                                      },
+                                      "id": {
+                                        "fieldType": {
+                                          "type": "string"
+                                        },
+                                        "optional": false
+                                      },
+                                      "label": {
+                                        "fieldType": {
+                                          "type": "string"
+                                        },
+                                        "optional": false
+                                      },
+                                      "options": {
+                                        "fieldType": {
+                                          "type": "array",
+                                          "value": {
+                                            "type": "object",
+                                            "value": {
+                                              "id": {
+                                                "fieldType": {
+                                                  "type": "string"
+                                                },
+                                                "optional": false
+                                              },
+                                              "label": {
+                                                "fieldType": {
+                                                  "type": "string"
+                                                },
+                                                "optional": false
+                                              },
+                                              "recommendation": {
+                                                "fieldType": {
+                                                  "type": "union",
+                                                  "value": [
+                                                    {
+                                                      "type": "literal",
+                                                      "value": "recommended"
+                                                    },
+                                                    {
+                                                      "type": "literal",
+                                                      "value": "alternative"
+                                                    },
+                                                    {
+                                                      "type": "literal",
+                                                      "value": "none"
+                                                    }
+                                                  ]
+                                                },
+                                                "optional": false
+                                              },
+                                              "note": {
+                                                "fieldType": {
+                                                  "type": "string"
+                                                },
+                                                "optional": true
+                                              }
+                                            }
+                                          }
+                                        },
+                                        "optional": false
+                                      }
+                                    }
+                                  }
+                                ]
+                              }
+                            },
+                            "optional": false
+                          },
+                          "rightNodes": {
+                            "fieldType": {
+                              "type": "array",
+                              "value": {
+                                "type": "union",
+                                "value": [
+                                  {
+                                    "type": "object",
+                                    "value": {
+                                      "kind": {
+                                        "fieldType": {
+                                          "type": "literal",
+                                          "value": "topic"
+                                        },
+                                        "optional": false
+                                      },
+                                      "id": {
+                                        "fieldType": {
+                                          "type": "string"
+                                        },
+                                        "optional": false
+                                      },
+                                      "label": {
+                                        "fieldType": {
+                                          "type": "string"
+                                        },
+                                        "optional": false
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "type": "object",
+                                    "value": {
+                                      "kind": {
+                                        "fieldType": {
+                                          "type": "literal",
+                                          "value": "choice"
+                                        },
+                                        "optional": false
+                                      },
+                                      "id": {
+                                        "fieldType": {
+                                          "type": "string"
+                                        },
+                                        "optional": false
+                                      },
+                                      "label": {
+                                        "fieldType": {
+                                          "type": "string"
+                                        },
+                                        "optional": false
+                                      },
+                                      "options": {
+                                        "fieldType": {
+                                          "type": "array",
+                                          "value": {
+                                            "type": "object",
+                                            "value": {
+                                              "id": {
+                                                "fieldType": {
+                                                  "type": "string"
+                                                },
+                                                "optional": false
+                                              },
+                                              "label": {
+                                                "fieldType": {
+                                                  "type": "string"
+                                                },
+                                                "optional": false
+                                              },
+                                              "recommendation": {
+                                                "fieldType": {
+                                                  "type": "union",
+                                                  "value": [
+                                                    {
+                                                      "type": "literal",
+                                                      "value": "recommended"
+                                                    },
+                                                    {
+                                                      "type": "literal",
+                                                      "value": "alternative"
+                                                    },
+                                                    {
+                                                      "type": "literal",
+                                                      "value": "none"
+                                                    }
+                                                  ]
+                                                },
+                                                "optional": false
+                                              },
+                                              "note": {
+                                                "fieldType": {
+                                                  "type": "string"
+                                                },
+                                                "optional": true
+                                              }
+                                            }
+                                          }
+                                        },
+                                        "optional": false
+                                      }
+                                    }
+                                  }
+                                ]
+                              }
+                            },
+                            "optional": false
+                          }
+                        }
+                      }
+                    },
+                    "optional": false
+                  }
+                }
+              },
+              "optional": true
+            },
+            "errorMessage": {
+              "fieldType": {
+                "type": "string"
+              },
+              "optional": true
+            }
+          }
+        }
+      },
+      {
+        "tableName": "roadmap_questions",
+        "indexes": [
+          {
+            "indexDescriptor": "by_roadmap",
+            "fields": ["roadmapId"]
+          },
+          {
+            "indexDescriptor": "by_roadmap_and_order",
+            "fields": ["roadmapId", "order"]
+          },
+          {
+            "indexDescriptor": "by_roadmap_and_key",
+            "fields": ["roadmapId", "key"]
+          }
+        ],
+        "stagedDbIndexes": [],
+        "searchIndexes": [],
+        "stagedSearchIndexes": [],
+        "vectorIndexes": [],
+        "stagedVectorIndexes": [],
+        "documentType": {
+          "type": "object",
+          "value": {
+            "roadmapId": {
+              "fieldType": {
+                "type": "id",
+                "tableName": "roadmaps"
+              },
+              "optional": false
+            },
+            "order": {
+              "fieldType": {
+                "type": "number"
+              },
+              "optional": false
+            },
+            "key": {
+              "fieldType": {
+                "type": "string"
+              },
+              "optional": false
+            },
+            "title": {
+              "fieldType": {
+                "type": "string"
+              },
+              "optional": false
+            },
+            "description": {
+              "fieldType": {
+                "type": "union",
+                "value": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "optional": false
+            },
+            "required": {
+              "fieldType": {
+                "type": "boolean"
+              },
+              "optional": false
+            },
+            "options": {
+              "fieldType": {
+                "type": "array",
+                "value": {
+                  "type": "string"
+                }
+              },
+              "optional": false
+            },
+            "answer": {
+              "fieldType": {
+                "type": "string"
+              },
+              "optional": true
+            }
+          }
+        }
+      },
+      {
+        "tableName": "roadmapThreads",
+        "indexes": [
+          {
+            "indexDescriptor": "by_roadmap",
+            "fields": ["roadmapId"]
+          },
+          {
+            "indexDescriptor": "by_thread",
+            "fields": ["threadId"]
+          }
+        ],
+        "stagedDbIndexes": [],
+        "searchIndexes": [],
+        "stagedSearchIndexes": [],
+        "vectorIndexes": [],
+        "stagedVectorIndexes": [],
+        "documentType": {
+          "type": "object",
+          "value": {
+            "roadmapId": {
+              "fieldType": {
+                "type": "id",
+                "tableName": "roadmaps"
+              },
+              "optional": false
+            },
+            "userId": {
+              "fieldType": {
+                "type": "string"
+              },
+              "optional": false
+            },
+            "threadId": {
+              "fieldType": {
+                "type": "string"
+              },
+              "optional": false
+            },
+            "title": {
+              "fieldType": {
+                "type": "string"
+              },
+              "optional": false
+            },
+            "messageCount": {
+              "fieldType": {
+                "type": "number"
+              },
+              "optional": true
+            }
+          }
+        }
+      },
+      {
+        "tableName": "roadmapNodeQuizzes",
+        "indexes": [
+          {
+            "indexDescriptor": "by_roadmap_and_node",
+            "fields": ["roadmapId", "nodeId"]
+          }
+        ],
+        "stagedDbIndexes": [],
+        "searchIndexes": [],
+        "stagedSearchIndexes": [],
+        "vectorIndexes": [],
+        "stagedVectorIndexes": [],
+        "documentType": {
+          "type": "object",
+          "value": {
+            "roadmapId": {
+              "fieldType": {
+                "type": "id",
+                "tableName": "roadmaps"
+              },
+              "optional": false
+            },
+            "nodeId": {
+              "fieldType": {
+                "type": "string"
+              },
+              "optional": false
+            },
+            "questions": {
+              "fieldType": {
+                "type": "array",
+                "value": {
+                  "type": "object",
+                  "value": {
+                    "question": {
+                      "fieldType": {
+                        "type": "string"
+                      },
+                      "optional": false
+                    },
+                    "options": {
+                      "fieldType": {
+                        "type": "array",
+                        "value": {
+                          "type": "string"
+                        }
+                      },
+                      "optional": false
+                    },
+                    "correctIndex": {
+                      "fieldType": {
+                        "type": "number"
+                      },
+                      "optional": false
+                    }
+                  }
+                }
+              },
+              "optional": false
+            }
+          }
+        }
+      },
+      {
+        "tableName": "roadmapNodeProgress",
+        "indexes": [
+          {
+            "indexDescriptor": "by_roadmap",
+            "fields": ["roadmapId"]
+          },
+          {
+            "indexDescriptor": "by_roadmap_and_node",
+            "fields": ["roadmapId", "nodeId"]
+          }
+        ],
+        "stagedDbIndexes": [],
+        "searchIndexes": [],
+        "stagedSearchIndexes": [],
+        "vectorIndexes": [],
+        "stagedVectorIndexes": [],
+        "documentType": {
+          "type": "object",
+          "value": {
+            "roadmapId": {
+              "fieldType": {
+                "type": "id",
+                "tableName": "roadmaps"
+              },
+              "optional": false
+            },
+            "userId": {
+              "fieldType": {
+                "type": "string"
+              },
+              "optional": false
+            },
+            "nodeId": {
+              "fieldType": {
+                "type": "string"
+              },
+              "optional": false
+            },
+            "completedAt": {
+              "fieldType": {
+                "type": "number"
+              },
+              "optional": false
+            }
+          }
+        }
+      },
+      {
+        "tableName": "roadmapProjects",
+        "indexes": [
+          {
+            "indexDescriptor": "by_roadmap",
+            "fields": ["roadmapId"]
+          },
+          {
+            "indexDescriptor": "by_roadmap_and_order",
+            "fields": ["roadmapId", "order"]
+          }
+        ],
+        "stagedDbIndexes": [],
+        "searchIndexes": [],
+        "stagedSearchIndexes": [],
+        "vectorIndexes": [],
+        "stagedVectorIndexes": [],
+        "documentType": {
+          "type": "object",
+          "value": {
+            "roadmapId": {
+              "fieldType": {
+                "type": "id",
+                "tableName": "roadmaps"
+              },
+              "optional": false
+            },
+            "level": {
+              "fieldType": {
+                "type": "union",
+                "value": [
+                  {
+                    "type": "literal",
+                    "value": "Novice"
+                  },
+                  {
+                    "type": "literal",
+                    "value": "Apprentice"
+                  },
+                  {
+                    "type": "literal",
+                    "value": "Intermediate"
+                  },
+                  {
+                    "type": "literal",
+                    "value": "Competent"
+                  },
+                  {
+                    "type": "literal",
+                    "value": "Advanced"
+                  },
+                  {
+                    "type": "literal",
+                    "value": "Expert"
+                  },
+                  {
+                    "type": "literal",
+                    "value": "Master"
+                  },
+                  {
+                    "type": "literal",
+                    "value": "Authority"
+                  },
+                  {
+                    "type": "literal",
+                    "value": "Legend"
+                  },
+                  {
+                    "type": "literal",
+                    "value": "Grandmaster"
+                  }
+                ]
+              },
+              "optional": false
+            },
+            "order": {
+              "fieldType": {
+                "type": "number"
+              },
+              "optional": false
+            },
+            "title": {
+              "fieldType": {
+                "type": "string"
+              },
+              "optional": false
+            },
+            "description": {
+              "fieldType": {
+                "type": "string"
+              },
+              "optional": false
+            },
+            "objectives": {
+              "fieldType": {
+                "type": "array",
+                "value": {
+                  "type": "string"
+                }
+              },
+              "optional": false
+            },
+            "skillsPracticed": {
+              "fieldType": {
+                "type": "array",
+                "value": {
+                  "type": "string"
+                }
+              },
+              "optional": false
+            },
+            "estimatedDuration": {
+              "fieldType": {
+                "type": "string"
+              },
+              "optional": true
+            }
+          }
+        }
+      },
+      {
+        "tableName": "roadmapProjectSubmissions",
+        "indexes": [
+          {
+            "indexDescriptor": "by_project",
+            "fields": ["projectId"]
+          },
+          {
+            "indexDescriptor": "by_project_and_user",
+            "fields": ["projectId", "userId"]
+          },
+          {
+            "indexDescriptor": "by_roadmap_and_user",
+            "fields": ["roadmapId", "userId"]
+          }
+        ],
+        "stagedDbIndexes": [],
+        "searchIndexes": [],
+        "stagedSearchIndexes": [],
+        "vectorIndexes": [],
+        "stagedVectorIndexes": [],
+        "documentType": {
+          "type": "object",
+          "value": {
+            "roadmapId": {
+              "fieldType": {
+                "type": "id",
+                "tableName": "roadmaps"
+              },
+              "optional": false
+            },
+            "projectId": {
+              "fieldType": {
+                "type": "id",
+                "tableName": "roadmapProjects"
+              },
+              "optional": false
+            },
+            "userId": {
+              "fieldType": {
+                "type": "string"
+              },
+              "optional": false
+            },
+            "storageId": {
+              "fieldType": {
+                "type": "id",
+                "tableName": "_storage"
+              },
+              "optional": false
+            },
+            "fileName": {
+              "fieldType": {
+                "type": "string"
+              },
+              "optional": false
+            },
+            "status": {
+              "fieldType": {
+                "type": "union",
+                "value": [
+                  {
+                    "type": "literal",
+                    "value": "uploaded"
+                  },
+                  {
+                    "type": "literal",
+                    "value": "extracting"
+                  },
+                  {
+                    "type": "literal",
+                    "value": "reviewing"
+                  },
+                  {
+                    "type": "literal",
+                    "value": "completed"
+                  },
+                  {
+                    "type": "literal",
+                    "value": "failed"
+                  }
+                ]
+              },
+              "optional": false
+            },
+            "score": {
+              "fieldType": {
+                "type": "number"
+              },
+              "optional": true
+            },
+            "passed": {
+              "fieldType": {
+                "type": "boolean"
+              },
+              "optional": true
+            },
+            "summary": {
+              "fieldType": {
+                "type": "string"
+              },
+              "optional": true
+            },
+            "strengths": {
+              "fieldType": {
+                "type": "array",
+                "value": {
+                  "type": "string"
+                }
+              },
+              "optional": true
+            },
+            "improvements": {
+              "fieldType": {
+                "type": "array",
+                "value": {
+                  "type": "string"
+                }
+              },
+              "optional": true
+            },
+            "meetsObjectives": {
+              "fieldType": {
+                "type": "boolean"
+              },
+              "optional": true
+            },
+            "errorMessage": {
+              "fieldType": {
+                "type": "string"
+              },
+              "optional": true
+            },
+            "totalFilesInProject": {
+              "fieldType": {
+                "type": "number"
+              },
+              "optional": true
+            },
+            "totalFilesAnalyzed": {
+              "fieldType": {
+                "type": "number"
+              },
+              "optional": true
+            },
+            "totalBatches": {
+              "fieldType": {
+                "type": "number"
+              },
+              "optional": true
+            },
+            "truncated": {
+              "fieldType": {
+                "type": "boolean"
+              },
+              "optional": true
+            },
+            "submittedAt": {
+              "fieldType": {
+                "type": "number"
+              },
+              "optional": false
+            },
+            "reviewedAt": {
+              "fieldType": {
+                "type": "number"
+              },
+              "optional": true
+            }
+          }
+        }
+      },
+      {
+        "tableName": "roadmapSubmissionFileBatches",
+        "indexes": [
+          {
+            "indexDescriptor": "by_submission",
+            "fields": ["submissionId"]
+          }
+        ],
+        "stagedDbIndexes": [],
+        "searchIndexes": [],
+        "stagedSearchIndexes": [],
+        "vectorIndexes": [],
+        "stagedVectorIndexes": [],
+        "documentType": {
+          "type": "object",
+          "value": {
+            "submissionId": {
+              "fieldType": {
+                "type": "id",
+                "tableName": "roadmapProjectSubmissions"
+              },
+              "optional": false
+            },
+            "batchIndex": {
+              "fieldType": {
+                "type": "number"
+              },
+              "optional": false
+            },
+            "filePaths": {
+              "fieldType": {
+                "type": "array",
+                "value": {
+                  "type": "string"
+                }
+              },
+              "optional": false
+            },
+            "content": {
+              "fieldType": {
+                "type": "string"
+              },
+              "optional": false
+            },
+            "filesReviewed": {
+              "fieldType": {
+                "type": "array",
+                "value": {
+                  "type": "string"
+                }
+              },
+              "optional": true
+            },
+            "observations": {
+              "fieldType": {
+                "type": "array",
+                "value": {
+                  "type": "string"
+                }
+              },
+              "optional": true
+            },
+            "notableIssues": {
+              "fieldType": {
+                "type": "array",
+                "value": {
+                  "type": "string"
+                }
+              },
+              "optional": true
+            },
+            "analyzed": {
+              "fieldType": {
+                "type": "boolean"
+              },
+              "optional": false
+            }
+          }
+        }
+      }
+    ],
+    "schemaValidation": true
+  },
+  "contracts": {
+    "auth:getCurrentUser": {
+      "kind": "query",
+      "visibility": "public",
+      "args": {
+        "type": "object",
+        "value": {}
+      }
+    },
+    "auth:generateUploadUrl": {
+      "kind": "mutation",
+      "visibility": "public",
+      "args": {
+        "type": "object",
+        "value": {}
+      }
+    },
+    "auth:getImageUrl": {
+      "kind": "query",
+      "visibility": "public",
+      "args": {
+        "type": "object",
+        "value": {
+          "storageId": {
+            "fieldType": {
+              "type": "id",
+              "tableName": "_storage"
+            },
+            "optional": false
+          }
+        }
+      }
+    },
+    "chat/action:sendMessage": {
+      "kind": "action",
+      "visibility": "public",
+      "args": {
+        "type": "object",
+        "value": {
+          "threadId": {
+            "fieldType": {
+              "type": "string"
+            },
+            "optional": false
+          },
+          "roadmapId": {
+            "fieldType": {
+              "type": "id",
+              "tableName": "roadmaps"
+            },
+            "optional": false
+          },
+          "content": {
+            "fieldType": {
+              "type": "string"
+            },
+            "optional": false
+          }
+        }
+      }
+    },
+    "chat/action:generateThreadTitle": {
+      "kind": "action",
+      "visibility": "internal",
+      "args": {
+        "type": "object",
+        "value": {
+          "threadId": {
+            "fieldType": {
+              "type": "string"
+            },
+            "optional": false
+          },
+          "firstMessage": {
+            "fieldType": {
+              "type": "string"
+            },
+            "optional": false
+          }
+        }
+      }
+    },
+    "chat/queries:listSessions": {
+      "kind": "query",
+      "visibility": "public",
+      "args": {
+        "type": "object",
+        "value": {
+          "roadmapId": {
+            "fieldType": {
+              "type": "id",
+              "tableName": "roadmaps"
+            },
+            "optional": false
+          }
+        }
+      }
+    },
+    "chat/queries:listThreadMessages": {
+      "kind": "query",
+      "visibility": "public",
+      "args": {
+        "type": "object",
+        "value": {
+          "threadId": {
+            "fieldType": {
+              "type": "string"
+            },
+            "optional": false
+          },
+          "paginationOpts": {
+            "fieldType": {
+              "type": "object",
+              "value": {
+                "numItems": {
+                  "fieldType": {
+                    "type": "number"
+                  },
+                  "optional": false
+                },
+                "cursor": {
+                  "fieldType": {
+                    "type": "union",
+                    "value": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "optional": false
+                },
+                "endCursor": {
+                  "fieldType": {
+                    "type": "union",
+                    "value": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "optional": true
+                },
+                "id": {
+                  "fieldType": {
+                    "type": "number"
+                  },
+                  "optional": true
+                },
+                "maximumRowsRead": {
+                  "fieldType": {
+                    "type": "number"
+                  },
+                  "optional": true
+                },
+                "maximumBytesRead": {
+                  "fieldType": {
+                    "type": "number"
+                  },
+                  "optional": true
+                }
+              }
+            },
+            "optional": false
+          }
+        }
+      }
+    },
+    "chat/queries:getSession": {
+      "kind": "query",
+      "visibility": "public",
+      "args": {
+        "type": "object",
+        "value": {
+          "threadId": {
+            "fieldType": {
+              "type": "string"
+            },
+            "optional": false
+          }
+        }
+      }
+    },
+    "chat/mutation:createSession": {
+      "kind": "mutation",
+      "visibility": "public",
+      "args": {
+        "type": "object",
+        "value": {
+          "roadmapId": {
+            "fieldType": {
+              "type": "id",
+              "tableName": "roadmaps"
+            },
+            "optional": false
+          }
+        }
+      }
+    },
+    "chat/mutation:renameSession": {
+      "kind": "mutation",
+      "visibility": "public",
+      "args": {
+        "type": "object",
+        "value": {
+          "threadId": {
+            "fieldType": {
+              "type": "string"
+            },
+            "optional": false
+          },
+          "title": {
+            "fieldType": {
+              "type": "string"
+            },
+            "optional": false
+          }
+        }
+      }
+    },
+    "chat/internal:getSessionByThreadId": {
+      "kind": "query",
+      "visibility": "internal",
+      "args": {
+        "type": "object",
+        "value": {
+          "threadId": {
+            "fieldType": {
+              "type": "string"
+            },
+            "optional": false
+          }
+        }
+      }
+    },
+    "chat/internal:incrementSessionMessageCount": {
+      "kind": "mutation",
+      "visibility": "internal",
+      "args": {
+        "type": "object",
+        "value": {
+          "threadId": {
+            "fieldType": {
+              "type": "string"
+            },
+            "optional": false
+          }
+        }
+      }
+    },
+    "chat/internal:patchSessionTitleByThreadId": {
+      "kind": "mutation",
+      "visibility": "internal",
+      "args": {
+        "type": "object",
+        "value": {
+          "threadId": {
+            "fieldType": {
+              "type": "string"
+            },
+            "optional": false
+          },
+          "title": {
+            "fieldType": {
+              "type": "string"
+            },
+            "optional": false
+          }
+        }
+      }
+    },
+    "roadmap/action:generateRoadmapProjects": {
+      "kind": "action",
+      "visibility": "public",
+      "args": {
+        "type": "object",
+        "value": {
+          "roadmapId": {
+            "fieldType": {
+              "type": "id",
+              "tableName": "roadmaps"
+            },
+            "optional": false
+          }
+        }
+      }
+    },
+    "roadmap/action:generateQuestionsAction": {
+      "kind": "action",
+      "visibility": "public",
+      "args": {
+        "type": "object",
+        "value": {
+          "roadmapId": {
+            "fieldType": {
+              "type": "id",
+              "tableName": "roadmaps"
+            },
+            "optional": false
+          }
+        }
+      }
+    },
+    "roadmap/action:submitAnswersAndGenerateRoadmap": {
+      "kind": "action",
+      "visibility": "public",
+      "args": {
+        "type": "object",
+        "value": {
+          "roadmapId": {
+            "fieldType": {
+              "type": "id",
+              "tableName": "roadmaps"
+            },
+            "optional": false
+          },
+          "answers": {
+            "fieldType": {
+              "type": "array",
+              "value": {
+                "type": "object",
+                "value": {
+                  "key": {
+                    "fieldType": {
+                      "type": "string"
+                    },
+                    "optional": false
+                  },
+                  "value": {
+                    "fieldType": {
+                      "type": "string"
+                    },
+                    "optional": false
+                  }
+                }
+              }
+            },
+            "optional": false
+          }
+        }
+      }
+    },
+    "roadmap/action:getOrCreateNodeQuiz": {
+      "kind": "action",
+      "visibility": "public",
+      "args": {
+        "type": "object",
+        "value": {
+          "roadmapId": {
+            "fieldType": {
+              "type": "id",
+              "tableName": "roadmaps"
+            },
+            "optional": false
+          },
+          "nodeId": {
+            "fieldType": {
+              "type": "string"
+            },
+            "optional": false
+          },
+          "nodeLabel": {
+            "fieldType": {
+              "type": "string"
+            },
+            "optional": false
+          }
+        }
+      }
+    },
+    "roadmap/internal:getSubmission": {
+      "kind": "query",
+      "visibility": "internal",
+      "args": {
+        "type": "object",
+        "value": {
+          "submissionId": {
+            "fieldType": {
+              "type": "id",
+              "tableName": "roadmapProjectSubmissions"
+            },
+            "optional": false
+          }
+        }
+      }
+    },
+    "roadmap/internal:getProjectForSubmission": {
+      "kind": "query",
+      "visibility": "internal",
+      "args": {
+        "type": "object",
+        "value": {
+          "projectId": {
+            "fieldType": {
+              "type": "id",
+              "tableName": "roadmapProjects"
+            },
+            "optional": false
+          }
+        }
+      }
+    },
+    "roadmap/internal:setSubmissionReviewing": {
+      "kind": "mutation",
+      "visibility": "internal",
+      "args": {
+        "type": "object",
+        "value": {
+          "submissionId": {
+            "fieldType": {
+              "type": "id",
+              "tableName": "roadmapProjectSubmissions"
+            },
+            "optional": false
+          }
+        }
+      }
+    },
+    "roadmap/internal:setSubmissionResult": {
+      "kind": "mutation",
+      "visibility": "internal",
+      "args": {
+        "type": "object",
+        "value": {
+          "submissionId": {
+            "fieldType": {
+              "type": "id",
+              "tableName": "roadmapProjectSubmissions"
+            },
+            "optional": false
+          },
+          "score": {
+            "fieldType": {
+              "type": "number"
+            },
+            "optional": false
+          },
+          "passed": {
+            "fieldType": {
+              "type": "boolean"
+            },
+            "optional": false
+          },
+          "summary": {
+            "fieldType": {
+              "type": "string"
+            },
+            "optional": false
+          },
+          "strengths": {
+            "fieldType": {
+              "type": "array",
+              "value": {
+                "type": "string"
+              }
+            },
+            "optional": false
+          },
+          "improvements": {
+            "fieldType": {
+              "type": "array",
+              "value": {
+                "type": "string"
+              }
+            },
+            "optional": false
+          },
+          "meetsObjectives": {
+            "fieldType": {
+              "type": "boolean"
+            },
+            "optional": false
+          }
+        }
+      }
+    },
+    "roadmap/internal:setSubmissionFailed": {
+      "kind": "mutation",
+      "visibility": "internal",
+      "args": {
+        "type": "object",
+        "value": {
+          "submissionId": {
+            "fieldType": {
+              "type": "id",
+              "tableName": "roadmapProjectSubmissions"
+            },
+            "optional": false
+          },
+          "errorMessage": {
+            "fieldType": {
+              "type": "string"
+            },
+            "optional": false
+          }
+        }
+      }
+    },
+    "roadmap/internal:getRoadmapProjectsInternal": {
+      "kind": "query",
+      "visibility": "internal",
+      "args": {
+        "type": "object",
+        "value": {
+          "roadmapId": {
+            "fieldType": {
+              "type": "id",
+              "tableName": "roadmaps"
+            },
+            "optional": false
+          }
+        }
+      }
+    },
+    "roadmap/internal:setSubmissionStatus": {
+      "kind": "mutation",
+      "visibility": "internal",
+      "args": {
+        "type": "object",
+        "value": {
+          "submissionId": {
+            "fieldType": {
+              "type": "id",
+              "tableName": "roadmapProjectSubmissions"
+            },
+            "optional": false
+          },
+          "status": {
+            "fieldType": {
+              "type": "union",
+              "value": [
+                {
+                  "type": "literal",
+                  "value": "extracting"
+                },
+                {
+                  "type": "literal",
+                  "value": "reviewing"
+                }
+              ]
+            },
+            "optional": false
+          }
+        }
+      }
+    },
+    "roadmap/internal:setSubmissionCoverage": {
+      "kind": "mutation",
+      "visibility": "internal",
+      "args": {
+        "type": "object",
+        "value": {
+          "submissionId": {
+            "fieldType": {
+              "type": "id",
+              "tableName": "roadmapProjectSubmissions"
+            },
+            "optional": false
+          },
+          "totalFilesInProject": {
+            "fieldType": {
+              "type": "number"
+            },
+            "optional": false
+          },
+          "totalFilesAnalyzed": {
+            "fieldType": {
+              "type": "number"
+            },
+            "optional": false
+          },
+          "totalBatches": {
+            "fieldType": {
+              "type": "number"
+            },
+            "optional": false
+          },
+          "truncated": {
+            "fieldType": {
+              "type": "boolean"
+            },
+            "optional": false
+          }
+        }
+      }
+    },
+    "roadmap/internal:insertFileBatch": {
+      "kind": "mutation",
+      "visibility": "internal",
+      "args": {
+        "type": "object",
+        "value": {
+          "submissionId": {
+            "fieldType": {
+              "type": "id",
+              "tableName": "roadmapProjectSubmissions"
+            },
+            "optional": false
+          },
+          "batchIndex": {
+            "fieldType": {
+              "type": "number"
+            },
+            "optional": false
+          },
+          "filePaths": {
+            "fieldType": {
+              "type": "array",
+              "value": {
+                "type": "string"
+              }
+            },
+            "optional": false
+          },
+          "content": {
+            "fieldType": {
+              "type": "string"
+            },
+            "optional": false
+          }
+        }
+      }
+    },
+    "roadmap/internal:getFileBatch": {
+      "kind": "query",
+      "visibility": "internal",
+      "args": {
+        "type": "object",
+        "value": {
+          "batchId": {
+            "fieldType": {
+              "type": "id",
+              "tableName": "roadmapSubmissionFileBatches"
+            },
+            "optional": false
+          }
+        }
+      }
+    },
+    "roadmap/internal:setFileBatchResult": {
+      "kind": "mutation",
+      "visibility": "internal",
+      "args": {
+        "type": "object",
+        "value": {
+          "batchId": {
+            "fieldType": {
+              "type": "id",
+              "tableName": "roadmapSubmissionFileBatches"
+            },
+            "optional": false
+          },
+          "filesReviewed": {
+            "fieldType": {
+              "type": "array",
+              "value": {
+                "type": "string"
+              }
+            },
+            "optional": false
+          },
+          "observations": {
+            "fieldType": {
+              "type": "array",
+              "value": {
+                "type": "string"
+              }
+            },
+            "optional": false
+          },
+          "notableIssues": {
+            "fieldType": {
+              "type": "array",
+              "value": {
+                "type": "string"
+              }
+            },
+            "optional": false
+          }
+        }
+      }
+    },
+    "roadmap/internal:listAnalyzedBatches": {
+      "kind": "query",
+      "visibility": "internal",
+      "args": {
+        "type": "object",
+        "value": {
+          "submissionId": {
+            "fieldType": {
+              "type": "id",
+              "tableName": "roadmapProjectSubmissions"
+            },
+            "optional": false
+          }
+        }
+      }
+    },
+    "roadmap/internal:saveRoadmapProjects": {
+      "kind": "mutation",
+      "visibility": "internal",
+      "args": {
+        "type": "object",
+        "value": {
+          "roadmapId": {
+            "fieldType": {
+              "type": "id",
+              "tableName": "roadmaps"
+            },
+            "optional": false
+          },
+          "projects": {
+            "fieldType": {
+              "type": "array",
+              "value": {
+                "type": "object",
+                "value": {
+                  "level": {
+                    "fieldType": {
+                      "type": "union",
+                      "value": [
+                        {
+                          "type": "literal",
+                          "value": "Novice"
+                        },
+                        {
+                          "type": "literal",
+                          "value": "Apprentice"
+                        },
+                        {
+                          "type": "literal",
+                          "value": "Intermediate"
+                        },
+                        {
+                          "type": "literal",
+                          "value": "Competent"
+                        },
+                        {
+                          "type": "literal",
+                          "value": "Advanced"
+                        },
+                        {
+                          "type": "literal",
+                          "value": "Expert"
+                        },
+                        {
+                          "type": "literal",
+                          "value": "Master"
+                        },
+                        {
+                          "type": "literal",
+                          "value": "Authority"
+                        },
+                        {
+                          "type": "literal",
+                          "value": "Legend"
+                        },
+                        {
+                          "type": "literal",
+                          "value": "Grandmaster"
+                        }
+                      ]
+                    },
+                    "optional": false
+                  },
+                  "order": {
+                    "fieldType": {
+                      "type": "number"
+                    },
+                    "optional": false
+                  },
+                  "title": {
+                    "fieldType": {
+                      "type": "string"
+                    },
+                    "optional": false
+                  },
+                  "description": {
+                    "fieldType": {
+                      "type": "string"
+                    },
+                    "optional": false
+                  },
+                  "objectives": {
+                    "fieldType": {
+                      "type": "array",
+                      "value": {
+                        "type": "string"
+                      }
+                    },
+                    "optional": false
+                  },
+                  "skillsPracticed": {
+                    "fieldType": {
+                      "type": "array",
+                      "value": {
+                        "type": "string"
+                      }
+                    },
+                    "optional": false
+                  },
+                  "estimatedDuration": {
+                    "fieldType": {
+                      "type": "string"
+                    },
+                    "optional": true
+                  }
+                }
+              }
+            },
+            "optional": false
+          }
+        }
+      }
+    },
+    "roadmap/internal:getNodeQuiz": {
+      "kind": "query",
+      "visibility": "internal",
+      "args": {
+        "type": "object",
+        "value": {
+          "roadmapId": {
+            "fieldType": {
+              "type": "id",
+              "tableName": "roadmaps"
+            },
+            "optional": false
+          },
+          "nodeId": {
+            "fieldType": {
+              "type": "string"
+            },
+            "optional": false
+          }
+        }
+      }
+    },
+    "roadmap/internal:saveNodeQuiz": {
+      "kind": "mutation",
+      "visibility": "internal",
+      "args": {
+        "type": "object",
+        "value": {
+          "roadmapId": {
+            "fieldType": {
+              "type": "id",
+              "tableName": "roadmaps"
+            },
+            "optional": false
+          },
+          "nodeId": {
+            "fieldType": {
+              "type": "string"
+            },
+            "optional": false
+          },
+          "questions": {
+            "fieldType": {
+              "type": "array",
+              "value": {
+                "type": "object",
+                "value": {
+                  "question": {
+                    "fieldType": {
+                      "type": "string"
+                    },
+                    "optional": false
+                  },
+                  "options": {
+                    "fieldType": {
+                      "type": "array",
+                      "value": {
+                        "type": "string"
+                      }
+                    },
+                    "optional": false
+                  },
+                  "correctIndex": {
+                    "fieldType": {
+                      "type": "number"
+                    },
+                    "optional": false
+                  }
+                }
+              }
+            },
+            "optional": false
+          }
+        }
+      }
+    },
+    "roadmap/internal:getRoadmapPreferences": {
+      "kind": "query",
+      "visibility": "internal",
+      "args": {
+        "type": "object",
+        "value": {
+          "roadmapId": {
+            "fieldType": {
+              "type": "id",
+              "tableName": "roadmaps"
+            },
+            "optional": false
+          }
+        }
+      }
+    },
+    "roadmap/internal:getRoadmap": {
+      "kind": "query",
+      "visibility": "internal",
+      "args": {
+        "type": "object",
+        "value": {
+          "roadmapId": {
+            "fieldType": {
+              "type": "id",
+              "tableName": "roadmaps"
+            },
+            "optional": false
+          }
+        }
+      }
+    },
+    "roadmap/internal:getAnsweredQuestions": {
+      "kind": "query",
+      "visibility": "internal",
+      "args": {
+        "type": "object",
+        "value": {
+          "roadmapId": {
+            "fieldType": {
+              "type": "id",
+              "tableName": "roadmaps"
+            },
+            "optional": false
+          }
+        }
+      }
+    },
+    "roadmap/internal:setStatus": {
+      "kind": "mutation",
+      "visibility": "internal",
+      "args": {
+        "type": "object",
+        "value": {
+          "roadmapId": {
+            "fieldType": {
+              "type": "id",
+              "tableName": "roadmaps"
+            },
+            "optional": false
+          },
+          "status": {
+            "fieldType": {
+              "type": "union",
+              "value": [
+                {
+                  "type": "literal",
+                  "value": "generating_questions"
+                },
+                {
+                  "type": "literal",
+                  "value": "generating_roadmap"
+                }
+              ]
+            },
+            "optional": false
+          }
+        }
+      }
+    },
+    "roadmap/internal:saveGeneratedQuestions": {
+      "kind": "mutation",
+      "visibility": "internal",
+      "args": {
+        "type": "object",
+        "value": {
+          "roadmapId": {
+            "fieldType": {
+              "type": "id",
+              "tableName": "roadmaps"
+            },
+            "optional": false
+          },
+          "questions": {
+            "fieldType": {
+              "type": "array",
+              "value": {
+                "type": "object",
+                "value": {
+                  "key": {
+                    "fieldType": {
+                      "type": "string"
+                    },
+                    "optional": false
+                  },
+                  "title": {
+                    "fieldType": {
+                      "type": "string"
+                    },
+                    "optional": false
+                  },
+                  "description": {
+                    "fieldType": {
+                      "type": "string"
+                    },
+                    "optional": true
+                  },
+                  "required": {
+                    "fieldType": {
+                      "type": "boolean"
+                    },
+                    "optional": false
+                  },
+                  "options": {
+                    "fieldType": {
+                      "type": "array",
+                      "value": {
+                        "type": "string"
+                      }
+                    },
+                    "optional": false
+                  }
+                }
+              }
+            },
+            "optional": false
+          }
+        }
+      }
+    },
+    "roadmap/internal:saveAnswers": {
+      "kind": "mutation",
+      "visibility": "internal",
+      "args": {
+        "type": "object",
+        "value": {
+          "roadmapId": {
+            "fieldType": {
+              "type": "id",
+              "tableName": "roadmaps"
+            },
+            "optional": false
+          },
+          "answers": {
+            "fieldType": {
+              "type": "array",
+              "value": {
+                "type": "object",
+                "value": {
+                  "key": {
+                    "fieldType": {
+                      "type": "string"
+                    },
+                    "optional": false
+                  },
+                  "value": {
+                    "fieldType": {
+                      "type": "string"
+                    },
+                    "optional": false
+                  }
+                }
+              }
+            },
+            "optional": false
+          }
+        }
+      }
+    },
+    "roadmap/internal:saveRoadmapResult": {
+      "kind": "mutation",
+      "visibility": "internal",
+      "args": {
+        "type": "object",
+        "value": {
+          "roadmapId": {
+            "fieldType": {
+              "type": "id",
+              "tableName": "roadmaps"
+            },
+            "optional": false
+          },
+          "title": {
+            "fieldType": {
+              "type": "string"
+            },
+            "optional": false
+          },
+          "summary": {
+            "fieldType": {
+              "type": "string"
+            },
+            "optional": false
+          },
+          "roadmapData": {
+            "fieldType": {
+              "type": "object",
+              "value": {
+                "title": {
+                  "fieldType": {
+                    "type": "string"
+                  },
+                  "optional": false
+                },
+                "sections": {
+                  "fieldType": {
+                    "type": "array",
+                    "value": {
+                      "type": "object",
+                      "value": {
+                        "id": {
+                          "fieldType": {
+                            "type": "string"
+                          },
+                          "optional": false
+                        },
+                        "title": {
+                          "fieldType": {
+                            "type": "string"
+                          },
+                          "optional": false
+                        },
+                        "centerNodes": {
+                          "fieldType": {
+                            "type": "array",
+                            "value": {
+                              "type": "object",
+                              "value": {
+                                "id": {
+                                  "fieldType": {
+                                    "type": "string"
+                                  },
+                                  "optional": false
+                                },
+                                "label": {
+                                  "fieldType": {
+                                    "type": "string"
+                                  },
+                                  "optional": false
+                                }
+                              }
+                            }
+                          },
+                          "optional": false
+                        },
+                        "leftNodes": {
+                          "fieldType": {
+                            "type": "array",
+                            "value": {
+                              "type": "union",
+                              "value": [
+                                {
+                                  "type": "object",
+                                  "value": {
+                                    "kind": {
+                                      "fieldType": {
+                                        "type": "literal",
+                                        "value": "topic"
+                                      },
+                                      "optional": false
+                                    },
+                                    "id": {
+                                      "fieldType": {
+                                        "type": "string"
+                                      },
+                                      "optional": false
+                                    },
+                                    "label": {
+                                      "fieldType": {
+                                        "type": "string"
+                                      },
+                                      "optional": false
+                                    }
+                                  }
+                                },
+                                {
+                                  "type": "object",
+                                  "value": {
+                                    "kind": {
+                                      "fieldType": {
+                                        "type": "literal",
+                                        "value": "choice"
+                                      },
+                                      "optional": false
+                                    },
+                                    "id": {
+                                      "fieldType": {
+                                        "type": "string"
+                                      },
+                                      "optional": false
+                                    },
+                                    "label": {
+                                      "fieldType": {
+                                        "type": "string"
+                                      },
+                                      "optional": false
+                                    },
+                                    "options": {
+                                      "fieldType": {
+                                        "type": "array",
+                                        "value": {
+                                          "type": "object",
+                                          "value": {
+                                            "id": {
+                                              "fieldType": {
+                                                "type": "string"
+                                              },
+                                              "optional": false
+                                            },
+                                            "label": {
+                                              "fieldType": {
+                                                "type": "string"
+                                              },
+                                              "optional": false
+                                            },
+                                            "recommendation": {
+                                              "fieldType": {
+                                                "type": "union",
+                                                "value": [
+                                                  {
+                                                    "type": "literal",
+                                                    "value": "recommended"
+                                                  },
+                                                  {
+                                                    "type": "literal",
+                                                    "value": "alternative"
+                                                  },
+                                                  {
+                                                    "type": "literal",
+                                                    "value": "none"
+                                                  }
+                                                ]
+                                              },
+                                              "optional": false
+                                            },
+                                            "note": {
+                                              "fieldType": {
+                                                "type": "string"
+                                              },
+                                              "optional": true
+                                            }
+                                          }
+                                        }
+                                      },
+                                      "optional": false
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          },
+                          "optional": false
+                        },
+                        "rightNodes": {
+                          "fieldType": {
+                            "type": "array",
+                            "value": {
+                              "type": "union",
+                              "value": [
+                                {
+                                  "type": "object",
+                                  "value": {
+                                    "kind": {
+                                      "fieldType": {
+                                        "type": "literal",
+                                        "value": "topic"
+                                      },
+                                      "optional": false
+                                    },
+                                    "id": {
+                                      "fieldType": {
+                                        "type": "string"
+                                      },
+                                      "optional": false
+                                    },
+                                    "label": {
+                                      "fieldType": {
+                                        "type": "string"
+                                      },
+                                      "optional": false
+                                    }
+                                  }
+                                },
+                                {
+                                  "type": "object",
+                                  "value": {
+                                    "kind": {
+                                      "fieldType": {
+                                        "type": "literal",
+                                        "value": "choice"
+                                      },
+                                      "optional": false
+                                    },
+                                    "id": {
+                                      "fieldType": {
+                                        "type": "string"
+                                      },
+                                      "optional": false
+                                    },
+                                    "label": {
+                                      "fieldType": {
+                                        "type": "string"
+                                      },
+                                      "optional": false
+                                    },
+                                    "options": {
+                                      "fieldType": {
+                                        "type": "array",
+                                        "value": {
+                                          "type": "object",
+                                          "value": {
+                                            "id": {
+                                              "fieldType": {
+                                                "type": "string"
+                                              },
+                                              "optional": false
+                                            },
+                                            "label": {
+                                              "fieldType": {
+                                                "type": "string"
+                                              },
+                                              "optional": false
+                                            },
+                                            "recommendation": {
+                                              "fieldType": {
+                                                "type": "union",
+                                                "value": [
+                                                  {
+                                                    "type": "literal",
+                                                    "value": "recommended"
+                                                  },
+                                                  {
+                                                    "type": "literal",
+                                                    "value": "alternative"
+                                                  },
+                                                  {
+                                                    "type": "literal",
+                                                    "value": "none"
+                                                  }
+                                                ]
+                                              },
+                                              "optional": false
+                                            },
+                                            "note": {
+                                              "fieldType": {
+                                                "type": "string"
+                                              },
+                                              "optional": true
+                                            }
+                                          }
+                                        }
+                                      },
+                                      "optional": false
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          },
+                          "optional": false
+                        }
+                      }
+                    }
+                  },
+                  "optional": false
+                }
+              }
+            },
+            "optional": false
+          }
+        }
+      }
+    },
+    "roadmap/internal:setFailed": {
+      "kind": "mutation",
+      "visibility": "internal",
+      "args": {
+        "type": "object",
+        "value": {
+          "roadmapId": {
+            "fieldType": {
+              "type": "id",
+              "tableName": "roadmaps"
+            },
+            "optional": false
+          },
+          "errorMessage": {
+            "fieldType": {
+              "type": "string"
+            },
+            "optional": false
+          }
+        }
+      }
+    },
+    "roadmap/mutation:createRoadmap": {
+      "kind": "mutation",
+      "visibility": "public",
+      "args": {
+        "type": "object",
+        "value": {
+          "topic": {
+            "fieldType": {
+              "type": "string"
+            },
+            "optional": false
+          }
+        }
+      }
+    },
+    "roadmap/mutation:submitNodeQuiz": {
+      "kind": "mutation",
+      "visibility": "public",
+      "args": {
+        "type": "object",
+        "value": {
+          "roadmapId": {
+            "fieldType": {
+              "type": "id",
+              "tableName": "roadmaps"
+            },
+            "optional": false
+          },
+          "nodeId": {
+            "fieldType": {
+              "type": "string"
+            },
+            "optional": false
+          },
+          "quizId": {
+            "fieldType": {
+              "type": "id",
+              "tableName": "roadmapNodeQuizzes"
+            },
+            "optional": false
+          },
+          "answers": {
+            "fieldType": {
+              "type": "array",
+              "value": {
+                "type": "number"
+              }
+            },
+            "optional": false
+          }
+        }
+      }
+    },
+    "roadmap/queries:getRecentRoadmaps": {
+      "kind": "query",
+      "visibility": "public",
+      "args": {
+        "type": "object",
+        "value": {}
+      }
+    },
+    "roadmap/queries:getRoadmapProjects": {
+      "kind": "query",
+      "visibility": "public",
+      "args": {
+        "type": "object",
+        "value": {
+          "roadmapId": {
+            "fieldType": {
+              "type": "id",
+              "tableName": "roadmaps"
+            },
+            "optional": false
+          }
+        }
+      }
+    },
+    "roadmap/queries:getRoadmap": {
+      "kind": "query",
+      "visibility": "public",
+      "args": {
+        "type": "object",
+        "value": {
+          "roadmapId": {
+            "fieldType": {
+              "type": "id",
+              "tableName": "roadmaps"
+            },
+            "optional": false
+          }
+        }
+      }
+    },
+    "roadmap/queries:getRoadmapQuestions": {
+      "kind": "query",
+      "visibility": "public",
+      "args": {
+        "type": "object",
+        "value": {
+          "roadmapId": {
+            "fieldType": {
+              "type": "id",
+              "tableName": "roadmaps"
+            },
+            "optional": false
+          }
+        }
+      }
+    },
+    "roadmap/queries:listMyRoadmaps": {
+      "kind": "query",
+      "visibility": "public",
+      "args": {
+        "type": "object",
+        "value": {}
+      }
+    },
+    "roadmap/queries:getRoadmapProgress": {
+      "kind": "query",
+      "visibility": "public",
+      "args": {
+        "type": "object",
+        "value": {
+          "roadmapId": {
+            "fieldType": {
+              "type": "id",
+              "tableName": "roadmaps"
+            },
+            "optional": false
+          }
+        }
+      }
+    },
+    "roadmap/submissions/mutation:generateSubmissionUploadUrl": {
+      "kind": "mutation",
+      "visibility": "public",
+      "args": {
+        "type": "object",
+        "value": {}
+      }
+    },
+    "roadmap/submissions/mutation:submitProject": {
+      "kind": "mutation",
+      "visibility": "public",
+      "args": {
+        "type": "object",
+        "value": {
+          "roadmapId": {
+            "fieldType": {
+              "type": "id",
+              "tableName": "roadmaps"
+            },
+            "optional": false
+          },
+          "projectId": {
+            "fieldType": {
+              "type": "id",
+              "tableName": "roadmapProjects"
+            },
+            "optional": false
+          },
+          "storageId": {
+            "fieldType": {
+              "type": "id",
+              "tableName": "_storage"
+            },
+            "optional": false
+          },
+          "fileName": {
+            "fieldType": {
+              "type": "string"
+            },
+            "optional": false
+          }
+        }
+      }
+    },
+    "roadmap/submissions/queries:listProjectSubmissions": {
+      "kind": "query",
+      "visibility": "public",
+      "args": {
+        "type": "object",
+        "value": {
+          "projectId": {
+            "fieldType": {
+              "type": "id",
+              "tableName": "roadmapProjects"
+            },
+            "optional": false
+          }
+        }
+      }
+    },
+    "roadmap/submissions/queries:getSubmissionsSummaryByRoadmap": {
+      "kind": "query",
+      "visibility": "public",
+      "args": {
+        "type": "object",
+        "value": {
+          "roadmapId": {
+            "fieldType": {
+              "type": "id",
+              "tableName": "roadmaps"
+            },
+            "optional": false
+          }
+        }
+      }
+    },
+    "roadmap/submissions/submissionsAnalyseBatchAction:analyzeFileBatch": {
+      "kind": "action",
+      "visibility": "internal",
+      "args": {
+        "type": "object",
+        "value": {
+          "batchId": {
+            "fieldType": {
+              "type": "id",
+              "tableName": "roadmapSubmissionFileBatches"
+            },
+            "optional": false
+          },
+          "userId": {
+            "fieldType": {
+              "type": "string"
+            },
+            "optional": false
+          },
+          "projectTitle": {
+            "fieldType": {
+              "type": "string"
+            },
+            "optional": false
+          },
+          "projectLevel": {
+            "fieldType": {
+              "type": "string"
+            },
+            "optional": false
+          }
+        }
+      }
+    },
+    "roadmap/submissions/submissionsExtractAction:extractAndChunkSubmission": {
+      "kind": "action",
+      "visibility": "internal",
+      "args": {
+        "type": "object",
+        "value": {
+          "submissionId": {
+            "fieldType": {
+              "type": "id",
+              "tableName": "roadmapProjectSubmissions"
+            },
+            "optional": false
+          }
+        }
+      }
+    },
+    "roadmap/submissions/submissionsSynthesizeAction:synthesizeSubmissionReview": {
+      "kind": "action",
+      "visibility": "internal",
+      "args": {
+        "type": "object",
+        "value": {
+          "submissionId": {
+            "fieldType": {
+              "type": "id",
+              "tableName": "roadmapProjectSubmissions"
+            },
+            "optional": false
+          }
+        }
+      }
+    },
+    "roadmap/submissions/submissionsWorkflow:reviewSubmissionWorkflow": {
+      "kind": "mutation",
+      "visibility": "internal",
+      "args": {
+        "type": "any"
+      }
+    },
+    "roadmap/submissions/submissionsWorkflow:handleSubmissionReviewComplete": {
+      "kind": "mutation",
+      "visibility": "internal",
+      "args": {
+        "type": "object",
+        "value": {
+          "workflowId": {
+            "fieldType": {
+              "type": "string"
+            },
+            "optional": false
+          },
+          "result": {
+            "fieldType": {
+              "type": "union",
+              "value": [
+                {
+                  "type": "object",
+                  "value": {
+                    "kind": {
+                      "fieldType": {
+                        "type": "literal",
+                        "value": "success"
+                      },
+                      "optional": false
+                    },
+                    "returnValue": {
+                      "fieldType": {
+                        "type": "any"
+                      },
+                      "optional": false
+                    }
+                  }
+                },
+                {
+                  "type": "object",
+                  "value": {
+                    "kind": {
+                      "fieldType": {
+                        "type": "literal",
+                        "value": "failed"
+                      },
+                      "optional": false
+                    },
+                    "error": {
+                      "fieldType": {
+                        "type": "string"
+                      },
+                      "optional": false
+                    }
+                  }
+                },
+                {
+                  "type": "object",
+                  "value": {
+                    "kind": {
+                      "fieldType": {
+                        "type": "literal",
+                        "value": "canceled"
+                      },
+                      "optional": false
+                    }
+                  }
+                }
+              ]
+            },
+            "optional": false
+          },
+          "context": {
+            "fieldType": {
+              "type": "id",
+              "tableName": "roadmapProjectSubmissions"
+            },
+            "optional": false
+          }
+        }
+      }
+    },
+    "roadmap/submissions/submissionsWorkflowComplete:handleSubmissionReviewComplete": {
+      "kind": "mutation",
+      "visibility": "internal",
+      "args": {
+        "type": "object",
+        "value": {
+          "workflowId": {
+            "fieldType": {
+              "type": "string"
+            },
+            "optional": false
+          },
+          "result": {
+            "fieldType": {
+              "type": "union",
+              "value": [
+                {
+                  "type": "object",
+                  "value": {
+                    "kind": {
+                      "fieldType": {
+                        "type": "literal",
+                        "value": "success"
+                      },
+                      "optional": false
+                    },
+                    "returnValue": {
+                      "fieldType": {
+                        "type": "any"
+                      },
+                      "optional": false
+                    }
+                  }
+                },
+                {
+                  "type": "object",
+                  "value": {
+                    "kind": {
+                      "fieldType": {
+                        "type": "literal",
+                        "value": "failed"
+                      },
+                      "optional": false
+                    },
+                    "error": {
+                      "fieldType": {
+                        "type": "string"
+                      },
+                      "optional": false
+                    }
+                  }
+                },
+                {
+                  "type": "object",
+                  "value": {
+                    "kind": {
+                      "fieldType": {
+                        "type": "literal",
+                        "value": "canceled"
+                      },
+                      "optional": false
+                    }
+                  }
+                }
+              ]
+            },
+            "optional": false
+          },
+          "context": {
+            "fieldType": {
+              "type": "id",
+              "tableName": "roadmapProjectSubmissions"
+            },
+            "optional": false
+          }
+        }
+      }
+    },
+    "playground/agentTest:pingAgent": {
+      "kind": "action",
+      "visibility": "public",
+      "args": {
+        "type": "object",
+        "value": {
+          "message": {
+            "fieldType": {
+              "type": "string"
+            },
+            "optional": false
+          }
+        }
+      }
+    },
+    "playground/ragTest:addTestDoc": {
+      "kind": "action",
+      "visibility": "public",
+      "args": {
+        "type": "object",
+        "value": {
+          "text": {
+            "fieldType": {
+              "type": "string"
+            },
+            "optional": false
+          }
+        }
+      }
+    },
+    "playground/ragTest:searchTestDoc": {
+      "kind": "action",
+      "visibility": "public",
+      "args": {
+        "type": "object",
+        "value": {
+          "query": {
+            "fieldType": {
+              "type": "string"
+            },
+            "optional": false
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,15 +1,18 @@
-// convex/roadmaps/queries.ts
+import { documentValidator } from "../lib/documents";
+import { getOrderedNodeIds, getUnlockedNodeIds } from "./progress/model";
+import { listRoadmapProjects } from "./projects/model";
+import { listRoadmapQuestions } from "./questions/model";
+import { requireOwnedRoadmap } from "./access";
+import { requireIdentity } from "../lib/auth";
 import { v } from "convex/values";
-import { query, QueryCtx } from "../_generated/server";
-import { Id } from "../_generated/dataModel";
-import { getOrderedNodeIds } from "../lib/nodeOrder";
+import { query } from "../_generated/server";
 import { DASHBOARD_ROADMAP_LIMIT } from "./constants";
 
 export const getRecentRoadmaps = query({
   args: {},
+  returns: v.array(documentValidator("roadmaps")),
   handler: async (ctx) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) throw new Error("Non authentifié");
+    const identity = await requireIdentity(ctx);
 
     return await ctx.db
       .query("roadmaps")
@@ -21,53 +24,36 @@ export const getRecentRoadmaps = query({
 
 export const getRoadmapProjects = query({
   args: { roadmapId: v.id("roadmaps") },
+  returns: v.array(documentValidator("roadmapProjects")),
   handler: async (ctx, { roadmapId }) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) throw new Error("Non authentifié");
+    const identity = await requireIdentity(ctx);
 
-    const roadmap = await ctx.db.get(roadmapId);
-    if (!roadmap || roadmap.userId !== identity.subject) {
-      throw new Error("Introuvable");
-    }
+    await requireOwnedRoadmap(ctx, roadmapId, identity.subject);
 
-    return await ctx.db
-      .query("roadmapProjects")
-      .withIndex("by_roadmap_and_order", (q) => q.eq("roadmapId", roadmapId))
-      .collect();
+    return await listRoadmapProjects(ctx, roadmapId);
   },
 });
 
-async function requireOwnedRoadmap(ctx: QueryCtx, roadmapId: Id<"roadmaps">) {
-  const identity = await ctx.auth.getUserIdentity();
-  if (!identity) throw new Error("Non authentifié");
-  const roadmap = await ctx.db.get(roadmapId);
-  if (!roadmap || roadmap.userId !== identity.subject) {
-    throw new Error("Introuvable");
-  }
-  return roadmap;
-}
-
 export const getRoadmap = query({
   args: { roadmapId: v.id("roadmaps") },
+  returns: documentValidator("roadmaps"),
   handler: async (ctx, { roadmapId }) => requireOwnedRoadmap(ctx, roadmapId),
 });
 
 export const getRoadmapQuestions = query({
   args: { roadmapId: v.id("roadmaps") },
+  returns: v.array(documentValidator("roadmap_questions")),
   handler: async (ctx, { roadmapId }) => {
     await requireOwnedRoadmap(ctx, roadmapId);
-    return await ctx.db
-      .query("roadmap_questions")
-      .withIndex("by_roadmap_and_order", (q) => q.eq("roadmapId", roadmapId))
-      .collect();
+    return await listRoadmapQuestions(ctx, roadmapId);
   },
 });
 
 export const listMyRoadmaps = query({
   args: {},
+  returns: v.array(documentValidator("roadmaps")),
   handler: async (ctx) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) throw new Error("Non authentifié");
+    const identity = await requireIdentity(ctx);
     return await ctx.db
       .query("roadmaps")
       .withIndex("by_user", (q) => q.eq("userId", identity.subject))
@@ -78,14 +64,15 @@ export const listMyRoadmaps = query({
 
 export const getRoadmapProgress = query({
   args: { roadmapId: v.id("roadmaps") },
+  returns: v.object({
+    orderedNodeIds: v.array(v.string()),
+    completedNodeIds: v.array(v.string()),
+    unlockedNodeIds: v.array(v.string()),
+  }),
   handler: async (ctx, { roadmapId }) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) throw new Error("Non authentifié");
+    const identity = await requireIdentity(ctx);
 
-    const roadmap = await ctx.db.get(roadmapId);
-    if (!roadmap || roadmap.userId !== identity.subject) {
-      throw new Error("Introuvable");
-    }
+    const roadmap = await requireOwnedRoadmap(ctx, roadmapId, identity.subject);
 
     if (!roadmap.roadmapData) {
       return { orderedNodeIds: [], completedNodeIds: [], unlockedNodeIds: [] };
@@ -100,19 +87,10 @@ export const getRoadmapProgress = query({
 
     const completedNodeIds = new Set(completedRows.map((r) => r.nodeId));
 
-    const unlockedNodeIds: string[] = [];
-    for (let i = 0; i < orderedNodeIds.length; i++) {
-      const nodeId = orderedNodeIds[i];
-      const isFirst = i === 0;
-      const previousCompleted =
-        i > 0 && completedNodeIds.has(orderedNodeIds[i - 1]);
-
-      if (isFirst || previousCompleted || completedNodeIds.has(nodeId)) {
-        unlockedNodeIds.push(nodeId);
-      } else {
-        break; // séquence strictement linéaire
-      }
-    }
+    const unlockedNodeIds = getUnlockedNodeIds(
+      orderedNodeIds,
+      completedNodeIds,
+    );
 
     return {
       orderedNodeIds,

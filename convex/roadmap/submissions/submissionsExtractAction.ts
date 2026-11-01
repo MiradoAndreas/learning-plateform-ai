@@ -1,4 +1,3 @@
-// convex/roadmap/submissions-extract-action.ts
 "use node";
 
 import { v } from "convex/values";
@@ -7,14 +6,17 @@ import { internalAction } from "../../_generated/server";
 import { internal } from "../../_generated/api";
 import { Id } from "../../_generated/dataModel";
 import {
-  BATCH_CHAR_BUDGET,
   isRelevantFile,
-  MAX_BATCHES,
-  MAX_SINGLE_FILE_CHARS,
-} from "../constants";
+  chunkSubmissionFiles,
+  formatFileBatch,
+} from "./archive";
 
 export const extractAndChunkSubmission = internalAction({
   args: { submissionId: v.id("roadmapProjectSubmissions") },
+  returns: v.object({
+    batchIds: v.array(v.id("roadmapSubmissionFileBatches")),
+    truncated: v.boolean(),
+  }),
   handler: async (
     ctx,
     { submissionId },
@@ -48,59 +50,14 @@ export const extractAndChunkSubmission = internalAction({
       );
     }
 
-    // Découpage en lots : chaque fichier apparaît une seule fois, dans un
-    // seul lot, sans plafond artificiel sur le nombre de fichiers total —
-    // seul un fichier individuellement énorme est tronqué (avec mention).
-    type PendingFile = { path: string; content: string };
-    const batches: PendingFile[][] = [];
-    let currentBatch: PendingFile[] = [];
-    let currentBatchChars = 0;
-    let filesIncluded = 0;
-    let truncated = false;
-
-    for (const entry of relevantEntries) {
-      if (batches.length >= MAX_BATCHES && currentBatch.length === 0) {
-        truncated = true;
-        break;
-      }
-
-      let content = await entry.async("string");
-      if (content.length > MAX_SINGLE_FILE_CHARS) {
-        content =
-          content.slice(0, MAX_SINGLE_FILE_CHARS) +
-          `\n\n[... fichier tronqué, ${content.length} caractères au total ...]`;
-      }
-
-      if (
-        currentBatchChars + content.length > BATCH_CHAR_BUDGET &&
-        currentBatch.length > 0
-      ) {
-        batches.push(currentBatch);
-        currentBatch = [];
-        currentBatchChars = 0;
-
-        if (batches.length >= MAX_BATCHES) {
-          truncated = true;
-          break;
-        }
-      }
-
-      currentBatch.push({ path: entry.name, content });
-      currentBatchChars += content.length;
-      filesIncluded += 1;
-    }
-
-    if (currentBatch.length > 0 && batches.length < MAX_BATCHES) {
-      batches.push(currentBatch);
-    }
+    const { batches, filesIncluded, truncated } =
+      await chunkSubmissionFiles(relevantEntries);
 
     const batchIds: Id<"roadmapSubmissionFileBatches">[] = [];
 
     for (let i = 0; i < batches.length; i++) {
       const files = batches[i];
-      const content = files
-        .map((f) => `### ${f.path}\n\`\`\`\n${f.content}\n\`\`\``)
-        .join("\n\n");
+      const content = formatFileBatch(files);
 
       const batchId = await ctx.runMutation(
         internal.roadmap.internal.insertFileBatch,

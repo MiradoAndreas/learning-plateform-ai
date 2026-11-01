@@ -1,7 +1,9 @@
-import type { RoadmapSkeleton } from "./phaseSkeleton";
-import type { PhaseDetail } from "./phaseDetails";
-import type { GapAudit } from "./gapAudit";
-import type { ChoicePass } from "./choicePass";
+import type {
+  RoadmapSkeleton,
+  PhaseDetail,
+  GapAudit,
+  ChoicePass,
+} from "./schemas";
 import {
   RoadmapData,
   RoadmapEntry,
@@ -48,7 +50,10 @@ export function mergeRoadmap({
           kind: "choice",
           id,
           label: replacement.label,
-          options: replacement.options,
+          options: replacement.options.map((option) => ({
+            ...option,
+            note: option.note ?? undefined,
+          })),
         };
       }
       return { kind: "topic", id, label: topic.label };

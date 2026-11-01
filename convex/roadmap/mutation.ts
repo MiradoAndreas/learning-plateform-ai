@@ -1,4 +1,6 @@
-// convex/roadmaps/mutations.ts
+import { requireOwnedRoadmap } from "./access";
+import { requireIdentity } from "../lib/auth";
+import { QUIZ_PASS_THRESHOLD } from "./progress/constants";
 import { v } from "convex/values";
 import { mutation } from "../_generated/server";
 
@@ -6,9 +8,9 @@ import { mutation } from "../_generated/server";
 // immédiatement, puis déclencher l'action de génération des questions.
 export const createRoadmap = mutation({
   args: { topic: v.string() },
+  returns: v.id("roadmaps"),
   handler: async (ctx, { topic }) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) throw new Error("Non authentifié");
+    const identity = await requireIdentity(ctx);
 
     return await ctx.db.insert("roadmaps", {
       userId: identity.subject,
@@ -18,8 +20,6 @@ export const createRoadmap = mutation({
   },
 });
 
-const PASS_THRESHOLD = 0.8;
-
 export const submitNodeQuiz = mutation({
   args: {
     roadmapId: v.id("roadmaps"),
@@ -27,14 +27,16 @@ export const submitNodeQuiz = mutation({
     quizId: v.id("roadmapNodeQuizzes"),
     answers: v.array(v.number()),
   },
+  returns: v.object({
+    passed: v.boolean(),
+    score: v.number(),
+    correctCount: v.number(),
+    total: v.number(),
+  }),
   handler: async (ctx, { roadmapId, nodeId, quizId, answers }) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) throw new Error("Non authentifié");
+    const identity = await requireIdentity(ctx);
 
-    const roadmap = await ctx.db.get(roadmapId);
-    if (!roadmap || roadmap.userId !== identity.subject) {
-      throw new Error("Introuvable");
-    }
+    await requireOwnedRoadmap(ctx, roadmapId, identity.subject);
 
     const quiz = await ctx.db.get(quizId);
     if (!quiz || quiz.roadmapId !== roadmapId || quiz.nodeId !== nodeId) {
@@ -52,7 +54,7 @@ export const submitNodeQuiz = mutation({
     );
 
     const score = correctCount / quiz.questions.length;
-    const passed = score >= PASS_THRESHOLD;
+    const passed = score >= QUIZ_PASS_THRESHOLD;
 
     if (passed) {
       const alreadyCompleted = await ctx.db

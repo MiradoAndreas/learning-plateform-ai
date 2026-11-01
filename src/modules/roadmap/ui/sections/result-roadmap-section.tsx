@@ -15,6 +15,10 @@ export const ResultRoadmapSection = () => {
     api.roadmap.queries.getRoadmap,
     roadmapId ? { roadmapId } : "skip",
   );
+  const progress = useQuery(
+    api.roadmap.queries.getRoadmapProgress,
+    roadmapId ? { roadmapId } : "skip",
+  );
 
   if (!roadmap) return null;
 
@@ -42,7 +46,14 @@ export const ResultRoadmapSection = () => {
       {roadmap.summary && (
         <p className="text-sm text-muted-foreground">{roadmap.summary}</p>
       )}
-      {roadmap.roadmapData && <RoadmapFlow data={roadmap.roadmapData} />}
+      {roadmap.roadmapData && progress && (
+        <RoadmapFlow
+          data={roadmap.roadmapData}
+          onNodeClick={() => {}}
+          unlockedNodeIds={progress.unlockedNodeIds}
+          completedNodeIds={progress.completedNodeIds}
+        />
+      )}
     </div>
   );
 };

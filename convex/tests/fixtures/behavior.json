@@ -1,0 +1,33 @@
+{
+  "zipExtractionSha256": "986a4349c6305d57a66d477ab9c8bebc5ec96d6570a6d679535d3827f1d5ca86",
+  "tutorBranches": [
+    {
+      "preferences": {},
+      "sha256": "5486506e57dfbd6167ccb92f301e9c9f25557a95513f8782cfc2ecc3c3d498d1"
+    },
+    {
+      "preferences": {
+        "learning_resource": "Vidéos YouTube"
+      },
+      "sha256": "7dfaa80afc5489e6cc1bf0ba525491ce64ab8ce0a9100b1c5d8656546c2e22b7"
+    },
+    {
+      "preferences": {
+        "learning_resource": "Articles écrits"
+      },
+      "sha256": "8f25dae0aebf42a15192948541ce50b1833b2dd013d019fc3783e31d92c33a0d"
+    },
+    {
+      "preferences": {
+        "learning_resource": "Documentation officielle"
+      },
+      "sha256": "891b02ea7c6efee96a6cd024fe3692687ca5ec9938c5375562433d0a43117ee7"
+    },
+    {
+      "preferences": {
+        "preferred_learning_resource": "Livres"
+      },
+      "sha256": "5b92de606a93f3164f0f4415e7ef97593b5c71c76381817797b36c1af8d31e3c"
+    }
+  ]
+}

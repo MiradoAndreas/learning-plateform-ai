@@ -1,21 +1,19 @@
-// convex/roadmap/submissions-queries.ts
+import { documentValidator } from "../../lib/documents";
+import { requireOwnedRoadmap } from "../access";
+import { requireIdentity } from "../../lib/auth";
 import { v } from "convex/values";
 import { query } from "../../_generated/server";
-import { Id } from "../../_generated/dataModel";
 
 export const listProjectSubmissions = query({
   args: { projectId: v.id("roadmapProjects") },
+  returns: v.array(documentValidator("roadmapProjectSubmissions")),
   handler: async (ctx, { projectId }) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) throw new Error("Non authentifié");
+    const identity = await requireIdentity(ctx);
 
     const project = await ctx.db.get(projectId);
     if (!project) throw new Error("Introuvable");
 
-    const roadmap = await ctx.db.get(project.roadmapId);
-    if (!roadmap || roadmap.userId !== identity.subject) {
-      throw new Error("Introuvable");
-    }
+    await requireOwnedRoadmap(ctx, project.roadmapId, identity.subject);
 
     return await ctx.db
       .query("roadmapProjectSubmissions")
@@ -35,17 +33,21 @@ type ProjectSubmissionSummary = {
 
 export const getSubmissionsSummaryByRoadmap = query({
   args: { roadmapId: v.id("roadmaps") },
+  returns: v.record(
+    v.string(),
+    v.object({
+      attempts: v.number(),
+      bestScore: v.union(v.number(), v.null()),
+      passed: v.boolean(),
+    }),
+  ),
   handler: async (
     ctx,
     { roadmapId },
   ): Promise<Record<string, ProjectSubmissionSummary>> => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) throw new Error("Non authentifié");
+    const identity = await requireIdentity(ctx);
 
-    const roadmap = await ctx.db.get(roadmapId);
-    if (!roadmap || roadmap.userId !== identity.subject) {
-      throw new Error("Introuvable");
-    }
+    await requireOwnedRoadmap(ctx, roadmapId, identity.subject);
 
     const submissions = await ctx.db
       .query("roadmapProjectSubmissions")
@@ -57,7 +59,7 @@ export const getSubmissionsSummaryByRoadmap = query({
     const summary: Record<string, ProjectSubmissionSummary> = {};
 
     for (const submission of submissions) {
-      const key = submission.projectId as Id<"roadmapProjects">;
+      const key = submission.projectId;
       const current = summary[key] ?? {
         attempts: 0,
         bestScore: null,

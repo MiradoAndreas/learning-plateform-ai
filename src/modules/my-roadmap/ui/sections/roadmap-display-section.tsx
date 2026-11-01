@@ -59,22 +59,24 @@ export const RoadmapDisplaySection = ({
   const handleNodeClick = (node: Node) => {
     const locked = Boolean(node.data.locked);
     if (locked) return;
+    const selection: RoadmapNodeSelection = {
+      id: node.id,
+      data: { ...node.data, label: String(node.data.label ?? "") },
+    };
 
     if (node.type === "topic" || node.type === "choice") {
-      const label = String(node.data.label ?? "");
-
       if (completedSet.has(node.id)) {
         // Déjà validé : plus besoin du menu, on va direct à l'explication.
-        onNodeClick(node);
+        onNodeClick(selection);
         return;
       }
 
-      openNodeMenu(node.id, label);
+      openNodeMenu(node.id, selection.data.label);
       return;
     }
 
     // "option" et "center" : jamais gatés, comportement normal
-    onNodeClick(node);
+    onNodeClick(selection);
   };
 
   return (

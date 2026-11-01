@@ -1,3 +1,8 @@
+import { threadMessagesValidator } from "./validators";
+import { documentValidator } from "../lib/documents";
+import { requireOwnedSession } from "./data";
+import { requireOwnedRoadmap } from "../roadmap/access";
+import { requireIdentity } from "../lib/auth";
 import { v } from "convex/values";
 import { query } from "../_generated/server";
 import { paginationOptsValidator } from "convex/server";
@@ -6,14 +11,11 @@ import { components } from "../_generated/api";
 
 export const listSessions = query({
   args: { roadmapId: v.id("roadmaps") },
+  returns: v.array(documentValidator("roadmapThreads")),
   handler: async (ctx, { roadmapId }) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) throw new Error("Non authentifié");
+    const identity = await requireIdentity(ctx);
 
-    const roadmap = await ctx.db.get(roadmapId);
-    if (!roadmap || roadmap.userId !== identity.subject) {
-      throw new Error("Introuvable");
-    }
+    await requireOwnedRoadmap(ctx, roadmapId, identity.subject);
 
     return await ctx.db
       .query("roadmapThreads")
@@ -28,18 +30,11 @@ export const listThreadMessages = query({
     threadId: v.string(),
     paginationOpts: paginationOptsValidator,
   },
+  returns: threadMessagesValidator,
   handler: async (ctx, { threadId, paginationOpts }) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) throw new Error("Non authentifié");
+    const identity = await requireIdentity(ctx);
 
-    const thread = await ctx.db
-      .query("roadmapThreads")
-      .withIndex("by_thread", (q) => q.eq("threadId", threadId))
-      .unique();
-
-    if (!thread || thread.userId !== identity.subject) {
-      throw new Error("Introuvable");
-    }
+    await requireOwnedSession(ctx, threadId, identity.subject);
 
     return await listUIMessages(ctx, components.agent, {
       threadId,
@@ -50,18 +45,11 @@ export const listThreadMessages = query({
 
 export const getSession = query({
   args: { threadId: v.string() },
+  returns: documentValidator("roadmapThreads"),
   handler: async (ctx, { threadId }) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) throw new Error("Non authentifié");
+    const identity = await requireIdentity(ctx);
 
-    const session = await ctx.db
-      .query("roadmapThreads")
-      .withIndex("by_thread", (q) => q.eq("threadId", threadId))
-      .unique();
-
-    if (!session || session.userId !== identity.subject) {
-      throw new Error("Introuvable");
-    }
+    const session = await requireOwnedSession(ctx, threadId, identity.subject);
 
     return session;
   },

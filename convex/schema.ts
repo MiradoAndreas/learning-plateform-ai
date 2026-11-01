@@ -1,26 +1,24 @@
 import { defineSchema } from "convex/server";
-
-import { userProfiles } from "./profiles/user_profiles";
-import { userSettings } from "./profiles/user_settings";
+import { userProfiles, userSettings } from "./tables/profiles";
+import { roadmaps, roadmapQuestions } from "./tables/roadmaps";
+import { roadmapThreads } from "./tables/chat";
+import { roadmapNodeProgress, roadmapNodeQuizzes } from "./tables/progress";
+import { roadmapProjects } from "./tables/projects";
 import {
   roadmapProjectSubmissions,
-  roadmapQuestions,
-  roadmaps,
   roadmapSubmissionFileBatches,
-  roadmapThreads,
-} from "./roadmap/roadmap";
-import { roadmapNodeProgress, roadmapNodeQuizzes } from "./roadmap/progress";
-import { roadmapProjects } from "./roadmap/projects";
+} from "./tables/submissions";
 
+// Persisted names stay stable; organization lives in modules.
 export default defineSchema({
   user_profiles: userProfiles,
   user_settings: userSettings,
-  roadmaps: roadmaps,
+  roadmaps,
   roadmap_questions: roadmapQuestions,
-  roadmapThreads: roadmapThreads,
-  roadmapNodeQuizzes: roadmapNodeQuizzes,
-  roadmapNodeProgress: roadmapNodeProgress,
-  roadmapProjects: roadmapProjects,
-  roadmapProjectSubmissions: roadmapProjectSubmissions,
-  roadmapSubmissionFileBatches: roadmapSubmissionFileBatches,
+  roadmapThreads,
+  roadmapNodeQuizzes,
+  roadmapNodeProgress,
+  roadmapProjects,
+  roadmapProjectSubmissions,
+  roadmapSubmissionFileBatches,
 });
