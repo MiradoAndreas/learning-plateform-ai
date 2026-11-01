@@ -3,7 +3,8 @@ import { z } from "zod";
 // todos: remove the file prompt-builder.ts if we don't need it
 
 import { buildQuestionsPrompt } from "./prompt-question-builder";
-import { openai } from "../../../../ai";
+import { gateway } from "../../../../ai";
+import { AI_MODELS } from "../../../../convex/ai/constants";
 import {
   generatePhaseSkeleton,
   generatePhaseDetails,
@@ -89,7 +90,7 @@ export async function generateQuestions({ topic }: { topic: string }) {
   const prompt = buildQuestionsPrompt(topic);
 
   const { output } = await generateText({
-    model: openai("gpt-5-nano"),
+    model: gateway(AI_MODELS.generation),
     output: Output.object({ schema: questionsSchema }),
     prompt,
   });

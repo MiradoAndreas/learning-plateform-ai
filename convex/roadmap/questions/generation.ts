@@ -1,6 +1,6 @@
 import { generateText, Output } from "ai";
 import { z } from "zod";
-import { openai } from "../../ai/provider";
+import { gateway } from "../../ai/provider";
 import { AI_MODELS } from "../../ai/constants";
 
 const questionSchema = z.object({
@@ -19,7 +19,7 @@ export async function generateQuestions({ topic }: { topic: string }) {
   const prompt = buildQuestionsPrompt(topic);
 
   const { output } = await generateText({
-    model: openai(AI_MODELS.generation),
+    model: gateway(AI_MODELS.generation),
     output: Output.object({ schema: questionsSchema }),
     prompt,
   });

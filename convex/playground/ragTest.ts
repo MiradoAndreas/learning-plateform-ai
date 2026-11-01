@@ -11,13 +11,13 @@ import {
 // convex/playground/rag-test.ts
 
 import { RAG } from "@convex-dev/rag";
-import { openai } from "@ai-sdk/openai";
+import { gateway } from "../ai/provider";
 import { action } from "../_generated/server";
 import { components } from "../_generated/api";
 import { v } from "convex/values";
 
 const rag = new RAG(components.rag, {
-  textEmbeddingModel: openai.embedding(AI_MODELS.embedding),
+  textEmbeddingModel: gateway.embeddingModel(AI_MODELS.embedding),
   embeddingDimension: EMBEDDING_DIMENSION,
 });
 

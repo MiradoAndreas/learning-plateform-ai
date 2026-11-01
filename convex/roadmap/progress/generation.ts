@@ -2,7 +2,7 @@ import type { ActionCtx } from "../../_generated/server";
 import type { Id } from "../../_generated/dataModel";
 import { internal } from "../../_generated/api";
 import { generateObject } from "ai";
-import { openai } from "@ai-sdk/openai";
+import { gateway } from "../../ai/provider";
 import { AI_MODELS } from "../../ai/constants";
 import { requireOwnedRoadmapForAction } from "../access";
 import { toClientQuiz } from "./model";
@@ -47,7 +47,7 @@ export async function getOrCreateQuiz(
   }
 
   const { object } = await generateObject({
-    model: openai.chat(AI_MODELS.review),
+    model: gateway(AI_MODELS.review),
     schema: quizSchema,
     prompt: `Génère un quiz de 5 questions à choix multiples (4 options chacune) en français pour valider la compréhension du sujet "${nodeLabel}" dans le contexte de la roadmap "${roadmap.title ?? roadmap.topic}". Niveau débutant à intermédiaire, une seule bonne réponse par question.`,
   });

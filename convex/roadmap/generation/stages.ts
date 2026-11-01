@@ -1,6 +1,6 @@
 import { generateText, Output } from "ai";
 import type { z } from "zod";
-import { openai } from "../../ai/provider";
+import { gateway } from "../../ai/provider";
 import { AI_MODELS } from "../../ai/constants";
 import {
   roadmapSkeletonSchema,
@@ -21,7 +21,7 @@ import {
 // Every generation stage uses the same provider, model and structured-output setup.
 async function generateStage<T>(schema: z.ZodType<T>, prompt: string) {
   const { output } = await generateText({
-    model: openai(AI_MODELS.generation),
+    model: gateway(AI_MODELS.generation),
     output: Output.object({ schema }),
     prompt,
   });

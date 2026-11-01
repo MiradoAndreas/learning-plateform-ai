@@ -1,6 +1,12 @@
 {
   "version": 1,
   "skills": {
+    "ai-gateway": {
+      "source": "vercel/vercel-plugin",
+      "sourceType": "github",
+      "skillPath": "skills/ai-gateway/SKILL.md",
+      "computedHash": "2825ef76df8a32be7f592b8d9af68042ccfea152706867b6f84aad55596ba0dc"
+    },
     "convex": {
       "source": "convex/agent-skills",
       "sourceType": "github",

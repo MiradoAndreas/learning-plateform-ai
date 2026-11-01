@@ -1,8 +1,8 @@
 export const AI_MODELS = {
-  generation: "gpt-5-nano",
-  learning: "gpt-5-mini",
-  review: "gpt-4o-mini",
-  embedding: "text-embedding-3-small",
+  generation: "openai/gpt-5-nano",
+  learning: "openai/gpt-5-mini",
+  review: "openai/gpt-4o-mini",
+  embedding: "openai/text-embedding-3-small",
 } as const;
 
 export const EMBEDDING_DIMENSION = 1536;

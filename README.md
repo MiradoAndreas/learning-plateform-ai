@@ -165,12 +165,20 @@ CONVEX_DEPLOYMENT=
 BETTER_AUTH_SECRET=
 BETTER_AUTH_URL=
 
-# Fournisseur du modèle de langage
-AI_PROVIDER_API_KEY=
+# Vercel AI Gateway (secret côté serveur uniquement)
+AI_GATEWAY_API_KEY=
 
 # Scraping (Firecrawl)
 FIRECRAWL_API_KEY=
 ```
+
+Tous les appels IA (génération structurée, agents et embeddings) passent par Vercel AI Gateway, via le provider intégré au SDK `ai`. Les modèles sont centralisés dans `convex/ai/constants.ts` et conservent les modèles OpenAI existants ainsi que les embeddings à 1536 dimensions. Les prompts, schémas et workflows restent identiques.
+
+Définissez `AI_GATEWAY_API_KEY` dans `.env.local` pour Next.js **et séparément dans chaque environnement Convex** qui exécute les actions IA. Un déploiement Next.js sur Vercel peut utiliser automatiquement son jeton OIDC ; les fonctions hébergées sur Convex nécessitent leur propre clé Gateway. Ne préfixez jamais cette clé par `NEXT_PUBLIC_`. Aucune clé OpenAI directe n'est utilisée par le code migré.
+
+Pour vérifier la configuration après déploiement, lancez une génération, un échange avec l’agent et une recherche RAG, puis contrôlez le modèle, l’usage et les erreurs dans les Logs AI Gateway. Les anciens modèles sont conservés sans ajout de modèles de repli afin de préserver le comportement.
+
+Documentation : https://ai-sdk.dev/providers/ai-sdk-providers/ai-gateway
 
 Les secrets destinés aux fonctions Convex (clé IA, clé Firecrawl) doivent également être déclarés dans l'environnement du déploiement Convex, via le tableau de bord ou la CLI (`npx convex env set NOM_VARIABLE valeur`).
 

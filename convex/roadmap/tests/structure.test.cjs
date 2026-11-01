@@ -64,7 +64,9 @@ for (const [name, args, fixture] of [
             },
             Output: { object: (args) => args },
           },
-          "convex/ai/provider.ts": { openai: (model) => model },
+          "convex/ai/provider.ts": {
+            gateway: (model) => model.replace(/^openai\//, ""),
+          },
         },
       });
       assert.equal(

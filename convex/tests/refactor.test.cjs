@@ -606,7 +606,7 @@ test("question generation keeps the active pre-refactor prompt, schema and model
     "convex/roadmap/questions/generation.ts",
   ]) {
     const calls = [];
-    const provider = (model) => model;
+    const provider = (model) => model.replace(/^openai\//, "");
     const loader = createLoader({
       overrides: {
         ai: {
@@ -616,8 +616,8 @@ test("question generation keeps the active pre-refactor prompt, schema and model
           },
           Output: { object: (args) => args },
         },
-        "ai.ts": { openai: provider },
-        "convex/ai/provider.ts": { openai: provider },
+        "ai.ts": { gateway: provider },
+        "convex/ai/provider.ts": { gateway: provider },
       },
     });
     const result = await loader(file).generateQuestions({

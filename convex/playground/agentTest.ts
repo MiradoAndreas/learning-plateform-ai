@@ -2,14 +2,14 @@ import { AI_MODELS } from "../ai/constants";
 // convex/playground/agent-test.ts
 
 import { Agent, createThread } from "@convex-dev/agent";
-import { openai } from "@ai-sdk/openai";
+import { gateway } from "../ai/provider";
 import { action } from "../_generated/server";
 import { components } from "../_generated/api";
 import { v } from "convex/values";
 
 const testAgent = new Agent(components.agent, {
   name: "Test Agent",
-  languageModel: openai.chat(AI_MODELS.generation),
+  languageModel: gateway(AI_MODELS.generation),
   instructions: "Tu es un assistant de test, réponds brièvement.",
 });
 
