@@ -26,7 +26,6 @@ import {
   MAX_EXCHANGES_PER_THREAD,
   THREAD_WARNING_THRESHOLD,
 } from "../../../../../convex/chat/constants";
-import { Node } from "@xyflow/react";
 
 import { RoadmapNodeSelection } from "@/modules/roadmap/lib/roadmap-node-selection";
 
@@ -44,7 +43,11 @@ export const LearnChatSection = ({
     (state) => state.setCurrentThreadId,
   );
   const [isSending, setIsSending] = useState(false);
-  const [limitReached, setLimitReached] = useState(false);
+  const [limitReachedThreadId, setLimitReachedThreadId] = useState<string | null>(
+    null,
+  );
+  const limitReached =
+    currentThreadId != null && limitReachedThreadId === currentThreadId;
 
   const session = useQuery(
     api.chat.queries.getSession,
@@ -66,11 +69,6 @@ export const LearnChatSection = ({
   const isNearingLimit =
     !isThreadFull && exchangeCount >= THREAD_WARNING_THRESHOLD;
 
-  // Réinitialise l'alerte quand on change de session
-  useEffect(() => {
-    setLimitReached(false);
-  }, [currentThreadId]);
-
   const handleCreateNewSession = async () => {
     const threadId = await createSession({ roadmapId });
     setCurrentThreadId(threadId);
@@ -86,7 +84,7 @@ export const LearnChatSection = ({
         error instanceof ConvexError &&
         (error.data as { code?: string })?.code === "THREAD_LIMIT_REACHED"
       ) {
-        setLimitReached(true);
+        setLimitReachedThreadId(currentThreadId);
       } else {
         throw error;
       }
@@ -119,7 +117,7 @@ export const LearnChatSection = ({
           error instanceof ConvexError &&
           (error.data as { code?: string })?.code === "THREAD_LIMIT_REACHED"
         ) {
-          setLimitReached(true);
+          setLimitReachedThreadId(currentThreadId);
         }
       } finally {
         setIsSending(false);
@@ -130,7 +128,7 @@ export const LearnChatSection = ({
   }, [selectedNode, currentThreadId, roadmapId, sendMessage, isThreadFull]);
 
   return (
-    <div className="flex h-full flex-col md:h-162.5">
+    <div className="flex h-full flex-col">
       <div className="flex items-center gap-x-2 border-b px-4 py-3">
         <SidebarTrigger />
         <BotIcon className="h-4 w-4 text-muted-foreground" />
@@ -174,6 +172,7 @@ export const LearnChatSection = ({
                     <ChatMessageItem
                       role={message.role === "user" ? "user" : "assistant"}
                       content={message.text ?? ""}
+                      isStreaming={message.status === "streaming"}
                     />
                   </MessageScrollerItem>
                 ))}

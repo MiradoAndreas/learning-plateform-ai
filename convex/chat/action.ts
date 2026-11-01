@@ -80,6 +80,8 @@ export const sendMessage = action({
       );
     }
 
+    console.log("message : ", result.text);
+
     return {
       text: await result.text,
     };
