@@ -16,12 +16,9 @@ export const ChatMessageItem = ({ role, content }: ChatMessageItemProps) => {
   const isUser = role === "user";
 
   return (
-    <Message
-      align={isUser ? "end" : "start"}
-      className={isUser ? "pr-4" : undefined}
-    >
+    <Message className="flex-col items-center">
       {!isUser && (
-        <MessageAvatar>
+        <MessageAvatar className="self-start">
           <Avatar>
             <AvatarFallback>
               <BotIcon className="h-4 w-4" />
@@ -30,8 +27,8 @@ export const ChatMessageItem = ({ role, content }: ChatMessageItemProps) => {
         </MessageAvatar>
       )}
       <MessageContent>
-        <Bubble variant={isUser ? "muted" : undefined}>
-          <BubbleContent>
+        <Bubble variant={isUser ? "muted" : undefined} className="w-full max-w-full">
+          <BubbleContent className="w-full">
             <p className="text-sm whitespace-pre-wrap">{content}</p>
           </BubbleContent>
         </Bubble>

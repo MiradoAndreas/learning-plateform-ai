@@ -56,10 +56,10 @@ export const sendMessage = action({
       threadId,
     });
 
-    const result = await thread.generateText({
-      system,
-      prompt: content,
-    });
+    const result = await thread.streamText(
+      { system, prompt: content },
+      { saveStreamDeltas: { throttleMs: 100 } },
+    );
 
     await ctx.runMutation(internal.chat.internal.incrementSessionMessageCount, {
       threadId,
@@ -81,7 +81,7 @@ export const sendMessage = action({
     }
 
     return {
-      text: result.text,
+      text: await result.text,
     };
   },
 });

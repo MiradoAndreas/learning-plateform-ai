@@ -55,7 +55,7 @@ export const LearnChatSection = ({
   const { results: messages } = useUIMessages(
     api.chat.queries.listThreadMessages,
     currentThreadId ? { threadId: currentThreadId } : "skip",
-    { initialNumItems: 20 },
+    { initialNumItems: 20, stream: true },
   );
   const lastNodeId = useRef("");
 

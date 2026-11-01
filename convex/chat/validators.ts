@@ -1,5 +1,5 @@
 import { v } from "convex/values";
-import { vPaginationResult } from "@convex-dev/agent";
+import { vPaginationResult, vStreamMessagesReturnValue } from "@convex-dev/agent";
 
 // AI SDK parts and metadata are extensible. Validate their container while
 // allowing SDK-defined payloads; application-owned fields stay explicit.
@@ -23,4 +23,7 @@ const uiMessageValidator = v.object({
   _creationTime: v.number(),
 });
 
-export const threadMessagesValidator = vPaginationResult(uiMessageValidator);
+export const threadMessagesValidator = v.object({
+  ...vPaginationResult(uiMessageValidator).fields,
+  streams: vStreamMessagesReturnValue.fields.streams,
+});

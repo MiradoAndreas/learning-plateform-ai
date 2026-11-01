@@ -6,7 +6,7 @@ import { requireIdentity } from "../lib/auth";
 import { v } from "convex/values";
 import { query } from "../_generated/server";
 import { paginationOptsValidator } from "convex/server";
-import { listUIMessages } from "@convex-dev/agent";
+import { listUIMessages, syncStreams, vStreamArgs } from "@convex-dev/agent";
 import { components } from "../_generated/api";
 
 export const listSessions = query({
@@ -29,17 +29,23 @@ export const listThreadMessages = query({
   args: {
     threadId: v.string(),
     paginationOpts: paginationOptsValidator,
+    streamArgs: vStreamArgs,
   },
   returns: threadMessagesValidator,
-  handler: async (ctx, { threadId, paginationOpts }) => {
+  handler: async (ctx, { threadId, paginationOpts, streamArgs }) => {
     const identity = await requireIdentity(ctx);
 
     await requireOwnedSession(ctx, threadId, identity.subject);
 
-    return await listUIMessages(ctx, components.agent, {
+    const paginated = await listUIMessages(ctx, components.agent, {
       threadId,
       paginationOpts,
     });
+    const streams = await syncStreams(ctx, components.agent, {
+      threadId,
+      streamArgs,
+    });
+    return { ...paginated, streams };
   },
 });
 
